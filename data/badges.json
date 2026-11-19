@@ -12,5 +12,12 @@
   "desc": "Главный Ларпер Мику",
   "kind": "image",
   "value": "data\/badges\/bmwns4zso.png"
+ },
+ {
+  "id": "bmwnsa47d",
+  "name": "ZIX не ZIX",
+  "desc": "Гланое помнить как меня отличить :)",
+  "kind": "color",
+  "value": "#3F51B5"
  }
 ]
