@@ -59,7 +59,7 @@
   "username": "strela",
   "name": "Стрела",
   "desc": "🐖",
-  "avatar": "",
+  "avatar": "data\/avatars\/strela.png",
   "salt": "fb2ae8c572d2aaedf61f0c2c",
   "hash": "ff40a66edc0c8086ce0d58ee919f5b20e02dc949c733c0f383712e735a96a46b",
   "role": "user",
@@ -71,6 +71,6 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795106198277
+  "updated": 1795106213873
  }
 ]
