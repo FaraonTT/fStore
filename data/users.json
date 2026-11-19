@@ -12,7 +12,9 @@
   "glow": true,
   "nameColor": "#F44336",
   "glowColor": "#F44336",
-  "badges": [],
+  "badges": [
+   "bmwmytg21"
+  ],
   "friend": false,
   "virus": false,
   "updated": 1795056392901
