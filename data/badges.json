@@ -33,5 +33,12 @@
   "desc": "Always be strong.",
   "kind": "image",
   "value": "data\/badges\/bmwnt46cv.png"
+ },
+ {
+  "id": "bmwnul63i",
+  "name": "YtakezDev",
+  "desc": "Официальный аккаунт создателя YouStore",
+  "kind": "color",
+  "value": "#4CAF50"
  }
 ]
