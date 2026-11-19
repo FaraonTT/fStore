@@ -3,17 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-fun bc(name: String, fallback: String = ""): String {
-    val value = System.getenv(name) ?: fallback
-    // Escape values so generated BuildConfig string literals remain valid Kotlin.
-    val escaped = value
-        .replace("\\", "\\\\")
-        .replace("\"", "\\\"")
-        .replace("\n", "\\n")
-        .replace("\r", "\\r")
-    return "\"$escaped\""
-}
-
 android {
     namespace = "com.fworld.fstore"
     compileSdk = 37
@@ -22,28 +11,19 @@ android {
         applicationId = "com.fworld.fstore"
         minSdk = 26
         targetSdk = 35
-        versionCode = 12
-        versionName = "1.2b"
-
-        buildConfigField("String", "GH_OWNER", bc("GH_OWNER", "FaraonTT"))
-        buildConfigField("String", "GH_REPO", bc("GH_REPO", "fStore"))
-
-        // ВНИМАНИЕ: значение BuildConfig вшивается в APK и может быть извлечено.
-        // Не используйте здесь PAT с широкими правами в опубликованном приложении.
-        buildConfigField("String", "GH_TOKEN", bc("GH_TOKEN"))
-
-        // Токены также вшиваются в APK; оставлены для совместимости с текущим проектом.
-        buildConfigField("String", "INBOX_TOKEN", bc("INBOX_TOKEN"))
-        buildConfigField("String", "DROP_TOKEN", bc("DROP_TOKEN"))
-        buildConfigField("String", "SERVER_PUB", bc("FSTORE_SERVER_PUB"))
+        versionCode = 11
+        versionName = "1.1b"
+        buildConfigField("String", "GH_OWNER", "\"${System.getenv("GH_OWNER") ?: "FaraonTT"}\"")
+        buildConfigField("String", "GH_REPO", "\"${System.getenv("GH_REPO") ?: "fStore"}\"")
+        buildConfigField("String", "GH_TOKEN", "\"${System.getenv("FSTORE_TOKEN") ?: ""}\"")
     }
 
     signingConfigs {
         create("release") {
             storeFile = rootProject.file("fstore.keystore")
-            storePassword = System.getenv("KS_PASS") ?: ""
+            storePassword = "fstore123"
             keyAlias = "fstore"
-            keyPassword = System.getenv("KS_PASS") ?: ""
+            keyPassword = "fstore123"
         }
     }
 
