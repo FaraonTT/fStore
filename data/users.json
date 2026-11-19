@@ -72,7 +72,9 @@
   "glow": true,
   "nameColor": "#FFFFFF",
   "glowColor": "#FFFFFF",
-  "badges": [],
+  "badges": [
+   "bmwnsvbys"
+  ],
   "friend": false,
   "virus": false,
   "updated": 1795106213873
