@@ -56,7 +56,9 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2025.09.00"))
+    // Обновлённый BOM — даёт material3 1.5.x с Expressive API
+    implementation(platform("androidx.compose:compose-bom:2025.12.01"))
+
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
