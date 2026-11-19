@@ -54,5 +54,23 @@
   "friend": true,
   "virus": false,
   "updated": 1795105751927
+ },
+ {
+  "username": "strela",
+  "name": "Стрела",
+  "desc": "🐖",
+  "avatar": "",
+  "salt": "fb2ae8c572d2aaedf61f0c2c",
+  "hash": "ff40a66edc0c8086ce0d58ee919f5b20e02dc949c733c0f383712e735a96a46b",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795106198277
  }
 ]
