@@ -26,5 +26,12 @@
   "desc": "🐖",
   "kind": "emoji",
   "value": "🐖"
+ },
+ {
+  "id": "bmwnt46cv",
+  "name": "Be strong...",
+  "desc": "Always be strong.",
+  "kind": "image",
+  "value": "data\/badges\/bmwnt46cv.png"
  }
 ]
