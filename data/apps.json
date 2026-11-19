@@ -30,5 +30,21 @@
   "fworld": false,
   "created": 1795059588205,
   "updated": 1795059599430
+ },
+ {
+  "id": "zix-ai-mwnqyphx",
+  "owner": "zix510",
+  "name": "ZIX AI",
+  "version": "1.0-global-release",
+  "shortDesc": "ИИ-асистент (имеет маленькие лимиты, бесплатный)",
+  "desc": "ИИ-асистент (имеет маленькие лимиты, бесплатный).\n\nРаботает на Free серверах провайдеров. работает по системе ZIXD (запрос отправляется на 3 сервера. От какого агента ответ придет первым тот и придет пользователю). Ситема сырая. ТГК: @ZIX_AI_original",
+  "whatsNew": "",
+  "icon": "apps\/zix510\/zix-ai-mwnqyphx.png",
+  "apk": "apps\/zix510\/zix-ai-mwnqyphx-1-0-global-release.apk",
+  "size": 10087074,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795104665855,
+  "updated": 1795104665855
  }
 ]
