@@ -99,5 +99,23 @@
   "friend": true,
   "virus": false,
   "updated": 1795110142926
+ },
+ {
+  "username": "ve1moru",
+  "name": "Arnur",
+  "desc": "",
+  "avatar": "",
+  "salt": "2b47492ef88258c9b5e20aba",
+  "hash": "452c58cb69fd3663f76f395ab61a67940d7d37fbe63dcf23b52f2152de12ea0f",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795120224545
  }
 ]
