@@ -3,7 +3,7 @@
   "username": "void_fworld",
   "name": "v0iD",
   "desc": "Creator fStore & fworld",
-  "avatar": "",
+  "avatar": "data\/avatars\/void_fworld.png",
   "salt": "328a6466fe966985e8c0729e",
   "hash": "c8b56adf5e4d4bd401a12c2f1a11830676df554bb08a710db670691eaf8d1654",
   "role": "user",
@@ -15,6 +15,6 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795056352342
+  "updated": 1795056392901
  }
 ]
