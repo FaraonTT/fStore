@@ -18,5 +18,23 @@
   "friend": false,
   "virus": false,
   "updated": 1795058082956
+ },
+ {
+  "username": "zix510",
+  "name": "ZIX",
+  "desc": "",
+  "avatar": "",
+  "salt": "bfab0d73c2fbbe4f25e71dba",
+  "hash": "2772edf2202116b52c893953e47a7ff3560a0df56ebd90575d511faed13c9f60",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795104383317
  }
 ]
