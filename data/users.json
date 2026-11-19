@@ -84,7 +84,7 @@
   "username": "ytakez",
   "name": "YtakezDev",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/ytakez.png",
   "salt": "bb3853a1a1a475a3aeda4d27",
   "hash": "e4ecb72d3891dc567558bde0c7370cf6177e9ab1b6a0a6573adad29f7f96bf25",
   "role": "user",
@@ -96,6 +96,6 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795110029041
+  "updated": 1795110033305
  }
 ]
