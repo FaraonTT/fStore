@@ -109,11 +109,13 @@
   "hash": "452c58cb69fd3663f76f395ab61a67940d7d37fbe63dcf23b52f2152de12ea0f",
   "role": "user",
   "banned": false,
-  "verified": false,
-  "glow": false,
+  "verified": true,
+  "glow": true,
   "nameColor": "",
   "glowColor": "",
-  "badges": [],
+  "badges": [
+   "bmwnt46cv"
+  ],
   "friend": false,
   "virus": false,
   "updated": 1795120230170
