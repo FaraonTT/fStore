@@ -36,5 +36,23 @@
   "friend": true,
   "virus": false,
   "updated": 1795104387242
+ },
+ {
+  "username": "terenov",
+  "name": "Terenov",
+  "desc": "",
+  "avatar": "",
+  "salt": "03e9a93748efbce335b736a0",
+  "hash": "85870eb96b6a8cf8ac993b9acd117672ed9167ca2215507a57abb0f861876ac4",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795105747171
  }
 ]
