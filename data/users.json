@@ -94,7 +94,7 @@
   "nameColor": "",
   "glowColor": "",
   "badges": [],
-  "friend": false,
+  "friend": true,
   "virus": false,
   "updated": 1795110142926
  }
