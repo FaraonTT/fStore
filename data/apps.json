@@ -1,1 +1,18 @@
-[]
+[
+ {
+  "id": "collection-reborn-mwmyb8h7",
+  "owner": "void_fworld",
+  "name": "Collection - Reborn",
+  "version": "2.0",
+  "shortDesc": "Игра про коллекционирование.",
+  "desc": "Игра про коллекцилнирование.\n\nЭксклюзивно от fworld",
+  "whatsNew": "",
+  "icon": "apps\/void_fworld\/collection-reborn-mwmyb8h7.png",
+  "apk": "apps\/void_fworld\/collection-reborn-mwmyb8h7-2-0.apk",
+  "size": 10106373,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795056552842,
+  "updated": 1795056552842
+ }
+]
