@@ -38,7 +38,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.13'
+          gradle-version: '9.3.1'
 
       - name: Decode keystore
         run: base64 -d fstore.keystore.b64 > fstore.keystore
