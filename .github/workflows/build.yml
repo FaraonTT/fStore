@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - 'data/**'
       - 'apps/**'
+      - 'server/**'
+      - '.github/workflows/server.yml'
       - '**.md'
   workflow_dispatch:
 
@@ -22,7 +24,8 @@ jobs:
     env:
       GH_OWNER: ${{ github.repository_owner }}
       GH_REPO: ${{ github.event.repository.name }}
-      FSTORE_TOKEN: ${{ secrets.FSTORE_TOKEN }}
+      INBOX_TOKEN: ${{ secrets.INBOX_TOKEN }}
+      DROP_TOKEN: ${{ secrets.DROP_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,8 +43,32 @@ jobs:
         with:
           gradle-version: '9.3.1'
 
-      - name: Decode keystore
-        run: base64 -d fstore.keystore.b64 > fstore.keystore
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Server public key
+        env:
+          SERVER_SECRET: ${{ secrets.SERVER_SECRET }}
+        run: |
+          if [ -n "$SERVER_SECRET" ]; then
+            echo "FSTORE_SERVER_PUB=$(node server/pubkey.js)" >> "$GITHUB_ENV"
+          fi
+
+      - name: Signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KEYSTORE_PASSWORD" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > fstore.keystore
+            echo "KS_PASS=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+          else
+            P=$(openssl rand -hex 16)
+            keytool -genkeypair -keystore fstore.keystore -storepass "$P" -keypass "$P" -alias fstore \
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=fStore"
+            echo "KS_PASS=$P" >> "$GITHUB_ENV"
+          fi
 
       - name: Build release APK
         shell: bash
@@ -50,22 +77,21 @@ jobs:
           gradle :app:assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/release/app-release.apk fStore-1.1b.apk
+        run: cp app/build/outputs/apk/release/app-release.apk fStore-1.2b.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: fStore-1.1b
-          path: fStore-1.1b.apk
+          name: fStore-1.2b
+          path: fStore-1.2b.apk
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1b
-          name: fStore 1.1b
-          files: fStore-1.1b.apk
+          tag_name: v1.2b
+          name: fStore 1.2b
+          files: fStore-1.2b.apk
           body: |
-            fStore 1.1b — Material 3 Expressive.
-            Установи APK и зарегистрируй аккаунт void_fworld.
+            fStore 1.2b — безопасный сервер на GitHub Actions, вкладки «Загрузки» и «Настройки».
 
       - name: Publish build log on failure
         if: failure()
