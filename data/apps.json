@@ -46,21 +46,5 @@
   "fworld": false,
   "created": 1795104665855,
   "updated": 1795104781006
- },
- {
-  "id": "test-mwnytawp",
-  "owner": "void_fworld",
-  "name": "test",
-  "version": "test",
-  "shortDesc": "test",
-  "desc": "test",
-  "whatsNew": "",
-  "icon": "apps\/void_fworld\/test-mwnytawp.png",
-  "apk": "apps\/void_fworld\/test-mwnytawp-test.apk",
-  "size": 10087074,
-  "status": "pending",
-  "fworld": false,
-  "created": 1795117855941,
-  "updated": 1795117855941
  }
 ]
