@@ -89,11 +89,13 @@
   "hash": "e4ecb72d3891dc567558bde0c7370cf6177e9ab1b6a0a6573adad29f7f96bf25",
   "role": "user",
   "banned": false,
-  "verified": false,
-  "glow": false,
-  "nameColor": "",
-  "glowColor": "",
-  "badges": [],
+  "verified": true,
+  "glow": true,
+  "nameColor": "#4CAF50",
+  "glowColor": "#4CAF50",
+  "badges": [
+   "bmwnul63i"
+  ],
   "friend": true,
   "virus": false,
   "updated": 1795110142926
