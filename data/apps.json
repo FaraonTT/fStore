@@ -46,21 +46,5 @@
   "fworld": false,
   "created": 1795104665855,
   "updated": 1795104781006
- },
- {
-  "id": "ball-blast-2-mwnsw891",
-  "owner": "zix510",
-  "name": "BALL BLAST 2",
-  "version": "2.5",
-  "shortDesc": "2D аркада",
-  "desc": "ИГРА БЕЗ ИНТЕРНЕТА. игра полностью на вайбкоджена. лор не читайте он плохой.",
-  "whatsNew": "",
-  "icon": "apps\/zix510\/ball-blast-2-mwnsw891.png",
-  "apk": "apps\/zix510\/ball-blast-2-mwnsw891-2-5.apk",
-  "size": 10902591,
-  "status": "pending",
-  "fworld": false,
-  "created": 1795107908075,
-  "updated": 1795107908075
  }
 ]
