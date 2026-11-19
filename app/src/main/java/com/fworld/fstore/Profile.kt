@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.CloudUpload
@@ -177,7 +178,7 @@ fun EditProfile(vm: StoreVM, me: User, onClose: () -> Unit) {
             title = { Text("Редактировать профиль") },
             navigationIcon = {
                 IconButton(onClick = onClose) {
-                    Icon(androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack, "Назад")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад")
                 }
             },
         )
