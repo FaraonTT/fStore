@@ -79,5 +79,23 @@
   "friend": false,
   "virus": false,
   "updated": 1795106213873
+ },
+ {
+  "username": "ytakez",
+  "name": "YtakezDev",
+  "desc": "",
+  "avatar": "",
+  "salt": "bb3853a1a1a475a3aeda4d27",
+  "hash": "e4ecb72d3891dc567558bde0c7370cf6177e9ab1b6a0a6573adad29f7f96bf25",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795110029041
  }
 ]
