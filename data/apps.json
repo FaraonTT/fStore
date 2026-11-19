@@ -11,7 +11,7 @@
   "apk": "apps\/void_fworld\/collection-reborn-mwmyb8h7-2-0.apk",
   "size": 10106373,
   "status": "pending",
-  "fworld": false,
+  "fworld": true,
   "created": 1795056552842,
   "updated": 1795056552842
  }
