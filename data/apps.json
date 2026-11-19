@@ -14,5 +14,21 @@
   "fworld": true,
   "created": 1795056552842,
   "updated": 1795056575142
+ },
+ {
+  "id": "you-store-mwn04mnv",
+  "owner": "void_fworld",
+  "name": "You Store",
+  "version": "1.2.21",
+  "shortDesc": "Магазин приложений от YTakezDev",
+  "desc": "Магазин приложений без которого бы не появился fStore",
+  "whatsNew": "",
+  "icon": "apps\/void_fworld\/you-store-mwn04mnv.png",
+  "apk": "apps\/void_fworld\/you-store-mwn04mnv-1-2-21.apk",
+  "size": 387059,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795059588205,
+  "updated": 1795059588205
  }
 ]
