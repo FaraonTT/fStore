@@ -13,7 +13,8 @@
   "status": "approved",
   "fworld": true,
   "created": 1795056552842,
-  "updated": 1795056575142
+  "updated": 1795056575142,
+  "parts": 1
  },
  {
   "id": "you-store-mwn04mnv",
@@ -29,7 +30,8 @@
   "status": "approved",
   "fworld": false,
   "created": 1795059588205,
-  "updated": 1795059599430
+  "updated": 1795059599430,
+  "parts": 1
  },
  {
   "id": "zix-ai-mwnqyphx",
@@ -45,6 +47,24 @@
   "status": "approved",
   "fworld": false,
   "created": 1795104665855,
-  "updated": 1795104781006
+  "updated": 1795104781006,
+  "parts": 1
+ },
+ {
+  "id": "fmessage-mwoavi4c",
+  "owner": "void_fworld",
+  "name": "fMessage",
+  "version": "1.7b",
+  "shortDesc": "Мессенджер от #fworld",
+  "desc": "Настоящий и молурабочий мессенджер от #fworld\n\nЭксклюзив от #fworld",
+  "whatsNew": "",
+  "icon": "apps\/void_fworld\/fmessage-mwoavi4c.png",
+  "apk": "apps\/void_fworld\/fmessage-mwoavi4c-1-7b.apk",
+  "size": 1051631,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795138105811,
+  "updated": 1795138105811,
+  "parts": 1
  }
 ]
