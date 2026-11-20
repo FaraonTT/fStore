@@ -45,6 +45,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -73,6 +74,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -140,7 +143,21 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     val glow = cs.primary.copy(alpha = if (dark && vm.amoled) 0.10f else 0.16f).compositeOver(cs.background)
     val bg = Brush.verticalGradient(0f to glow, 0.5f to cs.background, 1f to cs.background)
 
-    CompositionLocalProvider(LocalAnim provides anim, LocalBottomPad provides dockPad) {
+    // Ссылки на APK из каталога скачиваются внутри приложения (в «Загрузки»), а не открываются в браузере.
+    val baseUri = LocalUriHandler.current
+    val uriHandler = remember(baseUri, vm) {
+        object : UriHandler {
+            override fun openUri(uri: String) {
+                if (!vm.downloadByUrl(uri)) baseUri.openUri(uri)
+            }
+        }
+    }
+
+    CompositionLocalProvider(
+        LocalAnim provides anim,
+        LocalBottomPad provides dockPad,
+        LocalUriHandler provides uriHandler,
+    ) {
         Scaffold(
             containerColor = Color.Transparent,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -177,7 +194,6 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                         k == "admin" -> AdminScreen(vm) { admin = false }
                         k == "profile" -> ProfileScreen(
                             vm = vm,
-                            onBack = { profile = false },
                             onOpenApp = { profile = false; detail = it },
                             onUpload = { uploadTarget = null; profile = false; tab = 1 },
                             onAdmin = { admin = true },
@@ -216,6 +232,16 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                     exit = if (anim) fadeOut() + scaleOut(targetScale = 0.6f) else ExitTransition.None,
                 ) {
                     ProfileButton(vm.me) { profile = true }
+                }
+
+                // В профиле на том же месте — кнопка «закрыть» (у остальных вложенных экранов своя стрелка назад).
+                AnimatedVisibility(
+                    visible = profile && !admin,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    enter = if (anim) fadeIn() + scaleIn(initialScale = 0.6f) else EnterTransition.None,
+                    exit = if (anim) fadeOut() + scaleOut(targetScale = 0.6f) else ExitTransition.None,
+                ) {
+                    CloseButton { profile = false }
                 }
 
                 // Плавающий док.
@@ -261,6 +287,27 @@ private fun ProfileButton(me: User?, onClick: () -> Unit) {
             } else {
                 Icon(Icons.Default.Person, "Профиль", tint = MaterialTheme.colorScheme.primary)
             }
+        }
+    }
+}
+
+@Composable
+private fun CloseButton(onClick: () -> Unit) {
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        tonalElevation = 3.dp,
+        shadowElevation = 6.dp,
+        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
+        modifier = Modifier
+            .statusBarsPadding()
+            .padding(top = 10.dp, end = 14.dp)
+            .size(46.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick),
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(Icons.Default.Close, "Закрыть профиль", tint = MaterialTheme.colorScheme.primary)
         }
     }
 }
