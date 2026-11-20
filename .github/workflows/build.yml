@@ -45,6 +45,8 @@ jobs:
 
       - name: Build release APK
         shell: bash
+        env:
+          KS_PASS: fstore123
         run: |
           set -o pipefail
           gradle :app:assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
@@ -54,17 +56,17 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: fStore-1.1b
-          path: fStore-1.1b.apk
+          name: fStore-1.2b
+          path: fStore-1.2b.apk
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1b
-          name: fStore 1.1b
-          files: fStore-1.1b.apk
+          tag_name: v1.2b
+          name: fStore 1.2b
+          files: fStore-1.2b.apk
           body: |
-            fStore 1.1b — Material 3 Expressive.
+            fStore 1.2b — плавающий док, настройки, загрузки внутри приложения, AMOLED, лимит APK 300 МБ.
             Установи APK и зарегистрируй аккаунт void_fworld.
 
       - name: Publish build log on failure
