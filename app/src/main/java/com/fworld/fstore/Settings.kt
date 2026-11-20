@@ -3,7 +3,18 @@
 package com.fworld.fstore
 
 import android.os.Build
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.ViewAgenda
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +36,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -168,6 +180,62 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit) 
                 )
             }
             SwitchRow(Icons.Default.Animation, "Анимации", "Плавные переходы и появление списков", vm.animations, vm::setAnimations)
+            SwitchRow(Icons.Default.Vibration, "Вибрация", "Отклик при переключении вкладок", UiPrefs.haptics, UiPrefs::setHaptics)
+            Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Palette, null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(16.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text("Акцентный цвет", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            if (vm.dynamicColor && Build.VERSION.SDK_INT >= 31) "Выключите «Цвета из обоев», чтобы выбрать"
+                            else ACCENTS[UiPrefs.accent].name,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    ACCENTS.forEachIndexed { i, ac ->
+                        val sel = UiPrefs.accent == i
+                        Box(
+                            Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(ac.lp)
+                                .then(if (sel) Modifier.border(3.dp, MaterialTheme.colorScheme.onSurface, CircleShape) else Modifier)
+                                .clickable { UiPrefs.setAccent(i) },
+                            contentAlignment = Alignment.Center,
+                        ) { if (sel) Icon(Icons.Default.Check, ac.name, tint = Color.White) }
+                    }
+                }
+            }
+            Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.FormatSize, null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(16.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text("Размер текста", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "Поверх системного масштаба",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Text("${(UiPrefs.fontScale * 100).toInt()}%", style = MaterialTheme.typography.labelLarge)
+                }
+                Slider(
+                    value = UiPrefs.fontScale,
+                    onValueChange = { UiPrefs.setFontScale((it * 20).toInt() / 20f) },
+                    valueRange = 0.85f..1.3f,
+                )
+            }
+        }
+
+        Section("Карточки приложений") {
+            SwitchRow(Icons.Default.ViewAgenda, "Компактные карточки", "Меньше иконка и отступы", UiPrefs.compactCards, UiPrefs::setCompactCards)
+            SwitchRow(Icons.Default.Description, "Краткое описание", "Показывать в списке", UiPrefs.showDesc, UiPrefs::setShowDesc)
+            SwitchRow(Icons.Default.Storage, "Размер файла", "Показывать рядом с версией", UiPrefs.showSize, UiPrefs::setShowSize)
         }
 
         Section("Главная") {
@@ -206,6 +274,10 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit) 
 
         Section("О приложении") {
             RowBase(Icons.Default.Info, "fStore", "Версия ${BuildConfig.VERSION_NAME} · by #fworld")
+            NavRow(Icons.Default.RestartAlt, "Сбросить внешний вид", "Акцент, размер текста и карточки по умолчанию") {
+                UiPrefs.reset()
+                vm.message = "Настройки внешнего вида сброшены"
+            }
         }
     }
 }

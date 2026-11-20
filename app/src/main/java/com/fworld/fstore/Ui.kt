@@ -8,11 +8,14 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,6 +62,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -163,13 +167,17 @@ fun NameLine(
     style: TextStyle = MaterialTheme.typography.titleMedium,
     modifier: Modifier = Modifier,
 ) {
+    // Клик по имени открывает страницу пользователя (если экран это разрешает).
+    val open = LocalOpenUser.current
+    val un = u?.username ?: ""
+    val link = if (open != null && un.isNotBlank()) Modifier.clickable { open(un) } else Modifier
     if (u == null) {
         Text(fallback, style = style, modifier = modifier)
         return
     }
     val base = hexColor(u.nameColor) ?: MaterialTheme.colorScheme.onSurface
     val glow = hexColor(u.glowColor) ?: base
-    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier.then(link), verticalAlignment = Alignment.CenterVertically) {
         Text(
             u.name,
             color = base,
@@ -268,14 +276,22 @@ fun StatusTag(status: String) {
 
 @Composable
 fun AppCard(a: AppItem, onClick: () -> Unit) {
+    val compact = UiPrefs.compactCards
+    val src = remember { MutableInteractionSource() }
+    val pressed by src.collectIsPressedAsState()
+    val scale by animateFloatAsState(if (pressed && LocalAnim.current) 0.97f else 1f, label = "press")
+    val openUser = LocalOpenUser.current
     Card(
         onClick = onClick,
-        shape = RoundedCornerShape(28.dp),
+        interactionSource = src,
+        shape = RoundedCornerShape(if (compact) 20.dp else 28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer { scaleX = scale; scaleY = scale },
     ) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            AppIcon(a, 64.dp)
+        Row(Modifier.padding(if (compact) 12.dp else 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            AppIcon(a, if (compact) 48.dp else 64.dp)
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
@@ -284,12 +300,21 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Text(
-                    "v${a.version} · @${a.owner}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                if (a.shortDesc.isNotBlank()) {
+                Row {
+                    Text(
+                        "v${a.version}" + (if (UiPrefs.showSize) " · ${fmtSize(a.size)}" else "") + " · ",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    // Клик по @нику открывает профиль разработчика.
+                    Text(
+                        "@${a.owner}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (openUser != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = if (openUser != null) Modifier.clickable { openUser(a.owner) } else Modifier,
+                    )
+                }
+                if (!compact && UiPrefs.showDesc && a.shortDesc.isNotBlank()) {
                     Text(
                         a.shortDesc,
                         style = MaterialTheme.typography.bodyMedium,
@@ -297,7 +322,7 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(if (compact) 4.dp else 6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     if (a.fworld) Tag("✨ #fworld", MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary)
                     StatusTag(a.status)
