@@ -102,10 +102,42 @@ object Gh {
         putBytes(path, bytes, msg, sha(path))
     }
 
-    suspend fun putFile(path: String, file: File, msg: String, onProgress: (Float) -> Unit) {
+    /** Uploads [length] bytes of [file] starting at [offset] as one repository file. */
+    suspend fun putFile(
+        path: String, file: File, msg: String,
+        offset: Long = 0L, length: Long = file.length(), onProgress: (Float) -> Unit,
+    ) {
         val s = sha(path)
-        withContext(Dispatchers.IO) { put(path, FileBody(file, msg, s, onProgress)) }
+        withContext(Dispatchers.IO) { put(path, FileBody(file, offset, length, msg, s, onProgress)) }
     }
+
+    /** Streams the given repository files (parts of one APK) into [out]. */
+    suspend fun download(paths: List<String>, out: File, total: Long, onProgress: (Float) -> Unit) =
+        withContext(Dispatchers.IO) {
+            var done = 0L
+            var lastPct = -1
+            out.outputStream().buffered(65536).use { o ->
+                for (p in paths) {
+                    val rq = Request.Builder().url(rawUrl(p)).build()
+                    client.newCall(rq).execute().use { r ->
+                        if (!r.isSuccessful) throw HttpEx(r.code, "файл не найден")
+                        val ins = r.body!!.byteStream()
+                        val buf = ByteArray(65536)
+                        while (true) {
+                            val n = ins.read(buf)
+                            if (n < 0) break
+                            o.write(buf, 0, n)
+                            done += n
+                            val pct = if (total > 0) ((done * 100) / total).toInt().coerceIn(0, 100) else 0
+                            if (pct != lastPct) {
+                                lastPct = pct
+                                onProgress(pct / 100f)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
     suspend fun delete(path: String, msg: String) = withContext(Dispatchers.IO) {
         val s = sha(path) ?: return@withContext
@@ -135,6 +167,8 @@ object Gh {
 
 private class FileBody(
     private val file: File,
+    private val offset: Long,
+    private val length: Long,
     msg: String,
     sha: String?,
     private val onProgress: (Float) -> Unit,
@@ -150,16 +184,23 @@ private class FileBody(
 
     override fun contentType() = "application/json".toMediaType()
 
-    override fun contentLength(): Long = head.size + 4L * ((file.length() + 2) / 3) + tail.size
+    override fun contentLength(): Long = head.size + 4L * ((length + 2) / 3) + tail.size
 
     override fun writeTo(sink: BufferedSink) {
         sink.write(head)
         val buf = ByteArray(3 * 16384)
-        val total = file.length().coerceAtLeast(1L)
+        val total = length.coerceAtLeast(1L)
         var done = 0L
         file.inputStream().use { ins ->
-            while (true) {
-                val n = readFully(ins, buf)
+            var skipped = 0L
+            while (skipped < offset) {
+                val k = ins.skip(offset - skipped)
+                if (k <= 0) break
+                skipped += k
+            }
+            while (done < length) {
+                val want = minOf(buf.size.toLong(), length - done).toInt()
+                val n = readFully(ins, buf, want)
                 if (n <= 0) break
                 sink.write(Base64.encode(buf, 0, n, Base64.NO_WRAP))
                 done += n
@@ -169,10 +210,10 @@ private class FileBody(
         sink.write(tail)
     }
 
-    private fun readFully(i: InputStream, b: ByteArray): Int {
+    private fun readFully(i: InputStream, b: ByteArray, max: Int): Int {
         var o = 0
-        while (o < b.size) {
-            val r = i.read(b, o, b.size - o)
+        while (o < max) {
+            val r = i.read(b, o, max - o)
             if (r < 0) break
             o += r
         }

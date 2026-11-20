@@ -6,11 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
@@ -33,8 +37,116 @@ private fun hashPw(pw: String, salt: String): String {
         .encoded.joinToString("") { "%02x".format(it) }
 }
 
+data class DownloadItem(
+    val appId: String,
+    val name: String,
+    val version: String,
+    val size: Long,
+    val time: Long,
+    val file: String,
+) {
+    fun toJson(): JSONObject = JSONObject()
+        .put("appId", appId).put("name", name).put("version", version)
+        .put("size", size).put("time", time).put("file", file)
+
+    companion object {
+        fun from(o: JSONObject) = DownloadItem(
+            o.optString("appId"), o.optString("name"), o.optString("version"),
+            o.optLong("size"), o.optLong("time"), o.optString("file"),
+        )
+    }
+}
+
+data class ActiveDownload(val name: String, val version: String, val progress: Float)
+
 class StoreVM(app: Application) : AndroidViewModel(app) {
     private val prefs = app.getSharedPreferences("fstore", 0)
+
+    /** Настройки и загрузки живут отдельно от сессии: logout не должен их стирать. */
+    private val sp = app.getSharedPreferences("fstore_settings", 0)
+
+    var themeMode by mutableStateOf(sp.getInt("theme", 0)); private set          // 0 системная, 1 светлая, 2 тёмная
+    var amoled by mutableStateOf(sp.getBoolean("amoled", false)); private set
+    var dynamicColor by mutableStateOf(sp.getBoolean("dynamic", true)); private set
+    var uiAlpha by mutableStateOf(sp.getFloat("alpha", 0.88f)); private set
+    var animations by mutableStateOf(sp.getBoolean("anim", true)); private set
+    var homeTab by mutableStateOf(sp.getInt("homeTab", 1)); private set
+
+    fun setThemeMode(v: Int) { themeMode = v; sp.edit().putInt("theme", v).apply() }
+    fun setAmoled(v: Boolean) { amoled = v; sp.edit().putBoolean("amoled", v).apply() }
+    fun setDynamicColor(v: Boolean) { dynamicColor = v; sp.edit().putBoolean("dynamic", v).apply() }
+    fun setUiAlpha(v: Float) { uiAlpha = v; sp.edit().putFloat("alpha", v).apply() }
+    fun setAnimations(v: Boolean) { animations = v; sp.edit().putBoolean("anim", v).apply() }
+    fun setHomeTab(v: Int) { homeTab = v; sp.edit().putInt("homeTab", v).apply() }
+
+    // ---------- downloads (внутри приложения) ----------
+
+    private val dlDir: File get() = File(getApplication<Application>().filesDir, "downloads").apply { mkdirs() }
+
+    var downloads by mutableStateOf(listOf<DownloadItem>()); private set
+    var active by mutableStateOf(mapOf<String, ActiveDownload>()); private set
+    private val dlJobs = mutableMapOf<String, Job>()
+
+    fun downloadFile(d: DownloadItem): File = File(dlDir, d.file)
+
+    private fun loadDownloads() {
+        val raw = sp.getString("downloads", null) ?: return
+        downloads = try {
+            JSONArray(raw).objs().map { DownloadItem.from(it) }.filter { File(dlDir, it.file).exists() }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun saveDownloads() {
+        sp.edit().putString("downloads", downloads.map { it.toJson() }.toJsonArray().toString()).apply()
+    }
+
+    fun download(appId: String, name: String, version: String, apk: String, parts: Int, size: Long) {
+        if (active.containsKey(apk)) return
+        active = active + (apk to ActiveDownload(name, version, 0f))
+        val job = viewModelScope.launch {
+            val fname = "${slug(name)}-${slug(version)}-${System.currentTimeMillis().toString(36)}.apk"
+            val out = File(dlDir, fname)
+            var ok = false
+            try {
+                Gh.download(apkParts(apk, parts), out, size) { p ->
+                    active = active + (apk to ActiveDownload(name, version, p))
+                }
+                downloads = listOf(DownloadItem(appId, name, version, out.length(), System.currentTimeMillis(), fname)) + downloads
+                saveDownloads()
+                ok = true
+                message = "Скачано: $name — файл в Настройки → Загрузки"
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                message = "Ошибка скачивания: ${e.message}"
+            } finally {
+                if (!ok) out.delete()
+                active = active - apk
+                dlJobs.remove(apk)
+            }
+        }
+        dlJobs[apk] = job
+    }
+
+    fun download(a: AppItem) = download(a.id, a.name, a.version, a.apk, a.parts, a.size)
+
+    fun cancelDownload(apk: String) {
+        dlJobs[apk]?.cancel()
+    }
+
+    fun deleteDownload(d: DownloadItem) {
+        File(dlDir, d.file).delete()
+        downloads = downloads - d
+        saveDownloads()
+    }
+
+    fun clearDownloads() {
+        downloads.forEach { File(dlDir, it.file).delete() }
+        downloads = emptyList()
+        saveDownloads()
+    }
 
     var users by mutableStateOf(listOf<User>()); private set
     var apps by mutableStateOf(listOf<AppItem>()); private set
@@ -48,6 +160,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
     var message by mutableStateOf<String?>(null)
 
     init {
+        loadDownloads()
         refresh()
     }
 
@@ -191,6 +304,32 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    private suspend fun cleanupApk(path: String, parts: Int) {
+        if (path.isBlank()) return
+        cleanup(*apkParts(path, parts).toTypedArray())
+    }
+
+    /** Uploads the APK in <=50 MB parts (GitHub rejects files over 100 MB). Returns the part count. */
+    private suspend fun uploadApk(path: String, apk: File, msg: String): Int {
+        val total = apk.length()
+        val parts = apkPartCount(total)
+        val names = apkParts(path, parts)
+        val done = mutableListOf<String>()
+        try {
+            names.forEachIndexed { i, p ->
+                if (parts > 1) stage = "Загружаю APK… часть ${i + 1} из $parts"
+                val off = i * APK_PART
+                val len = minOf(APK_PART, total - off)
+                Gh.putFile(p, apk, "$msg part ${i + 1}/$parts", off, len) { progress = (i + it) / parts }
+                done += p
+            }
+        } catch (e: Exception) {
+            cleanup(*done.toTypedArray())
+            throw e
+        }
+        return parts
+    }
+
     fun submitNew(
         name: String, version: String, shortDesc: String, desc: String,
         icon: ByteArray, apk: File, onOk: () -> Unit,
@@ -204,13 +343,13 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         val size = apk.length()
         Gh.overwrite(iconPath, icon, "icon $id")
         stage = "Загружаю APK…"
-        Gh.putFile(apkPath, apk, "apk $id $version") { progress = it }
+        val parts = uploadApk(apkPath, apk, "apk $id $version")
         val now = System.currentTimeMillis()
         editApps("new app $id") {
             it + AppItem(
                 id = id, owner = m.username, name = name.trim(), version = version.trim(),
                 shortDesc = shortDesc.trim(), desc = desc.trim(), icon = iconPath, apk = apkPath,
-                size = size, status = "pending", created = now, updated = now,
+                size = size, status = "pending", created = now, updated = now, parts = parts,
             )
         }
         apk.delete()
@@ -233,10 +372,10 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         val apkPath = "$dir/$appId-${slug(version)}-$ts.apk"
         val size = apk.length()
         stage = "Загружаю APK…"
-        Gh.putFile(apkPath, apk, "apk update $appId $version") { progress = it }
-        val p = PendingUpdate(name.trim(), version.trim(), whatsNew.trim(), iconPath, apkPath, size, ts)
+        val parts = uploadApk(apkPath, apk, "apk update $appId $version")
+        val p = PendingUpdate(name.trim(), version.trim(), whatsNew.trim(), iconPath, apkPath, size, ts, parts)
         editApps("update $appId") { l -> l.map { if (it.id == appId) it.copy(pending = p) else it } }
-        a.pending?.let { cleanup(it.apk, it.icon) }
+        a.pending?.let { cleanupApk(it.apk, it.parts); cleanup(it.icon) }
         apk.delete()
     }
 
@@ -244,6 +383,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         val m = me ?: error("Нужен вход")
         check(m.isAdmin) { "Нет прав" }
         var oldApk = ""
+        var oldParts = 1
         var oldIcon = ""
         val now = System.currentTimeMillis()
         editApps("approve $id") { l ->
@@ -254,23 +394,26 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
                         a.copy(status = "approved", updated = now)
                     } else {
                         oldApk = a.apk
+                        oldParts = a.parts
                         oldIcon = if (p.icon.isNotBlank()) a.icon else ""
                         a.copy(
                             name = p.name, version = p.version, whatsNew = p.whatsNew, apk = p.apk,
                             size = p.size, icon = p.icon.ifBlank { a.icon }, status = "approved",
-                            pending = null, updated = now,
+                            pending = null, updated = now, parts = p.parts,
                         )
                     }
                 }
             }
         }
-        cleanup(oldApk, oldIcon)
+        cleanupApk(oldApk, oldParts)
+        cleanup(oldIcon)
     }
 
     fun reject(id: String) = act("Отклоняю…") {
         val m = me ?: error("Нужен вход")
         check(m.isAdmin) { "Нет прав" }
         var dropApk = ""
+        var dropParts = 1
         var dropIcon = ""
         editApps("reject $id") { l ->
             l.map { a ->
@@ -278,6 +421,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
                     val p = a.pending
                     if (p != null) {
                         dropApk = p.apk
+                        dropParts = p.parts
                         dropIcon = p.icon
                         a.copy(pending = null)
                     } else {
@@ -286,7 +430,8 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
                 }
             }
         }
-        cleanup(dropApk, dropIcon)
+        cleanupApk(dropApk, dropParts)
+        cleanup(dropIcon)
     }
 
     fun setFworld(id: String, on: Boolean) = act("Сохраняю…") {
@@ -303,7 +448,9 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         Gh.updateJson("data/reviews.json", "delete reviews $id") { arr ->
             arr.objs().filter { it.optString("appId") != id }.toJsonArray()
         }
-        cleanup(a.apk, a.icon, a.pending?.apk ?: "", a.pending?.icon ?: "")
+        cleanupApk(a.apk, a.parts)
+        a.pending?.let { cleanupApk(it.apk, it.parts); cleanup(it.icon) }
+        cleanup(a.icon)
     }
 
     // ---------- reviews ----------
