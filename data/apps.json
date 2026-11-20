@@ -99,6 +99,16 @@
   "fworld": true,
   "created": 1795173143721,
   "updated": 1795173747552,
-  "parts": 1
+  "parts": 1,
+  "pending": {
+   "name": "fStore",
+   "version": "1.2b",
+   "whatsNew": "Обновил токен",
+   "icon": "",
+   "apk": "apps\/void_fworld\/fstore-mwovq0cn-1-2b-1795173780564.apk",
+   "size": 13979169,
+   "time": 1795173780564,
+   "parts": 1
+  }
  }
 ]
