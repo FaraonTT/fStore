@@ -66,5 +66,22 @@
   "created": 1795138105811,
   "updated": 1795138124766,
   "parts": 1
+ },
+ {
+  "id": "onebox-mworv8h9",
+  "owner": "strela",
+  "name": "OneBox",
+  "version": "26.0.5",
+  "shortDesc": "Впн клиент",
+  "desc": "Впн клиент для android с ядром xray",
+  "whatsNew": "",
+  "icon": "apps\/strela\/onebox-mworv8h9.png",
+  "apk": "apps\/strela\/onebox-mworv8h9-26-0-5.apk",
+  "size": 34724516,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795166659039,
+  "updated": 1795166659039,
+  "parts": 2
  }
 ]
