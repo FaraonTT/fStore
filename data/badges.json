@@ -40,5 +40,12 @@
   "desc": "Официальный аккаунт создателя YouStore",
   "kind": "color",
   "value": "#4CAF50"
+ },
+ {
+  "id": "bmwp1tvkb",
+  "name": "Победитель",
+  "desc": "Победил в конкурсе",
+  "kind": "color",
+  "value": "#FFEB3B"
  }
 ]
