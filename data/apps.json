@@ -61,10 +61,10 @@
   "icon": "apps\/void_fworld\/fmessage-mwoavi4c.png",
   "apk": "apps\/void_fworld\/fmessage-mwoavi4c-1-7b.apk",
   "size": 1051631,
-  "status": "pending",
+  "status": "approved",
   "fworld": true,
   "created": 1795138105811,
-  "updated": 1795138105811,
+  "updated": 1795138124766,
   "parts": 1
  }
 ]
