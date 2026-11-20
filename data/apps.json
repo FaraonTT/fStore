@@ -66,22 +66,5 @@
   "created": 1795138105811,
   "updated": 1795138124766,
   "parts": 1
- },
- {
-  "id": "onebox-mwouu1gp",
-  "owner": "strela",
-  "name": "OneBox",
-  "version": "26.0.5-beta",
-  "shortDesc": "Ван клиент",
-  "desc": "Впн клиент для android с ядром xray",
-  "whatsNew": "",
-  "icon": "apps\/strela\/onebox-mwouu1gp.png",
-  "apk": "apps\/strela\/onebox-mwouu1gp-26-0-5-beta.apk",
-  "size": 34724516,
-  "status": "pending",
-  "fworld": false,
-  "created": 1795171640896,
-  "updated": 1795171640896,
-  "parts": 2
  }
 ]
