@@ -50,7 +50,7 @@ jobs:
           gradle :app:assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/release/app-release.apk fStore-1.1b.apk
+        run: cp app/build/outputs/apk/release/app-release.apk fStore-1.2b.apk
 
       - uses: actions/upload-artifact@v4
         with:
