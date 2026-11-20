@@ -1,6 +1,7 @@
 package com.fworld.fstore
 
 import android.app.Application
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +17,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -72,11 +74,23 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
     var animations by mutableStateOf(sp.getBoolean("anim", true)); private set
     var homeTab by mutableStateOf(sp.getInt("homeTab", 1)); private set
 
+    // @JvmName: у delegated-свойств с private set есть JVM-метод setX, он конфликтовал бы с этими функциями.
+    @JvmName("applyThemeMode")
     fun setThemeMode(v: Int) { themeMode = v; sp.edit().putInt("theme", v).apply() }
+
+    @JvmName("applyAmoled")
     fun setAmoled(v: Boolean) { amoled = v; sp.edit().putBoolean("amoled", v).apply() }
+
+    @JvmName("applyDynamicColor")
     fun setDynamicColor(v: Boolean) { dynamicColor = v; sp.edit().putBoolean("dynamic", v).apply() }
+
+    @JvmName("applyUiAlpha")
     fun setUiAlpha(v: Float) { uiAlpha = v; sp.edit().putFloat("alpha", v).apply() }
+
+    @JvmName("applyAnimations")
     fun setAnimations(v: Boolean) { animations = v; sp.edit().putBoolean("anim", v).apply() }
+
+    @JvmName("applyHomeTab")
     fun setHomeTab(v: Int) { homeTab = v; sp.edit().putInt("homeTab", v).apply() }
 
     // ---------- downloads (внутри приложения) ----------
@@ -103,7 +117,10 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
     }
 
     fun download(appId: String, name: String, version: String, apk: String, parts: Int, size: Long) {
-        if (active.containsKey(apk)) return
+        if (active.containsKey(apk)) {
+            message = "Уже скачивается: $name"
+            return
+        }
         active = active + (apk to ActiveDownload(name, version, 0f))
         val job = viewModelScope.launch {
             val fname = "${slug(name)}-${slug(version)}-${System.currentTimeMillis().toString(36)}.apk"
@@ -112,6 +129,10 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
             try {
                 Gh.download(apkParts(apk, parts), out, size) { p ->
                     active = active + (apk to ActiveDownload(name, version, p))
+                }
+                // Проверка целостности: размер файла должен совпасть с размером при загрузке.
+                if (size > 0 && out.length() != size) {
+                    throw IOException("файл повреждён при скачивании (размер не совпал), попробуйте ещё раз")
                 }
                 downloads = listOf(DownloadItem(appId, name, version, out.length(), System.currentTimeMillis(), fname)) + downloads
                 saveDownloads()
@@ -131,6 +152,31 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
     }
 
     fun download(a: AppItem) = download(a.id, a.name, a.version, a.apk, a.parts, a.size)
+
+    /**
+     * Любая ссылка на APK из каталога (кнопка «Скачать» у приложения, у администратора на проверке)
+     * обрабатывается внутри приложения: файл качается в «Загрузки», браузер не открывается.
+     * Возвращает true, если ссылка наша и обработана.
+     */
+    fun downloadByUrl(url: String): Boolean {
+        val prefix = "https://raw.githubusercontent.com/${Gh.owner}/${Gh.repo}/${Gh.BRANCH}/"
+        if (!url.startsWith(prefix)) return false
+        val path = Uri.decode(url.removePrefix(prefix).substringBefore('?'))
+        if (!path.endsWith(".apk")) return false
+        val a = apps.find { it.apk == path }
+        if (a != null) {
+            download(a)
+            return true
+        }
+        val owner = apps.firstOrNull { it.pending?.apk == path }
+        val p = owner?.pending
+        if (owner != null && p != null) {
+            download(owner.id, p.name, p.version, p.apk, p.parts, p.size)
+            return true
+        }
+        message = "Файл не найден в каталоге"
+        return true
+    }
 
     fun cancelDownload(apk: String) {
         dlJobs[apk]?.cancel()
@@ -312,6 +358,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
     /** Uploads the APK in <=50 MB parts (GitHub rejects files over 100 MB). Returns the part count. */
     private suspend fun uploadApk(path: String, apk: File, msg: String): Int {
         val total = apk.length()
+        require(total <= MAX_UPLOAD) { "APK больше 300 МБ" }
         val parts = apkPartCount(total)
         val names = apkParts(path, parts)
         val done = mutableListOf<String>()
