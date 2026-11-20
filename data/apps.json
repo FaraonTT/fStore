@@ -96,7 +96,7 @@
   "apk": "apps\/void_fworld\/fstore-mwovq0cn-1-2b-hot-fix.apk",
   "size": 13979169,
   "status": "approved",
-  "fworld": false,
+  "fworld": true,
   "created": 1795173143721,
   "updated": 1795173747552,
   "parts": 1
