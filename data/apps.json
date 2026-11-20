@@ -62,7 +62,7 @@
   "apk": "apps\/void_fworld\/fmessage-mwoavi4c-1-7b.apk",
   "size": 1051631,
   "status": "pending",
-  "fworld": false,
+  "fworld": true,
   "created": 1795138105811,
   "updated": 1795138105811,
   "parts": 1
