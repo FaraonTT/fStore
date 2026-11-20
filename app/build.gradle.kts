@@ -3,6 +3,16 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+fun bc(name: String, fallback: String = ""): String {
+    val value = System.getenv(name) ?: fallback
+    val escaped = value
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+    return "\"$escaped\""
+}
+
 android {
     namespace = "com.fworld.fstore"
     compileSdk = 37
@@ -11,19 +21,26 @@ android {
         applicationId = "com.fworld.fstore"
         minSdk = 26
         targetSdk = 35
-        versionCode = 11
-        versionName = "1.1b"
-        buildConfigField("String", "GH_OWNER", "\"${System.getenv("GH_OWNER") ?: "FaraonTT"}\"")
-        buildConfigField("String", "GH_REPO", "\"${System.getenv("GH_REPO") ?: "fStore"}\"")
-        buildConfigField("String", "GH_TOKEN", "\"${System.getenv("FSTORE_TOKEN") ?: ""}\"")
+        versionCode = 12
+        versionName = "1.2b"
+
+        buildConfigField("String", "GH_OWNER", bc("GH_OWNER", "FaraonTT"))
+        buildConfigField("String", "GH_REPO", bc("GH_REPO", "fStore"))
+
+        // FSTORE_TOKEN из GitHub Secrets передаётся в BuildConfig.GH_TOKEN
+        buildConfigField("String", "GH_TOKEN", bc("FSTORE_TOKEN"))
+
+        buildConfigField("String", "INBOX_TOKEN", bc("INBOX_TOKEN"))
+        buildConfigField("String", "DROP_TOKEN", bc("DROP_TOKEN"))
+        buildConfigField("String", "SERVER_PUB", bc("FSTORE_SERVER_PUB"))
     }
 
     signingConfigs {
         create("release") {
             storeFile = rootProject.file("fstore.keystore")
-            storePassword = "fstore123"
+            storePassword = System.getenv("KS_PASS") ?: ""
             keyAlias = "fstore"
-            keyPassword = "fstore123"
+            keyPassword = System.getenv("KS_PASS") ?: ""
         }
     }
 
