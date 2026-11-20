@@ -2,6 +2,7 @@
 
 package com.fworld.fstore
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.InstallMobile
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.filled.Delete
@@ -21,7 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -124,8 +126,7 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
     val isOwner = me != null && me.username == a.owner
     val owner = vm.users.find { it.username == a.owner }
     val revs = vm.reviews.filter { it.appId == a.id }.sortedByDescending { it.time }
-    // Ссылки на APK перехватываются в MainActivity и скачиваются внутри приложения.
-    val uri = LocalUriHandler.current
+    val ctx = LocalContext.current
     var confirmDelete by remember { mutableStateOf(false) }
     var replyFor by remember { mutableStateOf<Review?>(null) }
     var stars by remember { mutableStateOf(0) }
@@ -185,13 +186,58 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
             }
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(
-                        onClick = { uri.openUri(Gh.rawUrl(a.apk)) },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Icon(Icons.Default.Download, null)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Скачать APK")
+                    val act = vm.active[a.apk]
+                    val saved = vm.downloads.lastOrNull { it.appId == a.id && it.version == a.version }
+                    if (act != null) {
+                        // Полоска загрузки: пока файл качается, видно процент и сколько уже скачано.
+                        val shown by animateFloatAsState(act.progress, label = "dlProgress")
+                        Card(
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                        ) {
+                            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        if (act.progress <= 0f) "Подключаюсь…" else "Скачивание… ${(act.progress * 100).toInt()}%",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    Text(
+                                        "${fmtSize((act.progress * a.size).toLong())} из ${fmtSize(a.size)}",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                if (act.progress <= 0f) {
+                                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                                } else {
+                                    LinearProgressIndicator(progress = { shown }, modifier = Modifier.fillMaxWidth())
+                                }
+                                TextButton(onClick = { vm.cancelDownload(a.apk) }) { Text("Отменить") }
+                            }
+                        }
+                    } else {
+                        if (saved != null) {
+                            Button(
+                                onClick = { installApk(ctx, vm.downloadFile(saved)) },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Icon(Icons.Default.InstallMobile, null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Установить")
+                            }
+                            FilledTonalButton(onClick = { vm.download(a) }, modifier = Modifier.fillMaxWidth()) {
+                                Icon(Icons.Default.Download, null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Скачать заново")
+                            }
+                        } else {
+                            Button(onClick = { vm.download(a) }, modifier = Modifier.fillMaxWidth()) {
+                                Icon(Icons.Default.Download, null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Скачать APK · ${fmtSize(a.size)}")
+                            }
+                        }
                     }
                     if (isOwner) {
                         FilledTonalButton(onClick = { onUpdate(a.id) }, modifier = Modifier.fillMaxWidth()) {
