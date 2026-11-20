@@ -83,5 +83,22 @@
   "created": 1795171937370,
   "updated": 1795171952828,
   "parts": 7
+ },
+ {
+  "id": "fstore-mwovq0cn",
+  "owner": "void_fworld",
+  "name": "fStore",
+  "version": "1.2b-hot-fix",
+  "shortDesc": "Магазин приложений от #fworld",
+  "desc": "Магазин приложений с понятным интерфейсом и полностью работающим кодом\n\nЭксклюзив от #fworld",
+  "whatsNew": "",
+  "icon": "apps\/void_fworld\/fstore-mwovq0cn.png",
+  "apk": "apps\/void_fworld\/fstore-mwovq0cn-1-2b-hot-fix.apk",
+  "size": 13979169,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795173143721,
+  "updated": 1795173143721,
+  "parts": 1
  }
 ]
