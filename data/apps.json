@@ -66,22 +66,5 @@
   "created": 1795138105811,
   "updated": 1795138124766,
   "parts": 1
- },
- {
-  "id": "aemulator-mwoulom2",
-  "owner": "void_fworld",
-  "name": "AEmulator",
-  "version": "stable",
-  "shortDesc": "Приложение для эмуляции",
-  "desc": "Данное приложение эмулирует прошивки андроид",
-  "whatsNew": "",
-  "icon": "apps\/void_fworld\/aemulator-mwoulom2.png",
-  "apk": "apps\/void_fworld\/aemulator-mwoulom2-stable.apk",
-  "size": 69961439,
-  "status": "approved",
-  "fworld": false,
-  "created": 1795171294435,
-  "updated": 1795171304965,
-  "parts": 3
  }
 ]
