@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+private const val LIMIT_TEXT = "300 МБ"
+
 private suspend fun copyApk(ctx: Context, uri: Uri): Result<Pair<File, String>> = withContext(Dispatchers.IO) {
     runCatching {
         var name = "app.apk"
@@ -39,7 +41,10 @@ private suspend fun copyApk(ctx: Context, uri: Uri): Result<Pair<File, String>> 
             }
         }
         require(name.lowercase().endsWith(".apk")) { "Выберите файл .apk" }
-        require(size <= MAX_APK) { "APK больше 100 МБ" }
+        require(size <= MAX_UPLOAD) { "APK больше $LIMIT_TEXT" }
+        if (size > 0) {
+            require(ctx.cacheDir.usableSpace > size + 50L * 1024 * 1024) { "Недостаточно свободного места на устройстве" }
+        }
         val f = File(ctx.cacheDir, "upload.apk")
         var total = 0L
         ctx.contentResolver.openInputStream(uri)!!.use { i ->
@@ -49,7 +54,7 @@ private suspend fun copyApk(ctx: Context, uri: Uri): Result<Pair<File, String>> 
                     val n = i.read(b)
                     if (n < 0) break
                     total += n
-                    require(total <= MAX_APK) { "APK больше 100 МБ" }
+                    require(total <= MAX_UPLOAD) { "APK больше $LIMIT_TEXT" }
                     o.write(b, 0, n)
                 }
             }
@@ -108,7 +113,8 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
             .fillMaxSize()
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(20.dp),
+            // нижний отступ, чтобы кнопка не пряталась за плавающим доком
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp + LocalBottomPad.current),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Text("Загрузить", style = MaterialTheme.typography.headlineMedium)
@@ -142,7 +148,7 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
         OutlinedButton(onClick = { apkLauncher.launch(arrayOf("*/*")) }, modifier = Modifier.fillMaxWidth()) {
             Icon(Icons.Default.Android, null)
             Spacer(Modifier.width(8.dp))
-            Text(apk?.let { "${it.second} · ${fmtSize(it.first.length())}" } ?: "Выбрать APK (до 100 МБ)")
+            Text(apk?.let { "${it.second} · ${fmtSize(it.first.length())}" } ?: "Выбрать APK (до $LIMIT_TEXT)")
         }
         apkError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
