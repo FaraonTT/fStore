@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,7 +28,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
-    var sub by rememberSaveable { mutableStateOf(1) }
+    var sub by rememberSaveable { mutableStateOf(vm.homeTab) }
     val titles = listOf("Проверенные", "Все", "Непроверенные")
     val list = remember(vm.apps, sub) {
         vm.apps
@@ -42,7 +43,8 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
     }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(
-            Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 8.dp),
+            // справа оставляем место под кнопку профиля
+            Modifier.padding(start = 20.dp, end = 76.dp, top = 12.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
@@ -64,7 +66,7 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
                 )
             }
         }
-        PrimaryTabRow(selectedTabIndex = sub) {
+        PrimaryTabRow(selectedTabIndex = sub, containerColor = androidx.compose.ui.graphics.Color.Transparent) {
             titles.forEachIndexed { i, t ->
                 Tab(selected = sub == i, onClick = { sub = i }, text = { Text(t) })
             }
@@ -88,7 +90,8 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
         ) {
             LazyColumn(
                 Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
+                // нижний отступ учитывает плавающий док
+                contentPadding = listPadding(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 if (list.isEmpty()) {
@@ -100,7 +103,11 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
                         )
                     }
                 }
-                items(list, key = { it.id }) { a -> AppCard(a) { onOpen(a.id) } }
+                itemsIndexed(list, key = { _, a -> a.id }) { i, a ->
+                    Box(if (LocalAnim.current) Modifier.animateItem().appear(i) else Modifier) {
+                        AppCard(a) { onOpen(a.id) }
+                    }
+                }
             }
         }
     }
@@ -117,6 +124,7 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
     val isOwner = me != null && me.username == a.owner
     val owner = vm.users.find { it.username == a.owner }
     val revs = vm.reviews.filter { it.appId == a.id }.sortedByDescending { it.time }
+    // Ссылки на APK перехватываются в MainActivity и скачиваются внутри приложения.
     val uri = LocalUriHandler.current
     var confirmDelete by remember { mutableStateOf(false) }
     var replyFor by remember { mutableStateOf<Review?>(null) }
@@ -125,6 +133,7 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
+            colors = glassBarColors(),
             title = { Text(a.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             navigationIcon = {
                 IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Назад") }
