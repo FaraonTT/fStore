@@ -117,7 +117,7 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
             .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp + LocalBottomPad.current),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Text("Загрузить", style = MaterialTheme.typography.headlineMedium)
+        Text("Загрузить", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.heightIn(min = 64.dp))
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
             SegmentedButton(
                 selected = !update,

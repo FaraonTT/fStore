@@ -15,7 +15,9 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -95,6 +97,8 @@ fun FStoreTheme(
         motionScheme = MotionScheme.expressive(),
         shapes = shapes,
         typography = typography,
-        content = content,
-    )
+    ) {
+        // Scaffold с прозрачным фоном не задаёт цвет текста — без этого заголовки на тёмном фоне чёрные.
+        CompositionLocalProvider(LocalContentColor provides scheme.onBackground, content = content)
+    }
 }
