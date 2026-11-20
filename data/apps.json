@@ -78,10 +78,10 @@
   "icon": "apps\/void_fworld\/aemulator-mwoulom2.png",
   "apk": "apps\/void_fworld\/aemulator-mwoulom2-stable.apk",
   "size": 69961439,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795171294435,
-  "updated": 1795171294435,
+  "updated": 1795171304965,
   "parts": 3
  }
 ]
