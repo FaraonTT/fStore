@@ -120,5 +120,23 @@
   "friend": false,
   "virus": false,
   "updated": 1795120230170
+ },
+ {
+  "username": "tjehhtht",
+  "name": "Максим",
+  "desc": "",
+  "avatar": "",
+  "salt": "6f423fe9a12794ee3100d442",
+  "hash": "0df6b8ecf873bd4e9549a0fa0c5c5ffc66efafd57577cdfe78acd7e966dfbc09",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795188418620
  }
 ]
