@@ -3,6 +3,7 @@
 package com.fworld.fstore
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,6 +37,8 @@ fun ProfileScreen(vm: StoreVM, onOpenApp: (String) -> Unit, onUpload: () -> Unit
         return
     }
     val mine = vm.apps.filter { it.owner == me.username }
+    var showAvatar by remember { mutableStateOf(false) }
+    if (showAvatar) AvatarViewer(me) { showAvatar = false }
     LazyColumn(
         Modifier.fillMaxSize().statusBarsPadding(),
         contentPadding = PaddingValues(20.dp),
@@ -43,7 +46,8 @@ fun ProfileScreen(vm: StoreVM, onOpenApp: (String) -> Unit, onUpload: () -> Unit
     ) {
         item {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Avatar(me, 112.dp)
+                // Тап по аватарке открывает её на весь экран; менять аватарку — в «Редактировать профиль».
+                Avatar(me, 112.dp, Modifier.clickable { showAvatar = true })
                 Spacer(Modifier.height(12.dp))
                 NameLine(me, style = MaterialTheme.typography.headlineSmall)
                 Text(
@@ -175,6 +179,7 @@ fun EditProfile(vm: StoreVM, me: User, onClose: () -> Unit) {
     var avatar by remember { mutableStateOf<ByteArray?>(null) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         TopAppBar(
+            colors = glassBarColors(),
             title = { Text("Редактировать профиль") },
             navigationIcon = {
                 IconButton(onClick = onClose) {
