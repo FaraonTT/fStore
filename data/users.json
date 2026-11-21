@@ -198,7 +198,7 @@
   "username": "meldo",
   "name": "мелдо",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/meldo.png",
   "salt": "4b8b57bb340e2a228878f343",
   "hash": "c8a16afcfcfa86151c63c24b7e29a0eb0d3fb2b98d452a4b80daf99bd928efd6",
   "role": "user",
@@ -210,6 +210,6 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795288864433
+  "updated": 1795288868996
  }
 ]
