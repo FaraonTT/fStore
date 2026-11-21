@@ -143,6 +143,16 @@
   "fworld": false,
   "created": 1795279253979,
   "updated": 1795279346360,
-  "parts": 1
+  "parts": 1,
+  "pending": {
+   "name": "DeepSeek Pro",
+   "version": "0.1.32-beta",
+   "whatsNew": "Фикс багов",
+   "icon": "",
+   "apk": "apps\/zix510\/0-1-32-beta-mwqmwst5-0-1-32-beta-1795279446140.apk",
+   "size": 7588650,
+   "time": 1795279446140,
+   "parts": 1
+  }
  }
 ]
