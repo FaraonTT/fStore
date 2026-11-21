@@ -127,5 +127,22 @@
   "created": 1795269029713,
   "updated": 1795269484529,
   "parts": 1
+ },
+ {
+  "id": "0-1-32-beta-mwqmwst5",
+  "owner": "zix510",
+  "name": "0.1.32-beta",
+  "version": "DeepSeek Pro",
+  "shortDesc": "Модификация над DeepSeek (используя ее вы нарузает правила использования DeepSeek)",
+  "desc": "Модификация над DeepSeek. Само приложение работает как браузер с расширением. Приложение сильно багованое. Используя ее вы нарушаете правила DeepSeek и можете получить бан.",
+  "whatsNew": "",
+  "icon": "apps\/zix510\/0-1-32-beta-mwqmwst5.png",
+  "apk": "apps\/zix510\/0-1-32-beta-mwqmwst5-deepseek-pro.apk",
+  "size": 7588650,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795279253979,
+  "updated": 1795279253979,
+  "parts": 1
  }
 ]
