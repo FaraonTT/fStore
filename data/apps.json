@@ -105,27 +105,17 @@
   "id": "app-mwqgtgt4",
   "owner": "roman",
   "name": "Прыжки По Островам",
-  "version": "1.0",
+  "version": "1.0b",
   "shortDesc": "делали 2 модератора Roman и Maxim",
   "desc": "",
-  "whatsNew": "",
+  "whatsNew": "новые уровни",
   "icon": "apps\/roman\/app-mwqgtgt4.png",
-  "apk": "apps\/roman\/app-mwqgtgt4-1-0.apk",
+  "apk": "apps\/roman\/app-mwqgtgt4-1-0b-1795269147677.apk",
   "size": 5967419,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795269029713,
-  "updated": 1795269029713,
-  "parts": 1,
-  "pending": {
-   "name": "Прыжки По Островам",
-   "version": "1.0b",
-   "whatsNew": "новые уровни",
-   "icon": "",
-   "apk": "apps\/roman\/app-mwqgtgt4-1-0b-1795269147677.apk",
-   "size": 5967419,
-   "time": 1795269147677,
-   "parts": 1
-  }
+  "updated": 1795269484529,
+  "parts": 1
  }
 ]
