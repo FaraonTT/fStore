@@ -6,6 +6,17 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -73,6 +84,54 @@ fun glassBarColors(): TopAppBarColors =
 @Composable
 fun listPadding(h: Dp = 16.dp, top: Dp = 16.dp): PaddingValues =
     PaddingValues(start = h, end = h, top = top, bottom = 16.dp + LocalBottomPad.current)
+
+/** Чёрно-фиолетовая палитра бейджа #fworld. */
+val FW_COLORS = listOf(
+    Color(0xFF06000F), Color(0xFF3B0A7A), Color(0xFF9B30FF), Color(0xFF3B0A7A), Color(0xFF06000F),
+)
+
+/** Кнопка/плашка #fworld: переливающийся чёрно-фиолетовый градиент. */
+@Composable
+fun fworldBrush(w: Float, h: Float): Brush {
+    val phase = fworldPhase()
+    val shift = w * 2f * phase
+    return Brush.linearGradient(FW_COLORS, start = Offset(-w + shift, 0f), end = Offset(shift, h), tileMode = TileMode.Repeated)
+}
+
+@Composable
+private fun fworldPhase(): Float {
+    if (!LocalAnim.current) return 0.35f
+    val t = rememberInfiniteTransition(label = "fwPhase")
+    val p by t.animateFloat(0f, 1f, infiniteRepeatable(tween(3600, easing = LinearEasing), RepeatMode.Restart), label = "p")
+    return p
+}
+
+/** Свечение и переливающаяся рамка для приложений с бейджем #fworld. */
+@Composable
+fun Modifier.fworldGlow(shape: Shape): Modifier {
+    val anim = LocalAnim.current
+    val phase = fworldPhase()
+    val pulse = if (anim) {
+        val t = rememberInfiniteTransition(label = "fwPulse")
+        val v by t.animateFloat(0.3f, 1f, infiniteRepeatable(tween(1700), RepeatMode.Reverse), label = "v")
+        v
+    } else 0.7f
+    val glow = Color(0xFF9B30FF)
+    return this
+        .shadow((6 + 12 * pulse).dp, shape, ambientColor = glow, spotColor = glow)
+        .drawWithContent {
+            drawContent()
+            val w = size.width
+            val h = size.height
+            val shift = w * 2f * phase
+            val brush = Brush.linearGradient(
+                FW_COLORS, start = Offset(-w + shift, 0f), end = Offset(shift, h), tileMode = TileMode.Repeated,
+            )
+            val o = shape.createOutline(size, layoutDirection, this)
+            drawOutline(o, brush, alpha = 0.16f)
+            drawOutline(o, brush, style = Stroke(2.5.dp.toPx()))
+        }
+}
 
 /** Плавное появление элемента списка (первые несколько — лесенкой). */
 @Composable
