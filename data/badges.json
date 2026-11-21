@@ -40,5 +40,12 @@
   "desc": "Победил в конкурсе",
   "kind": "color",
   "value": "#FFEB3B"
+ },
+ {
+  "id": "bmwqmlgwe",
+  "name": "Лучший",
+  "desc": "Лучший создатель",
+  "kind": "image",
+  "value": "data\/badges\/bmwqmlgwe.png"
  }
 ]
