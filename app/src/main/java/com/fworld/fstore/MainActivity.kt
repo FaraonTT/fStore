@@ -85,6 +85,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val vm: StoreVM = viewModel()
+            UiPrefs.init(applicationContext)
             val dark = isDarkTheme(vm.themeMode)
             // Иконки статус-бара и навигации должны следовать теме приложения, а не системной.
             androidx.compose.runtime.DisposableEffect(dark) {
@@ -115,6 +116,9 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     var admin by rememberSaveable { mutableStateOf(false) }
     var profile by rememberSaveable { mutableStateOf(false) }
     var downloads by rememberSaveable { mutableStateOf(false) }
+    var viewUser by rememberSaveable { mutableStateOf<String?>(null) }
+    // Куда вернуться из страницы пользователя: на приложение, с которого пришли.
+    var userBackDetail by rememberSaveable { mutableStateOf<String?>(null) }
     var uploadTarget by rememberSaveable { mutableStateOf<String?>(null) }
     val snack = remember { SnackbarHostState() }
     val anim = vm.animations
@@ -125,9 +129,10 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
             vm.message = null
         }
     }
-    BackHandler(enabled = admin || detail != null || profile || downloads) {
+    BackHandler(enabled = admin || viewUser != null || detail != null || profile || downloads) {
         when {
             admin -> admin = false
+            viewUser != null -> { viewUser = null; detail = userBackDetail; userBackDetail = null }
             detail != null -> detail = null
             profile -> profile = false
             downloads -> downloads = false
@@ -135,7 +140,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     }
 
     // Док виден только на основных вкладках, на вложенных экранах он уезжает вниз.
-    val onTab = !admin && detail == null && !profile && !downloads
+    val onTab = !admin && viewUser == null && detail == null && !profile && !downloads
     val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val dockPad = if (onTab) 88.dp + navBottom else 0.dp
 
@@ -157,6 +162,15 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
         LocalAnim provides anim,
         LocalBottomPad provides dockPad,
         LocalUriHandler provides uriHandler,
+        LocalOpenUser provides { u: String ->
+            if (vm.me?.username == u) {
+                profile = true
+            } else {
+                userBackDetail = detail
+                detail = null
+                viewUser = u
+            }
+        },
     ) {
         Scaffold(
             containerColor = Color.Transparent,
@@ -168,6 +182,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                 val key = when {
                     admin -> "admin"
                     profile -> "profile"
+                    viewUser != null -> "user:$viewUser"
                     downloads -> "downloads"
                     detail != null -> "detail:$detail"
                     else -> "tab:$tab"
@@ -191,7 +206,15 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                     label = "nav",
                 ) { k ->
                     when {
-                        k == "admin" -> AdminScreen(vm) { admin = false }
+                        k == "admin" -> CompositionLocalProvider(LocalOpenUser provides null) {
+                            AdminScreen(vm) { admin = false }
+                        }
+                        k.startsWith("user:") -> UserProfileScreen(
+                            vm = vm,
+                            username = k.removePrefix("user:"),
+                            onBack = { viewUser = null; detail = userBackDetail; userBackDetail = null },
+                            onOpenApp = { viewUser = null; userBackDetail = null; detail = it },
+                        )
                         k == "profile" -> ProfileScreen(
                             vm = vm,
                             onOpenApp = { profile = false; detail = it },
@@ -251,10 +274,12 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                     enter = if (anim) slideInVertically(tween(320)) { it } + fadeIn(tween(320)) else EnterTransition.None,
                     exit = if (anim) slideOutVertically(tween(220)) { it } + fadeOut(tween(160)) else ExitTransition.None,
                 ) {
+                    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                     FloatingDock(
                         selected = tab,
                         anim = anim,
                         onSelect = { i ->
+                            if (UiPrefs.haptics) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
                             tab = i
                             detail = null
                             admin = false
