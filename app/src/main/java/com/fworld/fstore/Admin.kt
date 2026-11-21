@@ -88,7 +88,7 @@ private fun AdminApps(vm: StoreVM) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Switch(checked = a.fworld, onCheckedChange = { vm.setFworld(a.id, it) })
                         Spacer(Modifier.width(10.dp))
-                        Text("Бейдж #fworld (всегда выше всех)", Modifier.weight(1f))
+                        Text("Бейдж #fworld (отдельная вкладка, свечение)", Modifier.weight(1f))
                     }
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         if (a.status != "approved" || a.pending != null) {
@@ -350,6 +350,15 @@ private fun AdminManage(vm: StoreVM, me: User) {
                                         }
                                     },
                                     label = { Text("Админ") },
+                                )
+                                FilterChip(
+                                    selected = u.role == "moderator",
+                                    onClick = {
+                                        vm.adminEditUser(u.username, ownerOnly = true) {
+                                            it.copy(role = if (it.role == "moderator") "user" else "moderator")
+                                        }
+                                    },
+                                    label = { Text("Модератор") },
                                 )
                             }
                             FilterChip(
