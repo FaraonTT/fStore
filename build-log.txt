@@ -1,0 +1,101 @@
+46:> Task :app:compileReleaseKotlin FAILED
+47:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:14:38 Platform declaration clash: The following declarations have the same JVM signature (setAccent(I)V):
+48-    fun `<set-accent>`(`<set-?>`: Int): Unit defined in com.fworld.fstore.UiPrefs
+49-    fun setAccent(v: Int): Unit defined in com.fworld.fstore.UiPrefs
+50:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:17:42 Platform declaration clash: The following declarations have the same JVM signature (setFontScale(F)V):
+51-    fun `<set-fontScale>`(`<set-?>`: Float): Unit defined in com.fworld.fstore.UiPrefs
+52-    fun setFontScale(v: Float): Unit defined in com.fworld.fstore.UiPrefs
+53:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:20:48 Platform declaration clash: The following declarations have the same JVM signature (setCompactCards(Z)V):
+54-    fun `<set-compactCards>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+55-    fun setCompactCards(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+56:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:23:43 Platform declaration clash: The following declarations have the same JVM signature (setShowDesc(Z)V):
+57-    fun `<set-showDesc>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+58-    fun setShowDesc(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+59:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:26:44 Platform declaration clash: The following declarations have the same JVM signature (setShowSize(Z)V):
+60-    fun `<set-showSize>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+61-    fun setShowSize(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+62:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:29:42 Platform declaration clash: The following declarations have the same JVM signature (setHaptics(Z)V):
+63-    fun `<set-haptics>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+64-    fun setHaptics(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+65:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:43:5 Platform declaration clash: The following declarations have the same JVM signature (setAccent(I)V):
+66-    fun `<set-accent>`(`<set-?>`: Int): Unit defined in com.fworld.fstore.UiPrefs
+67-    fun setAccent(v: Int): Unit defined in com.fworld.fstore.UiPrefs
+68:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:44:5 Platform declaration clash: The following declarations have the same JVM signature (setFontScale(F)V):
+69-    fun `<set-fontScale>`(`<set-?>`: Float): Unit defined in com.fworld.fstore.UiPrefs
+70-    fun setFontScale(v: Float): Unit defined in com.fworld.fstore.UiPrefs
+71:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:45:5 Platform declaration clash: The following declarations have the same JVM signature (setCompactCards(Z)V):
+72-    fun `<set-compactCards>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+73-    fun setCompactCards(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+74:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:46:5 Platform declaration clash: The following declarations have the same JVM signature (setShowDesc(Z)V):
+75-    fun `<set-showDesc>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+76-    fun setShowDesc(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+77:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:47:5 Platform declaration clash: The following declarations have the same JVM signature (setShowSize(Z)V):
+78-    fun `<set-showSize>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+79-    fun setShowSize(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+80:e: file:///home/runner/work/fStore/fStore/app/src/main/java/com/fworld/fstore/Prefs.kt:48:5 Platform declaration clash: The following declarations have the same JVM signature (setHaptics(Z)V):
+81-    fun `<set-haptics>`(`<set-?>`: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+82-    fun setHaptics(v: Boolean): Unit defined in com.fworld.fstore.UiPrefs
+83-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1795276627148.json
+84-
+--
+87:* What went wrong:
+88-Execution failed for task ':app:compileReleaseKotlin'.
+89-> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+90-   > Compilation error. See log for more details
+91-
+--
+132:Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+133-	at org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java:289)
+134-	at org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.java:130)
+135-	at org.gradle.internal.Factories$1.create(Factories.java:30)
+136-	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withoutLocks$2(DefaultWorkerLeaseService.java:344)
+--
+235:Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Compilation error. See log for more details
+236-	at org.jetbrains.kotlin.gradle.tasks.TasksUtilsKt.throwExceptionIfCompilationFailed(tasksUtils.kt:21)
+237-	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:119)
+238-	at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:74)
+239-	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+--
+271:BUILD FAILED in 35s
+272-36 actionable tasks: 36 executed
+----
+	at org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.java:132)
+	... 30 more
+Caused by: org.jetbrains.kotlin.gradle.tasks.CompilationErrorException: Compilation error. See log for more details
+	at org.jetbrains.kotlin.gradle.tasks.TasksUtilsKt.throwExceptionIfCompilationFailed(tasksUtils.kt:21)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:119)
+	at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:74)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:176)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:269)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:42)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:267)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:259)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)
+	... 2 more
+
+
+BUILD FAILED in 35s
+36 actionable tasks: 36 executed
