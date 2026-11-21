@@ -49,7 +49,7 @@
   "avatar": "data\/avatars\/terenov.png",
   "salt": "03e9a93748efbce335b736a0",
   "hash": "85870eb96b6a8cf8ac993b9acd117672ed9167ca2215507a57abb0f861876ac4",
-  "role": "moderator",
+  "role": "admin",
   "banned": false,
   "verified": true,
   "glow": true,
