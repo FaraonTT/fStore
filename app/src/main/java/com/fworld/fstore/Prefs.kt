@@ -40,11 +40,18 @@ object UiPrefs {
         haptics = p.getBoolean("haptics", true)
     }
 
+    // @JvmName: у delegated-свойств с private set есть JVM-метод setX, он конфликтует с этими функциями.
+    @JvmName("applyAccent")
     fun setAccent(v: Int) { accent = v; sp?.edit()?.putInt("accent", v)?.apply() }
+    @JvmName("applyFontScale")
     fun setFontScale(v: Float) { fontScale = v; sp?.edit()?.putFloat("fontScale", v)?.apply() }
+    @JvmName("applyCompactCards")
     fun setCompactCards(v: Boolean) { compactCards = v; sp?.edit()?.putBoolean("compact", v)?.apply() }
+    @JvmName("applyShowDesc")
     fun setShowDesc(v: Boolean) { showDesc = v; sp?.edit()?.putBoolean("showDesc", v)?.apply() }
+    @JvmName("applyShowSize")
     fun setShowSize(v: Boolean) { showSize = v; sp?.edit()?.putBoolean("showSize", v)?.apply() }
+    @JvmName("applyHaptics")
     fun setHaptics(v: Boolean) { haptics = v; sp?.edit()?.putBoolean("haptics", v)?.apply() }
 
     fun reset() {
