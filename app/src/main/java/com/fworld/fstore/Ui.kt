@@ -264,6 +264,23 @@ fun Tag(text: String, container: Color, content: Color) {
     }
 }
 
+/** Плашка «#fworld» с переливающимся чёрно-фиолетовым градиентом. */
+@Composable
+fun FworldTag() {
+    Box(
+        Modifier
+            .clip(CircleShape)
+            .background(fworldBrush(260f, 80f)),
+    ) {
+        Text(
+            "✨ #fworld",
+            Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.White,
+        )
+    }
+}
+
 @Composable
 fun StatusTag(status: String) {
     val cs = MaterialTheme.colorScheme
@@ -281,14 +298,16 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
     val pressed by src.collectIsPressedAsState()
     val scale by animateFloatAsState(if (pressed && LocalAnim.current) 0.97f else 1f, label = "press")
     val openUser = LocalOpenUser.current
+    val cardShape = RoundedCornerShape(if (compact) 20.dp else 28.dp)
     Card(
         onClick = onClick,
         interactionSource = src,
-        shape = RoundedCornerShape(if (compact) 20.dp else 28.dp),
+        shape = cardShape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer { scaleX = scale; scaleY = scale },
+            .graphicsLayer { scaleX = scale; scaleY = scale }
+            .then(if (a.fworld) Modifier.fworldGlow(cardShape) else Modifier),
     ) {
         Row(Modifier.padding(if (compact) 12.dp else 16.dp), verticalAlignment = Alignment.CenterVertically) {
             AppIcon(a, if (compact) 48.dp else 64.dp)
@@ -324,7 +343,7 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
                 }
                 Spacer(Modifier.height(if (compact) 4.dp else 6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    if (a.fworld) Tag("✨ #fworld", MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary)
+                    if (a.fworld) FworldTag()
                     StatusTag(a.status)
                 }
             }
