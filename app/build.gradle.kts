@@ -21,8 +21,8 @@ android {
         applicationId = "com.fworld.fstore"
         minSdk = 26
         targetSdk = 35
-        versionCode = 12
-        versionName = "1.2b"
+        versionCode = 13
+        versionName = "1.3b"
 
         buildConfigField("String", "GH_OWNER", bc("GH_OWNER", "FaraonTT"))
         buildConfigField("String", "GH_REPO", bc("GH_REPO", "fStore"))
