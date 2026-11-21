@@ -167,11 +167,13 @@
   "hash": "c147fa56d813ece5be53ac47a5f03bb2e8c316da429f23f31b20842393daec95",
   "role": "admin",
   "banned": false,
-  "verified": false,
-  "glow": false,
-  "nameColor": "",
-  "glowColor": "",
-  "badges": [],
+  "verified": true,
+  "glow": true,
+  "nameColor": "#3F51B5",
+  "glowColor": "#3F51B5",
+  "badges": [
+   "bmwnt46cv"
+  ],
   "friend": true,
   "virus": false,
   "updated": 1795285410699
