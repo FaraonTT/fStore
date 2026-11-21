@@ -428,7 +428,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
 
     fun approve(id: String) = act("Одобряю…") {
         val m = me ?: error("Нужен вход")
-        check(m.isAdmin) { "Нет прав" }
+        check(m.isModerator) { "Нет прав" }
         var oldApk = ""
         var oldParts = 1
         var oldIcon = ""
@@ -458,7 +458,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
 
     fun reject(id: String) = act("Отклоняю…") {
         val m = me ?: error("Нужен вход")
-        check(m.isAdmin) { "Нет прав" }
+        check(m.isModerator) { "Нет прав" }
         var dropApk = ""
         var dropParts = 1
         var dropIcon = ""
