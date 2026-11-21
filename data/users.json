@@ -111,8 +111,8 @@
   "hash": "452c58cb69fd3663f76f395ab61a67940d7d37fbe63dcf23b52f2152de12ea0f",
   "role": "user",
   "banned": false,
-  "verified": true,
-  "glow": true,
+  "verified": false,
+  "glow": false,
   "nameColor": "",
   "glowColor": "",
   "badges": [
