@@ -113,7 +113,7 @@
   "apk": "apps\/roman\/app-mwqgtgt4-1-0.apk",
   "size": 5967419,
   "status": "pending",
-  "fworld": false,
+  "fworld": true,
   "created": 1795269029713,
   "updated": 1795269029713,
   "parts": 1,
