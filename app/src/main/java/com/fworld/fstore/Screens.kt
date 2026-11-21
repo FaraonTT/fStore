@@ -30,15 +30,17 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
-    var sub by rememberSaveable { mutableStateOf(vm.homeTab) }
-    val titles = listOf("Проверенные", "Все", "Непроверенные")
+    var sub by rememberSaveable { mutableStateOf(vm.homeTab + 1) }
+    val titles = listOf("#fworld", "Проверенные", "Все", "Непроверенные")
     val list = remember(vm.apps, sub) {
         vm.apps
             .filter {
+                // Приложения с бейджем #fworld живут только во вкладке #fworld.
                 when (sub) {
-                    0 -> it.status == "approved"
-                    1 -> it.status == "approved" || it.status == "pending"
-                    else -> it.status == "pending"
+                    0 -> it.fworld && it.status != "rejected"
+                    1 -> !it.fworld && it.status == "approved"
+                    2 -> !it.fworld && (it.status == "approved" || it.status == "pending")
+                    else -> !it.fworld && it.status == "pending"
                 }
             }
             .sortedWith(compareByDescending<AppItem> { it.fworld }.thenByDescending { it.updated })
@@ -68,7 +70,7 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
                 )
             }
         }
-        PrimaryTabRow(selectedTabIndex = sub, containerColor = androidx.compose.ui.graphics.Color.Transparent) {
+        PrimaryScrollableTabRow(selectedTabIndex = sub, edgePadding = 8.dp, containerColor = androidx.compose.ui.graphics.Color.Transparent) {
             titles.forEachIndexed { i, t ->
                 Tab(selected = sub == i, onClick = { sub = i }, text = { Text(t) })
             }
@@ -162,7 +164,7 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
                         )
                         Spacer(Modifier.height(6.dp))
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            if (a.fworld) Tag("✨ #fworld", MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary)
+                            if (a.fworld) FworldTag()
                             StatusTag(a.status)
                         }
                     }
