@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProfileScreen(vm: StoreVM, onOpenApp: (String) -> Unit, onUpload: () -> Unit, onAdmin: () -> Unit) {
+fun ProfileScreen(vm: StoreVM, onOpenApp: (String) -> Unit, onUpload: () -> Unit, onAdmin: () -> Unit, onModerator: () -> Unit) {
     val me = vm.me
     if (me == null) {
         AuthScreen(vm)
@@ -77,6 +77,13 @@ fun ProfileScreen(vm: StoreVM, onOpenApp: (String) -> Unit, onUpload: () -> Unit
                     Icon(Icons.Default.CloudUpload, null)
                     Spacer(Modifier.width(8.dp))
                     Text("Загрузить приложение")
+                }
+                if (me.isModerator && !me.isAdmin) {
+                    OutlinedButton(onClick = onModerator, modifier = Modifier.fillMaxWidth()) {
+                        Icon(Icons.Default.AdminPanelSettings, null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Панель модератора")
+                    }
                 }
                 if (me.isAdmin) {
                     OutlinedButton(onClick = onAdmin, modifier = Modifier.fillMaxWidth()) {

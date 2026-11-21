@@ -60,12 +60,13 @@ fun UserProfileScreen(vm: StoreVM, username: String, onBack: () -> Unit, onOpenA
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     val cs = MaterialTheme.colorScheme
-                    if (u.isOwner || u.isAdmin || u.friend || u.banned) {
+                    if (u.isOwner || u.isAdmin || u.isModerator || u.friend || u.banned) {
                         Spacer(Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             when {
                                 u.isOwner -> Tag("Владелец fStore", cs.primary, cs.onPrimary)
                                 u.isAdmin -> Tag("Администратор", cs.primaryContainer, cs.onPrimaryContainer)
+                                u.isModerator -> Tag("Модератор", cs.tertiaryContainer, cs.onTertiaryContainer)
                             }
                             if (u.friend) Tag("Друг #fworld", cs.secondaryContainer, cs.onSecondaryContainer)
                             if (u.banned) Tag("Заблокирован", cs.errorContainer, cs.onErrorContainer)
