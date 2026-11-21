@@ -165,7 +165,7 @@
   "avatar": "data\/avatars\/test.png",
   "salt": "1ab7489930d844472222f0d4",
   "hash": "c147fa56d813ece5be53ac47a5f03bb2e8c316da429f23f31b20842393daec95",
-  "role": "moderator",
+  "role": "admin",
   "banned": false,
   "verified": false,
   "glow": false,
