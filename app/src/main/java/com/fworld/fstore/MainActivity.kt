@@ -116,6 +116,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     var admin by rememberSaveable { mutableStateOf(false) }
     var profile by rememberSaveable { mutableStateOf(false) }
     var downloads by rememberSaveable { mutableStateOf(false) }
+    var moderator by rememberSaveable { mutableStateOf(false) }
     var viewUser by rememberSaveable { mutableStateOf<String?>(null) }
     // Куда вернуться из страницы пользователя: на приложение, с которого пришли.
     var userBackDetail by rememberSaveable { mutableStateOf<String?>(null) }
@@ -129,9 +130,10 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
             vm.message = null
         }
     }
-    BackHandler(enabled = admin || viewUser != null || detail != null || profile || downloads) {
+    BackHandler(enabled = admin || moderator || viewUser != null || detail != null || profile || downloads) {
         when {
             admin -> admin = false
+            moderator -> moderator = false
             viewUser != null -> { viewUser = null; detail = userBackDetail; userBackDetail = null }
             detail != null -> detail = null
             profile -> profile = false
@@ -140,7 +142,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     }
 
     // Док виден только на основных вкладках, на вложенных экранах он уезжает вниз.
-    val onTab = !admin && viewUser == null && detail == null && !profile && !downloads
+    val onTab = !admin && !moderator && viewUser == null && detail == null && !profile && !downloads
     val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val dockPad = if (onTab) 88.dp + navBottom else 0.dp
 
@@ -181,6 +183,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
             Box(Modifier.fillMaxSize().padding(pad)) {
                 val key = when {
                     admin -> "admin"
+                    moderator -> "moderator"
                     profile -> "profile"
                     viewUser != null -> "user:$viewUser"
                     downloads -> "downloads"
@@ -209,6 +212,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                         k == "admin" -> CompositionLocalProvider(LocalOpenUser provides null) {
                             AdminScreen(vm) { admin = false }
                         }
+                        k == "moderator" -> ModeratorScreen(vm) { moderator = false }
                         k.startsWith("user:") -> UserProfileScreen(
                             vm = vm,
                             username = k.removePrefix("user:"),
@@ -220,6 +224,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                             onOpenApp = { profile = false; detail = it },
                             onUpload = { uploadTarget = null; profile = false; tab = 1 },
                             onAdmin = { admin = true },
+                            onModerator = { moderator = true },
                         )
                         k == "downloads" -> DownloadsScreen(vm) { downloads = false }
                         k.startsWith("detail:") -> AppDetail(
@@ -259,7 +264,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
 
                 // В профиле на том же месте — кнопка «закрыть» (у остальных вложенных экранов своя стрелка назад).
                 AnimatedVisibility(
-                    visible = profile && !admin,
+                    visible = profile && !admin && !moderator,
                     modifier = Modifier.align(Alignment.TopEnd),
                     enter = if (anim) fadeIn() + scaleIn(initialScale = 0.6f) else EnterTransition.None,
                     exit = if (anim) fadeOut() + scaleOut(targetScale = 0.6f) else ExitTransition.None,
