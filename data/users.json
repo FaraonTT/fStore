@@ -175,5 +175,23 @@
   "friend": true,
   "virus": false,
   "updated": 1795285410699
+ },
+ {
+  "username": "plus",
+  "name": "Plus Studia",
+  "desc": "",
+  "avatar": "",
+  "salt": "0696156e7f8fbd4fe24e4ead",
+  "hash": "031706160479a2985f58c19d4c0939b2225d063ebc1f8aa6cc28cb4801495454",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795285709980
  }
 ]
