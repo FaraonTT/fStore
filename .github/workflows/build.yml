@@ -43,6 +43,23 @@ jobs:
       - name: Decode keystore
         run: base64 -d fstore.keystore.b64 > fstore.keystore
 
+      - name: Launcher icon
+        # branding/icon.b64 — исходник иконки приложения; из него собираются mipmap для всех плотностей.
+        run: |
+          base64 -d branding/icon.b64 > /tmp/icon.jpg
+          for d in "mdpi 108" "hdpi 162" "xhdpi 216" "xxhdpi 324" "xxxhdpi 432"; do
+            set -- $d
+            mkdir -p "app/src/main/res/mipmap-$1"
+            s=$(( $2 * 74 / 108 ))
+            convert /tmp/icon.jpg -resize "${s}x${s}" -background black -gravity center -extent "$2x$2" \
+              "PNG24:app/src/main/res/mipmap-$1/ic_launcher_foreground.png"
+          done
+          ls -la app/src/main/res/mipmap-xxxhdpi
+
+      - name: Read version
+        id: ver
+        run: echo "name=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
+
       - name: Build release APK
         shell: bash
         env:
@@ -52,22 +69,21 @@ jobs:
           gradle :app:assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/release/app-release.apk fStore-1.2b.apk
+        run: cp app/build/outputs/apk/release/app-release.apk "fStore-${{ steps.ver.outputs.name }}.apk"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: fStore-1.2b
-          path: fStore-1.2b.apk
+          name: fStore-${{ steps.ver.outputs.name }}
+          path: fStore-${{ steps.ver.outputs.name }}.apk
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.2b
-          name: fStore 1.2b
-          files: fStore-1.2b.apk
+          tag_name: v${{ steps.ver.outputs.name }}
+          name: fStore ${{ steps.ver.outputs.name }}
+          files: fStore-${{ steps.ver.outputs.name }}.apk
           body: |
-            fStore 1.2b — плавающий док, настройки, загрузки внутри приложения, AMOLED, лимит APK 300 МБ.
-            Установи APK и зарегистрируй аккаунт void_fworld.
+            fStore ${{ steps.ver.outputs.name }}
 
       - name: Publish build log on failure
         if: failure()
