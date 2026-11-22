@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -146,6 +147,7 @@ fun EasterEgg(onClose: () -> Unit) {
                 .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(Color(0xFF06000F), Color(0xFF1B0638), Color(0xFF06000F))))
                 .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onClose() },
+            contentAlignment = Alignment.Center,
         ) {
             FloatingStoreIcons()
             EggCenter()
@@ -202,7 +204,13 @@ private fun FloatingStoreIcons() {
 
 @Composable
 private fun EggCenter() {
-    val pop by animateFloatAsState(1f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow), label = "pop")
+    var shown by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { shown = true }
+    val pop by animateFloatAsState(
+        if (shown) 1f else 0f,
+        spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow),
+        label = "pop",
+    )
     val pulse by rememberInfiniteTransition(label = "pulse").animateFloat(
         initialValue = 0.96f,
         targetValue = 1.06f,
@@ -211,7 +219,6 @@ private fun EggCenter() {
     )
     Column(
         Modifier
-            .align(Alignment.Center)
             .padding(32.dp)
             .graphicsLayer { scaleX = pop; scaleY = pop; alpha = pop.coerceIn(0f, 1f) },
         horizontalAlignment = Alignment.CenterHorizontally,
