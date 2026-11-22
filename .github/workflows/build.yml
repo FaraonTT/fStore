@@ -43,19 +43,6 @@ jobs:
       - name: Decode keystore
         run: base64 -d fstore.keystore.b64 > fstore.keystore
 
-      - name: Launcher icon
-        # branding/icon.b64 — исходник иконки приложения; из него собираются mipmap для всех плотностей.
-        run: |
-          base64 -d branding/icon.b64 > /tmp/icon.jpg
-          for d in "mdpi 108" "hdpi 162" "xhdpi 216" "xxhdpi 324" "xxxhdpi 432"; do
-            set -- $d
-            mkdir -p "app/src/main/res/mipmap-$1"
-            s=$(( $2 * 74 / 108 ))
-            convert /tmp/icon.jpg -resize "${s}x${s}" -background black -gravity center -extent "$2x$2" \
-              "PNG24:app/src/main/res/mipmap-$1/ic_launcher_foreground.png"
-          done
-          ls -la app/src/main/res/mipmap-xxxhdpi
-
       - name: Read version
         id: ver
         run: echo "name=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)" >> "$GITHUB_OUTPUT"
