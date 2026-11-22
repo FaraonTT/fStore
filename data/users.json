@@ -203,9 +203,9 @@
   "friend": true,
   "virus": false,
   "updated": 1795285410699,
-  "shimmer": false,
-  "shimmerA": "",
-  "shimmerB": ""
+  "shimmer": true,
+  "shimmerA": "#030026",
+  "shimmerB": "#950CFF"
  },
  {
   "username": "plus",
