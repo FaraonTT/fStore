@@ -168,5 +168,22 @@
   "created": 1795356190838,
   "updated": 1795358651354,
   "parts": 1
+ },
+ {
+  "id": "countershoot2-mwsca6dj",
+  "owner": "valvenoofficial",
+  "name": "countershoot2",
+  "version": "7.00",
+  "shortDesc": "хуевая пока игра",
+  "desc": "управление пока неудобное привыкните!",
+  "whatsNew": "",
+  "icon": "apps\/valvenoofficial\/countershoot2-mwsca6dj.png",
+  "apk": "apps\/valvenoofficial\/countershoot2-mwsca6dj-7-00.apk",
+  "size": 25517871,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795382357140,
+  "updated": 1795382357140,
+  "parts": 1
  }
 ]
