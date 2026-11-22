@@ -163,10 +163,10 @@
   "icon": "apps\/void_fworld\/store-mwrcgw64.png",
   "apk": "apps\/void_fworld\/store-mwrcgw64-1-4.apk",
   "size": 14376216,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795322192056,
-  "updated": 1795322192056,
+  "updated": 1795322201360,
   "parts": 1
  }
 ]
