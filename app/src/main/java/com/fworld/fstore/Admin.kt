@@ -53,6 +53,7 @@ private fun AdminApps(vm: StoreVM) {
     val list = vm.apps.sortedWith(
         compareByDescending<AppItem> { it.status == "pending" || it.pending != null }.thenByDescending { it.updated },
     )
+    // Ссылки на APK перехватываются в MainActivity и скачиваются внутри приложения.
     val uri = LocalUriHandler.current
     LazyColumn(
         Modifier.fillMaxSize(),
@@ -183,8 +184,8 @@ private fun BadgeCreator(vm: StoreVM) {
     var kind by remember { mutableStateOf(0) }
     var value by remember { mutableStateOf("") }
     var img by remember { mutableStateOf<ByteArray?>(null) }
-    val kinds = listOf("emoji", "color", "image")
-    val kindNames = listOf("Эмодзи", "Цвет", "Фото")
+    val kinds = listOf("icon", "color", "image")
+    val kindNames = listOf("Иконка", "Цвет", "Фото")
     Card(shape = RoundedCornerShape(24.dp)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("Новый бейдж", style = MaterialTheme.typography.titleMedium)
@@ -206,10 +207,14 @@ private fun BadgeCreator(vm: StoreVM) {
                 }
             }
             when (kind) {
-                0 -> OutlinedTextField(
-                    value = value, onValueChange = { value = it.take(4) }, label = { Text("Эмодзи") },
-                    singleLine = true, modifier = Modifier.fillMaxWidth(),
-                )
+                0 -> FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // векторные иконки вместо эмодзи
+                    PICKABLE_ICONS.forEach { key ->
+                        FilledTonalIconToggleButton(checked = value == key, onCheckedChange = { value = key }) {
+                            Icon(badgeIcon(key), key)
+                        }
+                    }
+                }
                 1 -> ColorPicker("Цвет бейджа", value) { value = it }
                 else -> ImagePicker(img, { img = it }, 80.dp, round = false, label = "Фото")
             }
@@ -232,6 +237,9 @@ private fun UserStyleSheet(vm: StoreVM, u: User, onClose: () -> Unit) {
     var verified by remember(u.username) { mutableStateOf(u.verified) }
     var nameColor by remember(u.username) { mutableStateOf(u.nameColor) }
     var glowColor by remember(u.username) { mutableStateOf(u.glowColor) }
+    var shimmer by remember(u.username) { mutableStateOf(u.shimmer) }
+    var shimmerA by remember(u.username) { mutableStateOf(u.shimmerA) }
+    var shimmerB by remember(u.username) { mutableStateOf(u.shimmerB) }
     var picked by remember(u.username) { mutableStateOf(u.badges.toSet()) }
     ModalBottomSheet(
         onDismissRequest = onClose,
@@ -249,7 +257,10 @@ private fun UserStyleSheet(vm: StoreVM, u: User, onClose: () -> Unit) {
                 Spacer(Modifier.width(12.dp))
                 Column {
                     NameLine(
-                        u.copy(glow = glow, verified = verified, nameColor = nameColor, glowColor = glowColor),
+                        u.copy(
+                            glow = glow, verified = verified, nameColor = nameColor, glowColor = glowColor,
+                            shimmer = shimmer, shimmerA = shimmerA, shimmerB = shimmerB,
+                        ),
                         style = MaterialTheme.typography.headlineSmall,
                     )
                     Text("@${u.username}", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -267,6 +278,31 @@ private fun UserStyleSheet(vm: StoreVM, u: User, onClose: () -> Unit) {
             }
             ColorPicker("Цвет ника", nameColor) { nameColor = it }
             ColorPicker("Цвет свечения", glowColor) { glowColor = it }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Switch(checked = shimmer, onCheckedChange = { shimmer = it })
+                Spacer(Modifier.width(10.dp))
+                Column {
+                    Text("Переливающийся ник и подсветка")
+                    Text(
+                        "Два цвета плавно перетекают друг в друга как градиент",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            if (shimmer) {
+                ColorPicker("Первый цвет перелива", shimmerA) { shimmerA = it }
+                ColorPicker("Второй цвет перелива", shimmerB) { shimmerB = it }
+                if (shimmerA.isBlank() || shimmerB.isBlank()) {
+                    Text(
+                        "Выбери оба цвета, иначе перелив не включится",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            }
+
             Text("Бейджи", style = MaterialTheme.typography.titleMedium)
             if (vm.badges.isEmpty()) {
                 Text("Сначала создай бейдж выше", color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -289,6 +325,9 @@ private fun UserStyleSheet(vm: StoreVM, u: User, onClose: () -> Unit) {
                             verified = verified,
                             nameColor = nameColor.trim(),
                             glowColor = glowColor.trim(),
+                            shimmer = shimmer,
+                            shimmerA = shimmerA.trim(),
+                            shimmerB = shimmerB.trim(),
                             badges = picked.toList(),
                         )
                     }
@@ -371,11 +410,14 @@ private fun AdminManage(vm: StoreVM, me: User) {
                                 onClick = { vm.adminEditUser(u.username) { it.copy(virus = !it.virus) } },
                                 label = { Text("Вирусня...") },
                             )
-                            FilterChip(
-                                selected = u.friend,
-                                onClick = { vm.adminEditUser(u.username) { it.copy(friend = !it.friend) } },
-                                label = { Text("Друг #fworld") },
-                            )
+                            // «Друг #fworld» выдаёт только владелец (is_owner); у админов этой кнопки нет.
+                            if (me.isOwner) {
+                                FilterChip(
+                                    selected = u.friend,
+                                    onClick = { vm.adminEditUser(u.username, ownerOnly = true) { it.copy(friend = !it.friend) } },
+                                    label = { Text("Друг #fworld") },
+                                )
+                            }
                         }
                     }
                 }
