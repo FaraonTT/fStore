@@ -4,18 +4,30 @@ package com.fworld.fstore
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.InstallMobile
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Update
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
@@ -23,32 +35,73 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
+/** Варианты сортировки каталога (настройка «Сортировка» в «Главная»). */
+private val SORTS = listOf("Сначала новые", "По названию", "По размеру", "По рейтингу")
+
 @Composable
 fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
     var sub by rememberSaveable { mutableStateOf(vm.homeTab + 1) }
+    var query by rememberSaveable { mutableStateOf("") }
+    var favOnly by rememberSaveable { mutableStateOf(false) }
+    var sortOpen by remember { mutableStateOf(false) }
+    var egg by remember { mutableStateOf(false) }
+    val tap = remember { TapCounter() }
     val titles = listOf("#fworld", "Проверенные", "Все", "Непроверенные")
-    val list = remember(vm.apps, sub) {
-        vm.apps
-            .filter {
-                // Приложения с бейджем #fworld живут только во вкладке #fworld.
-                when (sub) {
-                    0 -> it.fworld && it.status != "rejected"
-                    1 -> !it.fworld && it.status == "approved"
-                    2 -> !it.fworld && (it.status == "approved" || it.status == "pending")
-                    else -> !it.fworld && it.status == "pending"
-                }
-            }
-            .sortedWith(compareByDescending<AppItem> { it.fworld }.thenByDescending { it.updated })
+
+    val ratings = remember(vm.reviews) {
+        vm.reviews.groupBy { it.appId }.mapValues { e -> e.value.sumOf { it.stars }.toDouble() / e.value.size }
     }
+
+    val list = remember(vm.apps, sub, query, favOnly, Favorites.ids, AppPrefs.sort, ratings) {
+        val q = query.trim().lowercase()
+        val base = vm.apps.filter {
+            // Приложения с бейджем #fworld живут только во вкладке #fworld.
+            val inTab = when (sub) {
+                0 -> it.fworld && it.status != "rejected"
+                1 -> !it.fworld && it.status == "approved"
+                2 -> !it.fworld && (it.status == "approved" || it.status == "pending")
+                else -> !it.fworld && it.status == "pending"
+            }
+            val okFav = !favOnly || it.id in Favorites.ids
+            val okQuery = q.isBlank() ||
+                it.name.lowercase().contains(q) ||
+                it.shortDesc.lowercase().contains(q) ||
+                it.desc.lowercase().contains(q) ||
+                it.owner.lowercase().contains(q)
+            inTab && okFav && okQuery
+        }
+        when (AppPrefs.sort) {
+            1 -> base.sortedBy { it.name.lowercase() }
+            2 -> base.sortedByDescending { it.size }
+            3 -> base.sortedByDescending { ratings[it.id] ?: 0.0 }
+            else -> base.sortedWith(
+                compareByDescending<AppItem> { it.fworld }.thenByDescending { it.updated },
+            )
+        }
+    }
+
+    val recent = remember(vm.apps, Recents.ids) {
+        Recents.ids.mapNotNull { id -> vm.apps.find { it.id == id } }.take(8)
+    }
+
+    // Пасхалка: семь быстрых тапов по шапке.
+    if (egg) EasterEgg { egg = false }
+
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(
             // справа оставляем место под кнопку профиля
-            Modifier.padding(start = 20.dp, end = 76.dp, top = 12.dp, bottom = 8.dp),
+            Modifier
+                .padding(start = 20.dp, end = 76.dp, top = 12.dp, bottom = 8.dp)
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) { if (tap.tap()) egg = true },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
@@ -70,11 +123,67 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
                 )
             }
         }
-        PrimaryScrollableTabRow(selectedTabIndex = sub, edgePadding = 8.dp, containerColor = androidx.compose.ui.graphics.Color.Transparent) {
+        PrimaryScrollableTabRow(
+            selectedTabIndex = sub,
+            edgePadding = 8.dp,
+            containerColor = Color.Transparent,
+        ) {
             titles.forEachIndexed { i, t ->
                 Tab(selected = sub == i, onClick = { sub = i }, text = { Text(t) })
             }
         }
+
+        // Поиск, избранное и сортировка.
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("Поиск", style = MaterialTheme.typography.bodyMedium) },
+                leadingIcon = { Icon(Icons.Default.Search, null) },
+                trailingIcon = {
+                    if (query.isNotBlank()) {
+                        IconButton(onClick = { query = "" }) { Icon(Icons.Default.Close, "Очистить") }
+                    }
+                },
+                singleLine = true,
+                shape = CircleShape,
+                textStyle = MaterialTheme.typography.bodyMedium,
+            )
+            IconToggleButton(checked = favOnly, onCheckedChange = { favOnly = it }) {
+                Icon(
+                    if (favOnly) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    "Только избранное",
+                    tint = if (favOnly) Color(0xFFFF4D8D) else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Box {
+                IconButton(onClick = { sortOpen = true }) { Icon(Icons.Default.Sort, "Сортировка") }
+                DropdownMenu(expanded = sortOpen, onDismissRequest = { sortOpen = false }) {
+                    SORTS.forEachIndexed { i, n ->
+                        DropdownMenuItem(
+                            text = { Text(n) },
+                            onClick = { AppPrefs.setSort(i); sortOpen = false },
+                            leadingIcon = {
+                                if (AppPrefs.sort == i) Icon(Icons.Default.Check, null)
+                                else Spacer(Modifier.size(24.dp))
+                            },
+                        )
+                    }
+                }
+            }
+        }
+
+        if (recent.isNotEmpty() && query.isBlank() && !favOnly) {
+            RecentRow(recent, onOpen)
+        }
+
         if (!Gh.ready) {
             Card(
                 Modifier.padding(16.dp).fillMaxWidth(),
@@ -92,25 +201,77 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
             onRefresh = { vm.refresh() },
             modifier = Modifier.weight(1f),
         ) {
-            LazyColumn(
-                Modifier.fillMaxSize(),
-                // нижний отступ учитывает плавающий док
-                contentPadding = listPadding(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                if (list.isEmpty()) {
-                    item {
-                        Text(
-                            if (vm.loading) "Загружаю…" else "Здесь пока пусто. Потяни вниз, чтобы обновить.",
-                            Modifier.fillMaxWidth().padding(32.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+            if (list.isEmpty()) {
+                Text(
+                    if (vm.loading) "Загружаю…"
+                    else if (favOnly) "В избранном пусто. Нажми сердечко на карточке приложения."
+                    else "Здесь пока пусто. Потяни вниз, чтобы обновить.",
+                    Modifier.fillMaxWidth().padding(32.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else if (UiPrefs.grid) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = listPadding(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(count = list.size, key = { list[it].id }) { i ->
+                        Box(if (LocalAnim.current) Modifier.appear(i) else Modifier) {
+                            AppTile(list[i]) { onOpen(list[i].id) }
+                        }
                     }
                 }
-                itemsIndexed(list, key = { _, a -> a.id }) { i, a ->
-                    Box(if (LocalAnim.current) Modifier.animateItem().appear(i) else Modifier) {
-                        AppCard(a) { onOpen(a.id) }
+            } else {
+                LazyColumn(
+                    Modifier.fillMaxSize(),
+                    // нижний отступ учитывает плавающий док
+                    contentPadding = listPadding(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    itemsIndexed(list, key = { _, a -> a.id }) { i, a ->
+                        Box(if (LocalAnim.current) Modifier.animateItem().appear(i) else Modifier) {
+                            AppCard(a) { onOpen(a.id) }
+                        }
                     }
+                }
+            }
+        }
+    }
+}
+
+/** Полка «недавно открытые» — иконки приложений, которые смотрели последними. */
+@Composable
+private fun RecentRow(list: List<AppItem>, onOpen: (String) -> Unit) {
+    Column(Modifier.padding(top = 2.dp, bottom = 6.dp)) {
+        Text(
+            "Недавно открытые",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 6.dp),
+        )
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            items(count = list.size, key = { list[it].id }) { i ->
+                val a = list[i]
+                Column(
+                    Modifier
+                        .width(62.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .clickable { onOpen(a.id) },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    AppIcon(a, 52.dp)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        a.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
         }
@@ -124,6 +285,7 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
         LaunchedEffect(Unit) { onBack() }
         return
     }
+    LaunchedEffect(a.id) { Recents.add(a.id) }
     val me = vm.me
     val isOwner = me != null && me.username == a.owner
     val owner = vm.users.find { it.username == a.owner }
@@ -162,6 +324,30 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        // Сколько аккаунтов скачали: одно скачивание засчитывается один раз на аккаунт.
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        ) {
+                            Icon(
+                                Icons.Default.Download, null,
+                                Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                "Скачали: ${DownloadStats.count(a.id)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            if (DownloadStats.counted(a.id)) {
+                                Text(
+                                    "· засчитано вам",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                            }
+                        }
                         Spacer(Modifier.height(6.dp))
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             if (a.fworld) FworldTag()
@@ -377,8 +563,10 @@ private fun ReviewItem(r: Review, author: User?, appOwner: User?, canReply: Bool
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Avatar(author, 36.dp)
-                Spacer(Modifier.width(10.dp))
+                if (UiPrefs.reviewAvatars) {
+                    Avatar(author, 36.dp)
+                    Spacer(Modifier.width(10.dp))
+                }
                 Column(Modifier.weight(1f)) {
                     NameLine(author, r.user)
                     Text(

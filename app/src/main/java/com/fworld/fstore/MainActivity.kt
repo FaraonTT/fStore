@@ -2,18 +2,27 @@
 
 package com.fworld.fstore
 
+import android.Manifest
 import android.graphics.Color as AColor
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -26,12 +35,13 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,7 +50,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,27 +74,42 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Настройки читаем до первой композиции: от них зависят тема, «жидкость» и подсветка.
+        UiPrefs.init(applicationContext)
+        AppPrefs.init(applicationContext)
+        Notifier.init(applicationContext)
+        Favorites.init(applicationContext)
+        Recents.init(applicationContext)
         enableEdgeToEdge()
         setContent {
             val vm: StoreVM = viewModel()
-            UiPrefs.init(applicationContext)
             val dark = isDarkTheme(vm.themeMode)
             // Иконки статус-бара и навигации должны следовать теме приложения, а не системной.
             androidx.compose.runtime.DisposableEffect(dark) {
@@ -117,12 +141,40 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     var profile by rememberSaveable { mutableStateOf(false) }
     var downloads by rememberSaveable { mutableStateOf(false) }
     var moderator by rememberSaveable { mutableStateOf(false) }
+    var egg by rememberSaveable { mutableStateOf(false) }
     var viewUser by rememberSaveable { mutableStateOf<String?>(null) }
     // Куда вернуться из страницы пользователя: на приложение, с которого пришли.
     var userBackDetail by rememberSaveable { mutableStateOf<String?>(null) }
     var uploadTarget by rememberSaveable { mutableStateOf<String?>(null) }
     val snack = remember { SnackbarHostState() }
     val anim = vm.animations
+    val ctx = LocalContext.current
+
+    // Уведомления: разрешение спрашиваем сразу при запуске, а не когда понадобится.
+    val askNotify = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (!granted) vm.message = "Уведомления выключены: их можно включить в настройках системы"
+    }
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= 33 && !Notifier.permissionGranted(ctx) && !AppPrefs.asked()) {
+            AppPrefs.markAsked()
+            askNotify.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        // Фоновая проверка новых релизов (если включена в настройках).
+        ReleaseWatch.schedule(ctx)
+    }
+
+    // Счётчик скачиваний: читаем при загрузке каталога и при смене аккаунта.
+    LaunchedEffect(vm.apps, vm.me) { DownloadStats.load(vm.me?.username) }
+
+    // Новый файл в «Загрузках» = скачивание: +1 приложению, но не больше раза на аккаунт.
+    var counted by remember { mutableStateOf(vm.downloads.map { it.file }.toSet()) }
+    LaunchedEffect(vm.downloads) {
+        val fresh = vm.downloads.filter { it.file !in counted }
+        if (fresh.isEmpty()) return@LaunchedEffect
+        counted = counted + fresh.map { it.file }.toSet()
+        val me = vm.me ?: return@LaunchedEffect
+        fresh.forEach { if (it.appId.isNotBlank()) DownloadStats.tick(it.appId, me.username) }
+    }
 
     LaunchedEffect(vm.message) {
         vm.message?.let {
@@ -130,8 +182,9 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
             vm.message = null
         }
     }
-    BackHandler(enabled = admin || moderator || viewUser != null || detail != null || profile || downloads) {
+    BackHandler(enabled = egg || admin || moderator || viewUser != null || detail != null || profile || downloads) {
         when {
+            egg -> egg = false
             admin -> admin = false
             moderator -> moderator = false
             viewUser != null -> { viewUser = null; detail = userBackDetail; userBackDetail = null }
@@ -142,7 +195,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     }
 
     // Док виден только на основных вкладках, на вложенных экранах он уезжает вниз.
-    val onTab = !admin && !moderator && viewUser == null && detail == null && !profile && !downloads
+    val onTab = !egg && !admin && !moderator && viewUser == null && detail == null && !profile && !downloads
     val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val dockPad = if (onTab) 88.dp + navBottom else 0.dp
 
@@ -182,6 +235,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
         ) { pad ->
             Box(Modifier.fillMaxSize().padding(pad)) {
                 val key = when {
+                    egg -> "egg"
                     admin -> "admin"
                     moderator -> "moderator"
                     profile -> "profile"
@@ -209,6 +263,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                     label = "nav",
                 ) { k ->
                     when {
+                        k == "egg" -> Egg3DScreen { egg = false }
                         k == "admin" -> CompositionLocalProvider(LocalOpenUser provides null) {
                             AdminScreen(vm) { admin = false }
                         }
@@ -248,6 +303,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                             vm = vm,
                             onProfile = { profile = true },
                             onDownloads = { downloads = true },
+                            onEgg = { egg = true },
                         )
                     }
                 }
@@ -279,12 +335,12 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                     enter = if (anim) slideInVertically(tween(320)) { it } + fadeIn(tween(320)) else EnterTransition.None,
                     exit = if (anim) slideOutVertically(tween(220)) { it } + fadeOut(tween(160)) else ExitTransition.None,
                 ) {
-                    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+                    val haptic = LocalHapticFeedback.current
                     FloatingDock(
                         selected = tab,
                         anim = anim,
                         onSelect = { i ->
-                            if (UiPrefs.haptics) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                            if (UiPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             tab = i
                             detail = null
                             admin = false
@@ -342,8 +398,39 @@ private fun CloseButton(onClick: () -> Unit) {
     }
 }
 
+/**
+ * Док из «жидкого стекла»: зажми — он дёрнется, приподнимется и потянется за пальцем, как капля,
+ * а на отпускании пружинкой уляжется там, где его оставили (положение запоминается).
+ * Двойное нажатие в настройках «Вернуть док на место» возвращает его вниз.
+ */
 @Composable
 private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) {
+    val draggable = UiPrefs.dockDrag
+    val scope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
+    val density = LocalDensity.current
+    val cfg = LocalConfiguration.current
+    val maxX = with(density) { (cfg.screenWidthDp.dp / 2 - 56.dp).toPx() }
+    val minY = with(density) { -(cfg.screenHeightDp.dp * 0.62f).toPx() }
+    val offX = remember { Animatable(UiPrefs.dockX.coerceIn(-maxX, maxX)) }
+    val offY = remember { Animatable(UiPrefs.dockY.coerceIn(minY, 0f)) }
+    val grab = remember { Animatable(0f) }
+    val stretch = remember { Animatable(0f) }
+
+    // «Вернуть док на место» из настроек.
+    LaunchedEffect(UiPrefs.dockToken) {
+        if (UiPrefs.dockToken > 0) {
+            offX.animateTo(0f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow))
+            offY.animateTo(0f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow))
+        }
+    }
+
+    fun drop() {
+        scope.launch { grab.animateTo(0f, tween(320)) }
+        scope.launch { stretch.animateTo(0f, tween(280)) }
+        UiPrefs.setDock(offX.value, offY.value)
+    }
+
     Surface(
         shape = RoundedCornerShape(34.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -352,7 +439,41 @@ private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) 
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         modifier = Modifier
             .navigationBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 14.dp),
+            .padding(horizontal = 24.dp, vertical = 14.dp)
+            .then(
+                if (!draggable) Modifier else Modifier.pointerInput(draggable) {
+                    detectDragGesturesAfterLongPress(
+                        onDragStart = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            scope.launch {
+                                grab.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = Spring.StiffnessMedium))
+                            }
+                        },
+                        onDragEnd = { drop() },
+                        onDragCancel = { drop() },
+                        onDrag = { change, delta ->
+                            change.consume()
+                            scope.launch {
+                                offX.snapTo((offX.value + delta.x).coerceIn(-maxX, maxX))
+                                offY.snapTo((offY.value + delta.y).coerceIn(minY, 0f))
+                                stretch.snapTo(
+                                    (stretch.value + delta.getDistance() / 90f).coerceIn(0f, 1f),
+                                )
+                            }
+                        },
+                    )
+                },
+            )
+            .graphicsLayer {
+                translationX = offX.value
+                translationY = offY.value
+                val p = grab.value
+                val s = stretch.value
+                // растягивается вдоль движения и сжимается поперёк — как капля
+                scaleX = 1f + 0.05f * p + 0.10f * s
+                scaleY = 1f + 0.05f * p - 0.05f * s
+                rotationZ = if (maxX > 0f) (offX.value / maxX).coerceIn(-1f, 1f) * 3f else 0f
+            },
     ) {
         Row(
             Modifier.padding(6.dp),

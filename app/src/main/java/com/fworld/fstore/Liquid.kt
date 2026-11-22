@@ -1,11 +1,11 @@
 package com.fworld.fstore
 
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
@@ -37,14 +37,10 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.tanh
 
-/**
- * «Жидкое стекло»: зажми элемент и потяни. Он тянется за пальцем с сопротивлением, растягивается
- * в сторону движения, подсвечивается в точке касания, а при отпускании пружинит назад, как желе.
- * Обычные тапы и прокрутка списков не затрагиваются — жест включается только после долгого нажатия.
- */
+/** Жидкое стекло: удерживай карточку и потяни; отпущенная карточка пружинит назад. */
 @Composable
 fun Modifier.liquid(strength: Float = 1f): Modifier {
-    if (!LocalAnim.current) return this
+    if (!LocalAnim.current || strength <= 0f) return this
     val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
@@ -61,7 +57,7 @@ fun Modifier.liquid(strength: Float = 1f): Modifier {
 
     return this
         .onSizeChanged { box = it }
-        .pointerInput(Unit) {
+        .pointerInput(strength) {
             detectDragGesturesAfterLongPress(
                 onDragStart = { p ->
                     touch = p
@@ -75,7 +71,6 @@ fun Modifier.liquid(strength: Float = 1f): Modifier {
                     touch = change.position
                     val raw = off.value + delta
                     val d = raw.getDistance()
-                    // резиновое сопротивление: чем дальше, тем тяжелее тянуть
                     val k = if (d <= 0f) 1f else (maxPull * tanh(d / maxPull)) / d
                     scope.launch { off.snapTo(raw * k) }
                 },
@@ -90,7 +85,6 @@ fun Modifier.liquid(strength: Float = 1f): Modifier {
             val p = press.value
             translationX = o.x
             translationY = o.y
-            // растяжение вдоль движения и сжатие поперёк, как у капли
             scaleX = (1f + sx * 0.55f - sy * 0.25f) * (1f + 0.03f * p)
             scaleY = (1f + sy * 0.55f - sx * 0.25f) * (1f + 0.03f * p)
             rotationZ = o.x / maxPull * 3f
@@ -110,7 +104,7 @@ fun Modifier.liquid(strength: Float = 1f): Modifier {
         }
 }
 
-/** Пульсирующее свечение и рамка: проверенным приложениям — белые, непроверенным — красные. */
+/** Мягкая пульсирующая рамка со статусным цветом. */
 @Composable
 fun Modifier.statusGlow(shape: Shape, color: Color): Modifier {
     val anim = LocalAnim.current
@@ -124,7 +118,8 @@ fun Modifier.statusGlow(shape: Shape, color: Color): Modifier {
         )
         v
     } else 0.7f
+    val power = UiPrefs.glowPower
     return this
-        .shadow((4 + 10 * pulse).dp, shape, ambientColor = color, spotColor = color)
-        .border(1.2.dp, color.copy(alpha = 0.5f + 0.3f * pulse), shape)
+        .shadow((4 + 10 * pulse).dp * power, shape, ambientColor = color, spotColor = color)
+        .border((1.2f * power).dp, color.copy(alpha = 0.5f + 0.3f * pulse), shape)
 }

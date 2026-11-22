@@ -54,7 +54,8 @@ object AppPrefs {
         sort = p.getInt("sort", 0).coerceIn(0, 3)
     }
 
-    fun asked(): Boolean = sp?.getBoolean("askedNotif", false) ?: true
+    /** Вернуло true только при первом запросе разрешения уведомлений. */
+    fun asked(): Boolean = sp?.getBoolean("askedNotif", false) ?: false
     fun markAsked() { sp?.edit()?.putBoolean("askedNotif", true)?.apply() }
 
     // @JvmName: у delegated-свойств с private set есть JVM-метод setX, он конфликтует с этими функциями.
@@ -159,11 +160,7 @@ object ReleaseWatch {
 
     private val online = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-    /**
-     * Включает или выключает фоновую проверку. Периодическая проверка идёт примерно раз в 15 минут
-     * (минимум, который разрешает Android; в режиме экономии батареи система может отложить её),
-     * плюс одна проверка сразу при запуске.
-     */
+    /** Включает или выключает фоновую проверку. */
     fun schedule(ctx: Context) {
         val wm = WorkManager.getInstance(ctx.applicationContext)
         if (!AppPrefs.notifyRelease) {

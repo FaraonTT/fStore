@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -49,11 +50,13 @@ import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Diamond
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.MusicNote
@@ -87,12 +90,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -105,6 +110,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
@@ -117,6 +123,10 @@ import kotlin.math.hypot
 import kotlin.math.sin
 
 const val MAX_APK = 100L * 1024 * 1024
+
+/** Цвет рамки: белый — проверено, красный — не проверено. */
+val VERIFIED_COLOR = Color(0xFFFFFFFF)
+val UNVERIFIED_COLOR = Color(0xFFFF3B30)
 
 fun fmtSize(b: Long): String =
     if (b >= 1048576) String.format("%.1f МБ", b / 1048576.0) else String.format("%d КБ", b / 1024)
@@ -466,14 +476,82 @@ fun StatusTag(status: String) {
     }
 }
 
+/** Значок «сколько скачали»: одно скачивание засчитывается один раз на аккаунт. */
+@Composable
+fun DownloadBadge(appId: String) {
+    val n = DownloadStats.count(appId)
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+    ) {
+        Row(
+            Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(Icons.Default.Download, null, Modifier.size(12.dp))
+            Text(fmtCount(n), style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+/** Избранное: сердечко на карточке, список хранится на устройстве. */
+@Composable
+fun FavoriteHeart(id: String) {
+    val on = id in Favorites.ids
+    Box(
+        Modifier
+            .size(36.dp)
+            .clip(CircleShape)
+            .clickable { Favorites.toggle(id) },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            if (on) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+            if (on) "Убрать из избранного" else "В избранное",
+            tint = if (on) Color(0xFFFF4D8D) else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp),
+        )
+    }
+}
+
+/**
+ * Рамка-подсветка вокруг карточки: белая пульса — приложение проверено, красная — ещё нет.
+ * Сила свечения берётся из настроек, при выключенной подсветке модификатор не добавляется.
+ */
+@Composable
+fun Modifier.cardGlow(shape: Shape, color: Color): Modifier {
+    val pulse = if (LocalAnim.current) {
+        val t = rememberInfiniteTransition(label = "cardGlow")
+        val v by t.animateFloat(
+            initialValue = 0.3f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(tween(2000, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+            label = "v",
+        )
+        v
+    } else 0.7f
+    val k = UiPrefs.glowPower
+    return this
+        .shadow((2 + 8 * pulse).dp * k, shape, ambientColor = color, spotColor = color)
+        .border((1.2f * k).dp, color.copy(alpha = (0.45f + 0.4f * pulse).coerceAtMost(1f)), shape)
+}
+
+/** Общая «начинка» карточки: иконка, название, версия, теги и сердечко. */
 @Composable
 fun AppCard(a: AppItem, onClick: () -> Unit) {
     val compact = UiPrefs.compactCards
     val src = remember { MutableInteractionSource() }
     val pressed by src.collectIsPressedAsState()
-    val scale by animateFloatAsState(if (pressed && LocalAnim.current) 0.97f else 1f, label = "press")
+    val anim = LocalAnim.current
+    val scale by animateFloatAsState(
+        if (pressed && anim && UiPrefs.pressFx) 0.965f else 1f,
+        label = "press",
+    )
     val openUser = LocalOpenUser.current
-    val cardShape = RoundedCornerShape(if (compact) 20.dp else 28.dp)
+    val cardShape = RoundedCornerShape(UiPrefs.corner.dp)
+    val verified = a.status == "approved"
     Card(
         onClick = onClick,
         interactionSource = src,
@@ -482,7 +560,9 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .graphicsLayer { scaleX = scale; scaleY = scale }
-            .then(if (a.fworld) Modifier.fworldGlow(cardShape) else Modifier),
+            .then(if (a.fworld) Modifier.fworldGlow(cardShape) else Modifier)
+            .then(if (UiPrefs.glow) Modifier.cardGlow(cardShape, if (verified) VERIFIED_COLOR else UNVERIFIED_COLOR) else Modifier)
+            .then(if (UiPrefs.liquid > 0f) Modifier.liquid(UiPrefs.liquid) else Modifier),
     ) {
         Row(Modifier.padding(if (compact) 12.dp else 16.dp), verticalAlignment = Alignment.CenterVertically) {
             AppIcon(a, if (compact) 48.dp else 64.dp)
@@ -520,7 +600,54 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     if (a.fworld) FworldTag()
                     StatusTag(a.status)
+                    if (UiPrefs.showDownloads) DownloadBadge(a.id)
                 }
+            }
+            FavoriteHeart(a.id)
+        }
+    }
+}
+
+/** Плитка каталога для режима «две колонки». */
+@Composable
+fun AppTile(a: AppItem, onClick: () -> Unit) {
+    val cardShape = RoundedCornerShape(UiPrefs.corner.dp)
+    val verified = a.status == "approved"
+    Card(
+        onClick = onClick,
+        shape = cardShape,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (a.fworld) Modifier.fworldGlow(cardShape) else Modifier)
+            .then(if (UiPrefs.glow) Modifier.cardGlow(cardShape, if (verified) VERIFIED_COLOR else UNVERIFIED_COLOR) else Modifier)
+            .then(if (UiPrefs.liquid > 0f) Modifier.liquid(UiPrefs.liquid) else Modifier),
+    ) {
+        Column(
+            Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            AppIcon(a, 56.dp)
+            Text(
+                a.name,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                "v${a.version}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                if (UiPrefs.showDownloads) DownloadBadge(a.id)
+                StatusTag(a.status)
             }
         }
     }
