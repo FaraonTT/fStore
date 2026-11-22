@@ -30,6 +30,10 @@ data class User(
     val friend: Boolean = false,
     val virus: Boolean = false,
     val updated: Long = 0L,
+    /** Переливающийся ник и подсветка: два цвета, которые плавно перетекают друг в друга. */
+    val shimmer: Boolean = false,
+    val shimmerA: String = "",
+    val shimmerB: String = "",
 ) {
     val isOwner: Boolean get() = username == OWNER_ADMIN
     val isAdmin: Boolean get() = isOwner || role == "admin"
@@ -52,6 +56,9 @@ data class User(
         .put("friend", friend)
         .put("virus", virus)
         .put("updated", updated)
+        .put("shimmer", shimmer)
+        .put("shimmerA", shimmerA)
+        .put("shimmerB", shimmerB)
 
     companion object {
         fun from(o: JSONObject): User {
@@ -73,6 +80,9 @@ data class User(
                 friend = o.optBoolean("friend"),
                 virus = o.optBoolean("virus"),
                 updated = o.optLong("updated"),
+                shimmer = o.optBoolean("shimmer"),
+                shimmerA = o.optString("shimmerA"),
+                shimmerB = o.optString("shimmerB"),
             )
         }
     }
@@ -100,14 +110,9 @@ data class PendingUpdate(
 
     companion object {
         fun from(o: JSONObject) = PendingUpdate(
-            o.optString("name"),
-            o.optString("version"),
-            o.optString("whatsNew"),
-            o.optString("icon"),
-            o.optString("apk"),
-            o.optLong("size"),
-            o.optLong("time"),
-            o.optInt("parts", 1),
+            o.optString("name"), o.optString("version"), o.optString("whatsNew"),
+            o.optString("icon"), o.optString("apk"), o.optLong("size"), o.optLong("time"),
+            o.optInt("parts", 1).coerceAtLeast(1),
         )
     }
 }
@@ -168,7 +173,7 @@ data class AppItem(
             created = o.optLong("created"),
             updated = o.optLong("updated"),
             pending = o.optJSONObject("pending")?.let { PendingUpdate.from(it) },
-            parts = o.optInt("parts", 1),
+            parts = o.optInt("parts", 1).coerceAtLeast(1),
         )
     }
 }
@@ -201,11 +206,15 @@ data class Review(
     }
 }
 
+/**
+ * Бейдж. kind: icon — векторная иконка (value = ключ из BADGE_ICONS), color — цветная точка,
+ * image — картинка. Старый kind "emoji" остаётся в данных, но рисуется векторной иконкой (эмодзи в интерфейсе нет).
+ */
 data class BadgeDef(
     val id: String,
     val name: String,
     val desc: String,
-    val kind: String, // emoji | color | image
+    val kind: String,
     val value: String,
 ) {
     fun toJson(): JSONObject = JSONObject()
@@ -218,20 +227,25 @@ data class BadgeDef(
     companion object {
         fun from(o: JSONObject) = BadgeDef(
             o.optString("id"), o.optString("name"), o.optString("desc"),
-            o.optString("kind", "emoji"), o.optString("value"),
+            o.optString("kind", "icon"), o.optString("value"),
         )
     }
 }
 
-val SYS_OWNER = BadgeDef("sys_owner", "#fworld", "Создатель fStore", "emoji", "👑")
-val SYS_ADMIN = BadgeDef("sys_admin", "Админ", "Администратор fStore", "emoji", "🛡️")
-val SYS_MODERATOR = BadgeDef("sys_moderator", "Модератор", "Проверяет приложения в fStore", "emoji", "🔍")
-val SYS_FRIEND = BadgeDef("sys_friend", "Друг #fworld", "Верифицированный друг #fworld", "emoji", "💜")
-val SYS_VIRUS = BadgeDef("sys_virus", "Вирусня...", "Этот пользователь замечен в распространении вредоносных приложений", "emoji", "🦠")
-val SYS_FWORLD_APP = BadgeDef("sys_fworld_app", "#fworld", "Приложение с бейджем от #fworld", "emoji", "✨")
+val SYS_OWNER = BadgeDef("sys_owner", "#fworld", "Создатель fStore", "icon", "premium")
+val SYS_VERIFIED = BadgeDef("sys_verified", "#fworld Верификация", "Подлинный аккаунт владельца fStore. Такого бейджа нет больше ни у кого.", "icon", "verified")
+val SYS_ADMIN = BadgeDef("sys_admin", "Админ", "Администратор fStore", "icon", "shield")
+val SYS_MODERATOR = BadgeDef("sys_moderator", "Модератор", "Проверяет приложения в fStore", "icon", "search")
+val SYS_FRIEND = BadgeDef("sys_friend", "Друг #fworld", "Верифицированный друг #fworld", "icon", "heart")
+val SYS_VIRUS = BadgeDef("sys_virus", "Вирусня...", "Этот пользователь замечен в распространении вредоносных приложений", "icon", "bug")
+val SYS_FWORLD_APP = BadgeDef("sys_fworld_app", "#fworld", "Приложение с бейджем от #fworld", "icon", "spark")
 
 fun userBadges(u: User, all: List<BadgeDef>): List<BadgeDef> = buildList {
-    if (u.isOwner) add(SYS_OWNER) else if (u.role == "admin") add(SYS_ADMIN) else if (u.role == "moderator") add(SYS_MODERATOR)
+    if (u.isOwner) {
+        add(SYS_OWNER)
+        // «#fworld Верификация» есть только у владельца (is_owner).
+        add(SYS_VERIFIED)
+    } else if (u.role == "admin") add(SYS_ADMIN) else if (u.role == "moderator") add(SYS_MODERATOR)
     if (u.friend) add(SYS_FRIEND)
     if (u.virus) add(SYS_VIRUS)
     u.badges.mapNotNull { id -> all.find { it.id == id } }.forEach { add(it) }
