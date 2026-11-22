@@ -233,19 +233,15 @@ data class BadgeDef(
 }
 
 val SYS_OWNER = BadgeDef("sys_owner", "#fworld", "Создатель fStore", "icon", "premium")
-val SYS_VERIFIED = BadgeDef("sys_verified", "#fworld Верификация", "Подлинный аккаунт владельца fStore. Такого бейджа нет больше ни у кого.", "icon", "verified")
 val SYS_ADMIN = BadgeDef("sys_admin", "Админ", "Администратор fStore", "icon", "shield")
 val SYS_MODERATOR = BadgeDef("sys_moderator", "Модератор", "Проверяет приложения в fStore", "icon", "search")
 val SYS_FRIEND = BadgeDef("sys_friend", "Друг #fworld", "Верифицированный друг #fworld", "icon", "heart")
 val SYS_VIRUS = BadgeDef("sys_virus", "Вирусня...", "Этот пользователь замечен в распространении вредоносных приложений", "icon", "bug")
 val SYS_FWORLD_APP = BadgeDef("sys_fworld_app", "#fworld", "Приложение с бейджем от #fworld", "icon", "spark")
 
+/** Галочка «#fworld Верификация» — не бейдж: она рисуется рядом с ником владельца (см. NameLine). */
 fun userBadges(u: User, all: List<BadgeDef>): List<BadgeDef> = buildList {
-    if (u.isOwner) {
-        add(SYS_OWNER)
-        // «#fworld Верификация» есть только у владельца (is_owner).
-        add(SYS_VERIFIED)
-    } else if (u.role == "admin") add(SYS_ADMIN) else if (u.role == "moderator") add(SYS_MODERATOR)
+    if (u.isOwner) add(SYS_OWNER) else if (u.role == "admin") add(SYS_ADMIN) else if (u.role == "moderator") add(SYS_MODERATOR)
     if (u.friend) add(SYS_FRIEND)
     if (u.virus) add(SYS_VIRUS)
     u.badges.mapNotNull { id -> all.find { it.id == id } }.forEach { add(it) }
