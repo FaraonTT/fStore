@@ -339,5 +339,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "ceo",
+  "name": "sasha",
+  "desc": "",
+  "avatar": "",
+  "salt": "795bf0d2fa6e742b1739f1f1",
+  "hash": "3b54d00b9d7bbb9bec723e71355523db3d5815e3c3ef48db7da22091a003c4aa",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795380565682,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
