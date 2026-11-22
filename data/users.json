@@ -215,5 +215,23 @@
   "friend": false,
   "virus": false,
   "updated": 1795288868996
+ },
+ {
+  "username": "maks",
+  "name": "макс",
+  "desc": "",
+  "avatar": "",
+  "salt": "ec8f13a129d4836f6499ce02",
+  "hash": "764d9743d3b9a40103246e3f78813af5910869fe15d84b5afc31eccbc1d0eb23",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795320221122
  }
 ]
