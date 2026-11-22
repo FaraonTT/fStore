@@ -86,9 +86,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.asImageBitmap
@@ -263,10 +266,52 @@ fun NameLine(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        if (u.verified) {
+        if (u.isOwner) {
+            // «#fworld Верификация»: только у владельца, вместо синей галочки — переливающийся чёрно-фиолетовый градиент.
+            Spacer(Modifier.width(4.dp))
+            FworldVerifiedMark(18.dp)
+        } else if (u.verified) {
             Spacer(Modifier.width(4.dp))
             Icon(Icons.Default.Verified, "Верифицирован", tint = Color(0xFF1D9BF0), modifier = Modifier.size(18.dp))
         }
+    }
+}
+
+/**
+ * Галочка «#fworld Верификация» (только у is_owner). Выглядит как обычная галочка верификации,
+ * но залита переливающимся чёрно-фиолетовым градиентом; по нажатию объясняет, что это такое.
+ */
+@Composable
+fun FworldVerifiedMark(size: Dp = 18.dp) {
+    var show by remember { mutableStateOf(false) }
+    val brush = fworldBrush(120f, 60f)
+    Box(Modifier.size(size).clickable { show = true }, contentAlignment = Alignment.Center) {
+        // светлый ореол, чтобы тёмный градиент был виден и на чёрном фоне
+        Icon(
+            Icons.Default.Verified, null,
+            tint = Color(0xFFB388FF).copy(alpha = 0.6f),
+            modifier = Modifier.size(size).graphicsLayer { scaleX = 1.2f; scaleY = 1.2f },
+        )
+        Icon(
+            Icons.Default.Verified, "#fworld Верификация",
+            tint = Color.Black,
+            modifier = Modifier
+                .size(size)
+                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                .drawWithContent {
+                    drawContent()
+                    drawRect(brush, blendMode = BlendMode.SrcIn)
+                },
+        )
+    }
+    if (show) {
+        AlertDialog(
+            onDismissRequest = { show = false },
+            confirmButton = { TextButton(onClick = { show = false }) { Text("Ок") } },
+            icon = { FworldVerifiedMark(32.dp) },
+            title = { Text("#fworld Верификация") },
+            text = { Text("Подлинный аккаунт владельца fStore. Такой галочки нет больше ни у кого.") },
+        )
     }
 }
 
