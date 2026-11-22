@@ -318,5 +318,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "pfoix",
+  "name": "PFOIX",
+  "desc": "",
+  "avatar": "",
+  "salt": "d35f5437036d262b7f54de70",
+  "hash": "01d5f042c856a3351330a712aacd56b028c90a8ef7e64cd05a9939c067daa7e3",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795377948904,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
