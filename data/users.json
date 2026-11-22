@@ -323,7 +323,7 @@
   "username": "pfoix",
   "name": "PFOIX",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/pfoix.png",
   "salt": "d35f5437036d262b7f54de70",
   "hash": "01d5f042c856a3351330a712aacd56b028c90a8ef7e64cd05a9939c067daa7e3",
   "role": "user",
@@ -335,7 +335,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795377948904,
+  "updated": 1795377954541,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
