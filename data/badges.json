@@ -40,5 +40,12 @@
   "desc": "Лучший создатель",
   "kind": "image",
   "value": "data\/badges\/bmwqmlgwe.png"
+ },
+ {
+  "id": "bmwradx1n",
+  "name": "Тестер",
+  "desc": "Официальный Второй Аккаунт void_fworld",
+  "kind": "color",
+  "value": "#3F51B5"
  }
 ]
