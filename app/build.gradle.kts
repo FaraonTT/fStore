@@ -21,8 +21,8 @@ android {
         applicationId = "com.fworld.fstore"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "1.3b"
+        versionCode = 14
+        versionName = "1.4"
 
         buildConfigField("String", "GH_OWNER", bc("GH_OWNER", "FaraonTT"))
         buildConfigField("String", "GH_REPO", bc("GH_REPO", "fStore"))
@@ -81,6 +81,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.3")
     implementation("androidx.core:core-ktx:1.16.0")
+    // Фоновая проверка новых релизов для уведомлений
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
