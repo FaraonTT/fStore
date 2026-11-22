@@ -19,7 +19,10 @@
   ],
   "friend": false,
   "virus": false,
-  "updated": 1795277326039
+  "updated": 1795277326039,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "zix510",
@@ -40,7 +43,10 @@
   ],
   "friend": true,
   "virus": false,
-  "updated": 1795104387242
+  "updated": 1795104387242,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "terenov",
@@ -60,7 +66,10 @@
   ],
   "friend": true,
   "virus": false,
-  "updated": 1795105751927
+  "updated": 1795330900491,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "strela",
@@ -81,7 +90,10 @@
   ],
   "friend": false,
   "virus": false,
-  "updated": 1795106213873
+  "updated": 1795106213873,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "ytakez",
@@ -101,7 +113,10 @@
   ],
   "friend": true,
   "virus": false,
-  "updated": 1795110142926
+  "updated": 1795110142926,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "ve1moru",
@@ -121,7 +136,10 @@
   ],
   "friend": false,
   "virus": false,
-  "updated": 1795120230170
+  "updated": 1795120230170,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "tjehhtht",
@@ -139,7 +157,10 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795285808170
+  "updated": 1795285808170,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "roman",
@@ -157,7 +178,10 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795188948181
+  "updated": 1795188948181,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "test",
@@ -178,7 +202,10 @@
   ],
   "friend": true,
   "virus": false,
-  "updated": 1795285410699
+  "updated": 1795285410699,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "plus",
@@ -196,7 +223,10 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795285715676
+  "updated": 1795285715676,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "meldo",
@@ -214,7 +244,10 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795288868996
+  "updated": 1795288868996,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  },
  {
   "username": "maks",
@@ -232,6 +265,9 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795320221122
+  "updated": 1795320221122,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
