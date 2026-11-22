@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,7 +22,9 @@ import androidx.core.content.ContextCompat
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -37,7 +40,7 @@ object AppPrefs {
     var notifyDone by mutableStateOf(true); private set
     var wifiOnly by mutableStateOf(false); private set
 
-    /** 0 — сначала новые, 1 — по названию, 2 — по размеру. */
+    /** 0 — сначала новые, 1 — по названию, 2 — по размеру, 3 — по рейтингу. */
     var sort by mutableStateOf(0); private set
 
     fun init(ctx: Context) {
@@ -48,7 +51,7 @@ object AppPrefs {
         notifyStart = p.getBoolean("nStart", true)
         notifyDone = p.getBoolean("nDone", true)
         wifiOnly = p.getBoolean("wifiOnly", false)
-        sort = p.getInt("sort", 0).coerceIn(0, 2)
+        sort = p.getInt("sort", 0).coerceIn(0, 3)
     }
 
     fun asked(): Boolean = sp?.getBoolean("askedNotif", false) ?: true
@@ -68,25 +71,40 @@ object AppPrefs {
 }
 
 object Notifier {
-    private const val CH_DL = "downloads"
+    private const val CH_PROGRESS = "downloads"
+    private const val CH_DONE = "downloads_done"
     private const val CH_REL = "releases"
 
+    /** Каналы нужно создавать до первого уведомления — в том числе из фонового воркера. */
     fun init(ctx: Context) {
         if (Build.VERSION.SDK_INT >= 26) {
             val nm = ctx.getSystemService(NotificationManager::class.java)
-            nm.createNotificationChannel(NotificationChannel(CH_DL, "Загрузки", NotificationManager.IMPORTANCE_LOW))
-            nm.createNotificationChannel(NotificationChannel(CH_REL, "Новые релизы", NotificationManager.IMPORTANCE_DEFAULT))
+            nm.createNotificationChannel(NotificationChannel(CH_PROGRESS, "Скачивание началось", NotificationManager.IMPORTANCE_LOW))
+            nm.createNotificationChannel(NotificationChannel(CH_DONE, "Скачивание завершено", NotificationManager.IMPORTANCE_HIGH))
+            nm.createNotificationChannel(NotificationChannel(CH_REL, "Новые релизы", NotificationManager.IMPORTANCE_HIGH))
         }
     }
 
-    /** На Android 13+ уведомления требуют разрешения; на старых версиях оно не нужно. */
-    fun allowed(ctx: Context): Boolean =
+    /** Выдано ли системное разрешение (на Android 12 и ниже оно не требуется). */
+    fun permissionGranted(ctx: Context): Boolean =
         Build.VERSION.SDK_INT < 33 ||
             ContextCompat.checkSelfPermission(ctx, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+
+    /** Реально ли система покажет уведомления (разрешение + не выключены в настройках приложения). */
+    fun allowed(ctx: Context): Boolean = NotificationManagerCompat.from(ctx).areNotificationsEnabled()
+
+    /** Системный экран уведомлений fStore — на случай, если пользователь отказал в разрешении. */
+    fun openSystemSettings(ctx: Context) {
+        val i = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            .putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        ctx.startActivity(i)
+    }
 
     @SuppressLint("MissingPermission")
     private fun post(ctx: Context, id: Int, channel: String, title: String, text: String) {
         if (!allowed(ctx)) return
+        init(ctx)
         val open = PendingIntent.getActivity(
             ctx, 0,
             Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
@@ -97,6 +115,7 @@ object Notifier {
             .setContentTitle(title)
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setPriority(if (channel == CH_PROGRESS) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(open)
             .setAutoCancel(true)
             .build()
@@ -106,17 +125,22 @@ object Notifier {
         }
     }
 
-    // Уведомления «началось» и «скачано» используют один id: второе заменяет первое.
+    // «Началось» и «Скачано» используют один id: второе уведомление заменяет первое.
     fun downloadStarted(ctx: Context, name: String) {
-        if (AppPrefs.notifyStart) post(ctx, ("dl:$name").hashCode(), CH_DL, "Началось скачивание", name)
+        if (AppPrefs.notifyStart) post(ctx, ("dl:$name").hashCode(), CH_PROGRESS, "Началось скачивание", name)
     }
 
     fun downloadDone(ctx: Context, name: String) {
-        if (AppPrefs.notifyDone) post(ctx, ("dl:$name").hashCode(), CH_DL, "Скачано", "$name — открой «Загрузки» в настройках, чтобы установить")
+        if (AppPrefs.notifyDone) post(ctx, ("dl:$name").hashCode(), CH_DONE, "Скачано", "$name — открой «Загрузки» в настройках, чтобы установить")
     }
 
     fun release(ctx: Context, id: String, title: String, text: String) {
         post(ctx, ("rel:$id").hashCode(), CH_REL, title, text)
+    }
+
+    /** Кнопка «Проверить уведомления» в настройках. */
+    fun test(ctx: Context) {
+        post(ctx, 7001, CH_DONE, "Уведомления работают", "fStore сможет сообщать о новых релизах и загрузках")
     }
 
     fun onWifi(ctx: Context): Boolean {
@@ -128,21 +152,35 @@ object Notifier {
 
 /** Следит за каталогом: новое приложение или новая версия → уведомление «новый релиз». */
 object ReleaseWatch {
-    private const val WORK = "release-watch"
+    private const val WORK_PERIODIC = "release-watch"
+    private const val WORK_NOW = "release-watch-now"
 
     private fun sp(ctx: Context) = ctx.applicationContext.getSharedPreferences("fstore_releases", 0)
 
-    /** Включает или выключает фоновую проверку (раз в ~15 минут, только при наличии сети). */
+    private val online = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+    /**
+     * Включает или выключает фоновую проверку. Периодическая проверка идёт примерно раз в 15 минут
+     * (минимум, который разрешает Android; в режиме экономии батареи система может отложить её),
+     * плюс одна проверка сразу при запуске.
+     */
     fun schedule(ctx: Context) {
         val wm = WorkManager.getInstance(ctx.applicationContext)
         if (!AppPrefs.notifyRelease) {
-            wm.cancelUniqueWork(WORK)
+            wm.cancelUniqueWork(WORK_PERIODIC)
+            wm.cancelUniqueWork(WORK_NOW)
             return
         }
-        val req = PeriodicWorkRequestBuilder<ReleaseWorker>(15, TimeUnit.MINUTES)
-            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
-            .build()
-        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.KEEP, req)
+        wm.enqueueUniquePeriodicWork(
+            WORK_PERIODIC,
+            ExistingPeriodicWorkPolicy.KEEP,
+            PeriodicWorkRequestBuilder<ReleaseWorker>(15, TimeUnit.MINUTES).setConstraints(online).build(),
+        )
+        wm.enqueueUniqueWork(
+            WORK_NOW,
+            ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<ReleaseWorker>().setConstraints(online).build(),
+        )
     }
 
     /** Первый вызов только запоминает текущие релизы, чтобы не засыпать уведомлениями. */
@@ -173,7 +211,9 @@ object ReleaseWatch {
 
 class ReleaseWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
     override suspend fun doWork(): Result = try {
+        // Воркер может стартовать в «холодном» процессе без Activity — готовим всё сами.
         AppPrefs.init(applicationContext)
+        Notifier.init(applicationContext)
         ReleaseWatch.check(applicationContext)
         Result.success()
     } catch (e: Exception) {
