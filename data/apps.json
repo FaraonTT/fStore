@@ -136,23 +136,6 @@
   "parts": 1
  },
  {
-  "id": "app-mwqtm6u6",
-  "owner": "tjehhtht",
-  "name": "техподдержка",
-  "version": "2.0",
-  "shortDesc": "надо допомагати своїм пользователям",
-  "desc": "да помогаете своим пользователем это бета версия потому что там что-то быть в разработке",
-  "whatsNew": "",
-  "icon": "apps\/tjehhtht\/app-mwqtm6u6.png",
-  "apk": "apps\/tjehhtht\/app-mwqtm6u6-2-0.apk",
-  "size": 8221223,
-  "status": "approved",
-  "fworld": false,
-  "created": 1795290521969,
-  "updated": 1795290546240,
-  "parts": 1
- },
- {
   "id": "app-mwrf6x0k",
   "owner": "tjehhtht",
   "name": "техподдержка",
