@@ -72,7 +72,9 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
     var dynamicColor by mutableStateOf(sp.getBoolean("dynamic", true)); private set
     var uiAlpha by mutableStateOf(sp.getFloat("alpha", 0.88f)); private set
     var animations by mutableStateOf(sp.getBoolean("anim", true)); private set
-    var homeTab by mutableStateOf(sp.getInt("homeTab", 1)); private set
+
+    /** Вкладка главной по умолчанию: 0 #fworld, 1 Проверенные, 2 Все, 3 Непроверенные. */
+    var homeTab by mutableStateOf(sp.getInt("homeSub", 0).coerceIn(0, 3)); private set
 
     // @JvmName: у delegated-свойств с private set есть JVM-метод setX, он конфликтовал бы с этими функциями.
     @JvmName("applyThemeMode")
@@ -91,7 +93,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
     fun setAnimations(v: Boolean) { animations = v; sp.edit().putBoolean("anim", v).apply() }
 
     @JvmName("applyHomeTab")
-    fun setHomeTab(v: Int) { homeTab = v; sp.edit().putInt("homeTab", v).apply() }
+    fun setHomeTab(v: Int) { homeTab = v; sp.edit().putInt("homeSub", v).apply() }
 
     // ---------- downloads (внутри приложения) ----------
 
@@ -121,7 +123,13 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
             message = "Уже скачивается: $name"
             return
         }
+        val ctx = getApplication<Application>()
+        if (AppPrefs.wifiOnly && !Notifier.onWifi(ctx)) {
+            message = "Включён режим «Только Wi-Fi». Подключитесь к Wi-Fi или выключите его в настройках."
+            return
+        }
         active = active + (apk to ActiveDownload(name, version, 0f))
+        Notifier.downloadStarted(ctx, name)
         val job = viewModelScope.launch {
             val fname = "${slug(name)}-${slug(version)}-${System.currentTimeMillis().toString(36)}.apk"
             val out = File(dlDir, fname)
@@ -137,6 +145,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
                 downloads = listOf(DownloadItem(appId, name, version, out.length(), System.currentTimeMillis(), fname)) + downloads
                 saveDownloads()
                 ok = true
+                Notifier.downloadDone(ctx, name)
                 message = "Скачано: $name — файл в Настройки → Загрузки"
             } catch (e: CancellationException) {
                 throw e
@@ -220,6 +229,8 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         reviews = r.await().objs().map { Review.from(it) }
         badges = b.await().objs().map { BadgeDef.from(it) }
         syncMe()
+        // Новый релиз → уведомление (первый запуск только запоминает текущие версии).
+        ReleaseWatch.process(getApplication(), apps)
     }
 
     private fun syncMe() {
@@ -355,7 +366,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         cleanup(*apkParts(path, parts).toTypedArray())
     }
 
-    /** Uploads the APK in <=50 MB parts (GitHub rejects files over 100 MB). Returns the part count. */
+    /** Uploads the APK in parts (GitHub rejects files over 100 MB). Returns the part count. */
     private suspend fun uploadApk(path: String, apk: File, msg: String): Int {
         val total = apk.length()
         require(total <= MAX_UPLOAD) { "APK больше 300 МБ" }
@@ -551,7 +562,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
             v = "data/badges/$id.png"
             Gh.overwrite(v, image, "badge $id")
         } else {
-            require(v.isNotBlank()) { "Укажите эмодзи или цвет" }
+            require(v.isNotBlank()) { "Выберите иконку или цвет" }
         }
         val def = BadgeDef(id, name.trim(), desc.trim(), kind, v)
         Gh.updateJson("data/badges.json", "badge $id") { arr -> (arr.objs() + def.toJson()).toJsonArray() }
