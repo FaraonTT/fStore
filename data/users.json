@@ -360,5 +360,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "valvenoofficial",
+  "name": "котикпортированный",
+  "desc": "",
+  "avatar": "",
+  "salt": "ba8aed1078444f10ad80295f",
+  "hash": "dffedac3fed9571b13320a991820a1534ec0a5028261173cf225a1d6b35936fc",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795381999770,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
