@@ -151,5 +151,22 @@
   "created": 1795290521969,
   "updated": 1795290546240,
   "parts": 1
+ },
+ {
+  "id": "store-mwrcgw64",
+  "owner": "void_fworld",
+  "name": "Store",
+  "version": "1.4",
+  "shortDesc": "Обновлёный стор",
+  "desc": "Вышла 1.4 можете скачать отсюда появились уведомления в 1.4 включать в «О приложений»",
+  "whatsNew": "",
+  "icon": "apps\/void_fworld\/store-mwrcgw64.png",
+  "apk": "apps\/void_fworld\/store-mwrcgw64-1-4.apk",
+  "size": 14376216,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795322192056,
+  "updated": 1795322192056,
+  "parts": 1
  }
 ]
