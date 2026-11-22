@@ -20,9 +20,9 @@
   "friend": false,
   "virus": false,
   "updated": 1795277326039,
-  "shimmer": false,
-  "shimmerA": "",
-  "shimmerB": ""
+  "shimmer": true,
+  "shimmerA": "#080028",
+  "shimmerB": "#8A00FF"
  },
  {
   "username": "zix510",
