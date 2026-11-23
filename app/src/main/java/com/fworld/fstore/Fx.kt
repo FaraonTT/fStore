@@ -11,7 +11,12 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.ClipOp
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shape
@@ -107,6 +112,30 @@ private fun fworldPhase(): Float {
     return p
 }
 
+/**
+ * Мягкое свечение СНАРУЖИ фигуры. Раньше здесь был Modifier.shadow: у прозрачной карточки
+ * системная тень просвечивает внутрь и рисует тёмный прямоугольник под содержимым.
+ * Здесь свечение рисуется слоями-обводками и вырезается по контуру карточки, внутрь не попадает.
+ */
+fun Modifier.softGlow(shape: Shape, color: Color, radius: Dp, strength: Float): Modifier = drawBehind {
+    val outline = shape.createOutline(size, layoutDirection, this)
+    val hole = Path()
+    when (outline) {
+        is Outline.Rounded -> hole.addRoundRect(outline.roundRect)
+        is Outline.Rectangle -> hole.addRect(outline.rect)
+        is Outline.Generic -> hole.addPath(outline.path)
+    }
+    val r = radius.toPx()
+    clipPath(hole, ClipOp.Difference) {
+        val steps = 8
+        for (i in steps downTo 1) {
+            val f = i / steps.toFloat()
+            val a = (strength * (1f - f) * 0.5f + 0.01f).coerceIn(0f, 1f)
+            drawOutline(outline, color.copy(alpha = a), style = Stroke(width = r * 2f * f))
+        }
+    }
+}
+
 /** Свечение и переливающаяся рамка для приложений с бейджем #fworld. */
 @Composable
 fun Modifier.fworldGlow(shape: Shape): Modifier {
@@ -119,7 +148,7 @@ fun Modifier.fworldGlow(shape: Shape): Modifier {
     } else 0.7f
     val glow = Color(0xFF9B30FF)
     return this
-        .shadow((6 + 12 * pulse).dp, shape, ambientColor = glow, spotColor = glow)
+        .softGlow(shape, glow, (8 + 10 * pulse).dp, pulse)
         .drawWithContent {
             drawContent()
             val w = size.width
