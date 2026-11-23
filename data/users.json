@@ -390,7 +390,7 @@
   "username": "ip_artem_eremeev",
   "name": "IP Artem Eremeev",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/ip_artem_eremeev.png",
   "salt": "82bd5f8b0104f2437bd67e2d",
   "hash": "c5c18510cafccb02facb35147014810ab296662ae778e60468129252642ba540",
   "role": "user",
@@ -402,7 +402,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795412226172,
+  "updated": 1795412238838,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
