@@ -184,7 +184,17 @@
   "fworld": false,
   "created": 1795382357140,
   "updated": 1795392274007,
-  "parts": 1
+  "parts": 1,
+  "pending": {
+   "name": "countershoot2",
+   "version": "12.00",
+   "whatsNew": "изменили модельку т изменили позу стояния и приседа мультиплеер может хромать и появляться страшные боты!",
+   "icon": "",
+   "apk": "apps\/valvenoofficial\/countershoot2-mwsca6dj-12-00-1795436717532.apk",
+   "size": 23747835,
+   "time": 1795436717532,
+   "parts": 1
+  }
  },
  {
   "id": "aemp-pro-mwsuixc0",
