@@ -285,7 +285,7 @@
   "username": "maks6352536",
   "name": "макс",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/maks6352536.png",
   "salt": "0968b94da1534ce9184b4e0a",
   "hash": "74e275c3e9e5b4e8642355b36e37a4e6a99294b6ec8e338d47716d2fc449194b",
   "role": "user",
@@ -297,7 +297,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795331339776,
+  "updated": 1795405959710,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
