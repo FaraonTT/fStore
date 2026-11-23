@@ -490,7 +490,7 @@
   "glowColor": "",
   "badges": [],
   "friend": false,
-  "virus": false,
+  "virus": true,
   "updated": 1795452924561,
   "shimmer": false,
   "shimmerA": "",
