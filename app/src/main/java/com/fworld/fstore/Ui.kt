@@ -519,6 +519,8 @@ fun FavoriteHeart(id: String) {
 /**
  * Рамка-подсветка вокруг карточки: белая пульса — приложение проверено, красная — ещё нет.
  * Сила свечения берётся из настроек, при выключенной подсветке модификатор не добавляется.
+ * Свечение рисуется снаружи карточки (softGlow), а не системной тенью: на прозрачной карточке
+ * Modifier.shadow давал тёмный прямоугольник под содержимым.
  */
 @Composable
 fun Modifier.cardGlow(shape: Shape, color: Color): Modifier {
@@ -534,7 +536,7 @@ fun Modifier.cardGlow(shape: Shape, color: Color): Modifier {
     } else 0.7f
     val k = UiPrefs.glowPower
     return this
-        .shadow((2 + 8 * pulse).dp * k, shape, ambientColor = color, spotColor = color)
+        .softGlow(shape, color, (6 + 10 * pulse).dp * k, (pulse * k).coerceAtMost(1.2f))
         .border((1.2f * k).dp, color.copy(alpha = (0.45f + 0.4f * pulse).coerceAtMost(1f)), shape)
 }
 
