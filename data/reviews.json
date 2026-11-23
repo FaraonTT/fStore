@@ -140,16 +140,6 @@
   "replyTime": 1795453143550
  },
  {
-  "id": "app-mwtgyqxx:valvenoofficial",
-  "appId": "app-mwtgyqxx",
-  "user": "valvenoofficial",
-  "stars": 3,
-  "text": "игру надо доработать слишком легко играть",
-  "time": 1795453233165,
-  "reply": "это бета версия мы пока что только ждём мнения и что обновлять и будем вам обновлять то что вы скажете",
-  "replyTime": 1795453531892
- },
- {
   "id": "countershoot2-mwsca6dj:anti_sdvg",
   "appId": "countershoot2-mwsca6dj",
   "user": "anti_sdvg",
@@ -238,5 +228,15 @@
   "time": 1795457233795,
   "reply": "бля не могу пока изменить в течении недели будет или две или в этот день (23.11)",
   "replyTime": 1795452675848
+ },
+ {
+  "id": "app-mwtgyqxx:valvenoofficial",
+  "appId": "app-mwtgyqxx",
+  "user": "valvenoofficial",
+  "stars": 5,
+  "text": "игра стала получше но проблема! некоторые текста очень тёмные невозможно читать!",
+  "time": 1795457318885,
+  "reply": "это бета версия мы пока что только ждём мнения и что обновлять и будем вам обновлять то что вы скажете",
+  "replyTime": 1795453531892
  }
 ]
