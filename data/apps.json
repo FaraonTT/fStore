@@ -14,8 +14,7 @@
   "fworld": true,
   "created": 1795056552842,
   "updated": 1795278026693,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "you-store-mwn04mnv",
@@ -32,8 +31,7 @@
   "fworld": false,
   "created": 1795059588205,
   "updated": 1795059599430,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "zix-ai-mwnqyphx",
@@ -50,8 +48,7 @@
   "fworld": false,
   "created": 1795104665855,
   "updated": 1795283899630,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "fmessage-mwoavi4c",
@@ -68,8 +65,7 @@
   "fworld": true,
   "created": 1795138105811,
   "updated": 1795138124766,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "meme-blockblast-mwouxi0c",
@@ -86,8 +82,7 @@
   "fworld": false,
   "created": 1795171937370,
   "updated": 1795171952828,
-  "parts": 7,
-  "shots": []
+  "parts": 7
  },
  {
   "id": "app-mwqgtgt4",
@@ -104,8 +99,7 @@
   "fworld": false,
   "created": 1795269029713,
   "updated": 1795285516561,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "0-1-32-beta-mwqmwst5",
@@ -122,8 +116,7 @@
   "fworld": false,
   "created": 1795279253979,
   "updated": 1795283892694,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "ball-blast-2-mwrwprv3",
@@ -140,8 +133,7 @@
   "fworld": false,
   "created": 1795356190838,
   "updated": 1795358651354,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "countershoot2-mwsca6dj",
@@ -159,7 +151,16 @@
   "created": 1795382357140,
   "updated": 1795441504410,
   "parts": 1,
-  "shots": []
+  "pending": {
+   "name": "countershoot2",
+   "version": "16.00",
+   "whatsNew": "оптимизация добавлена выключить можно в настройках и тени(они пока бесполезны ведь из почти не видно даже у тиммейтов",
+   "icon": "",
+   "apk": "apps\/valvenoofficial\/countershoot2-mwsca6dj-16-00-1795456409489.apk",
+   "size": 23746253,
+   "time": 1795456409489,
+   "parts": 1
+  }
  },
  {
   "id": "aemp-pro-mwsuixc0",
@@ -176,8 +177,7 @@
   "fworld": false,
   "created": 1795412976832,
   "updated": 1795425575099,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "droidscope-mwt7k5i3",
@@ -194,8 +194,7 @@
   "fworld": false,
   "created": 1795434872900,
   "updated": 1795435055566,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "app-mwtgyqxx",
@@ -212,15 +211,7 @@
   "fworld": false,
   "created": 1795450693743,
   "updated": 1795455382848,
-  "parts": 1,
-  "shots": [
-   "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot1.jpg",
-   "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot2.jpg",
-   "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot3.jpg",
-   "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot4.jpg",
-   "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot5.jpg",
-   "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot6.jpg"
-  ]
+  "parts": 1
  },
  {
   "id": "app-mwtig9v3",
@@ -237,12 +228,6 @@
   "fworld": false,
   "created": 1795453172200,
   "updated": 1795453556871,
-  "parts": 1,
-  "shots": [
-   "apps\/anti_sdvg\/app-mwtig9v3-shot1.jpg",
-   "apps\/anti_sdvg\/app-mwtig9v3-shot2.jpg",
-   "apps\/anti_sdvg\/app-mwtig9v3-shot3.jpg",
-   "apps\/anti_sdvg\/app-mwtig9v3-shot4.jpg"
-  ]
+  "parts": 1
  }
 ]
