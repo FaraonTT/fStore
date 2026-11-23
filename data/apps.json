@@ -220,7 +220,25 @@
    "apps\/tjehhtht\/app-mwtgyqxx-shot4.jpg",
    "apps\/tjehhtht\/app-mwtgyqxx-shot5.jpg",
    "apps\/tjehhtht\/app-mwtgyqxx-shot6.jpg"
-  ]
+  ],
+  "pending": {
+   "shots": [
+    "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot1.jpg",
+    "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot2.jpg",
+    "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot3.jpg",
+    "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot4.jpg",
+    "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot5.jpg",
+    "apps\/tjehhtht\/app-mwtgyqxx-1795455247985-shot6.jpg"
+   ],
+   "name": "перекуп",
+   "version": "2.0",
+   "whatsNew": "ми додали крутой интерфейс только что не сильно видно",
+   "icon": "apps\/tjehhtht\/app-mwtgyqxx-icon-1795455247985.png",
+   "apk": "apps\/tjehhtht\/app-mwtgyqxx-2-0-1795455247985.apk",
+   "size": 8221223,
+   "time": 1795455247985,
+   "parts": 1
+  }
  },
  {
   "id": "app-mwtig9v3",
