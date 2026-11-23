@@ -185,5 +185,22 @@
   "created": 1795382357140,
   "updated": 1795392274007,
   "parts": 1
+ },
+ {
+  "id": "aemp-pro-mwsuixc0",
+  "owner": "ip_artem_eremeev",
+  "name": "AEMP PRO",
+  "version": "1.5",
+  "shortDesc": "Удобный аудиоплеер вдохновленный AIMP",
+  "desc": "",
+  "whatsNew": "",
+  "icon": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0.png",
+  "apk": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1-5.apk",
+  "size": 247533,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795412976832,
+  "updated": 1795412976832,
+  "parts": 1
  }
 ]
