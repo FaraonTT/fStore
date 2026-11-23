@@ -97,8 +97,10 @@ data class PendingUpdate(
     val size: Long,
     val time: Long,
     val parts: Int = 1,
+    val shots: List<String> = emptyList(),
 ) {
     fun toJson(): JSONObject = JSONObject()
+        .put("shots", JSONArray(shots))
         .put("name", name)
         .put("version", version)
         .put("whatsNew", whatsNew)
@@ -113,9 +115,13 @@ data class PendingUpdate(
             o.optString("name"), o.optString("version"), o.optString("whatsNew"),
             o.optString("icon"), o.optString("apk"), o.optLong("size"), o.optLong("time"),
             o.optInt("parts", 1).coerceAtLeast(1),
+            o.optJSONArray("shots").strings(),
         )
     }
 }
+
+/** Список строк из JSON-массива (null → пусто). */
+fun JSONArray?.strings(): List<String> = if (this == null) emptyList() else (0 until length()).map { getString(it) }
 
 data class AppItem(
     val id: String,
@@ -134,6 +140,8 @@ data class AppItem(
     val updated: Long,
     val pending: PendingUpdate? = null,
     val parts: Int = 1,
+    /** Скриншоты: пути к картинкам в репозитории. */
+    val shots: List<String> = emptyList(),
 ) {
     fun toJson(): JSONObject {
         val o = JSONObject()
@@ -152,6 +160,7 @@ data class AppItem(
             .put("created", created)
             .put("updated", updated)
             .put("parts", parts)
+            .put("shots", JSONArray(shots))
         if (pending != null) o.put("pending", pending.toJson())
         return o
     }
@@ -174,6 +183,7 @@ data class AppItem(
             updated = o.optLong("updated"),
             pending = o.optJSONObject("pending")?.let { PendingUpdate.from(it) },
             parts = o.optInt("parts", 1).coerceAtLeast(1),
+            shots = o.optJSONArray("shots").strings(),
         )
     }
 }
