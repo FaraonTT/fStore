@@ -244,10 +244,10 @@
   "icon": "apps\/meldo\/blokerblast-mwtleji5.png",
   "apk": "apps\/meldo\/blokerblast-mwtleji5-1-0.apk",
   "size": 5969647,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795458125020,
-  "updated": 1795458125020,
+  "updated": 1795458323738,
   "parts": 1,
   "shots": [
    "apps\/meldo\/blokerblast-mwtleji5-shot1.jpg"
