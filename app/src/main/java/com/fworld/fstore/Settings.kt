@@ -42,6 +42,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -148,6 +152,7 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
     val ctx = LocalContext.current
     val me = vm.me
     val dlSize = vm.downloads.sumOf { it.size }
+    var settingsTab by rememberSaveable { mutableStateOf(0) }
     Column(
         Modifier
             .fillMaxSize()
@@ -157,22 +162,17 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         Text("Настройки", style = MaterialTheme.typography.headlineMedium)
-
-        Section("Файлы") {
-            NavRow(
-                Icons.Default.Download, "Загрузки",
-                if (vm.downloads.isEmpty() && vm.active.isEmpty()) "Скачанные приложения появятся здесь"
-                else "${vm.downloads.size} шт. · ${fmtSize(dlSize)}" +
-                    if (vm.active.isNotEmpty()) " · идёт скачивание" else "",
-                onDownloads,
-            )
-            NavRow(Icons.Default.DeleteSweep, "Очистить кэш картинок", "Иконки и аватарки загрузятся заново") {
-                ctx.imageLoader.memoryCache?.clear()
-                ctx.imageLoader.diskCache?.clear()
-                vm.message = "Кэш картинок очищен"
+        PrimaryScrollableTabRow(
+            selectedTabIndex = settingsTab,
+            edgePadding = 0.dp,
+            containerColor = Color.Transparent,
+        ) {
+            listOf("Вид", "Каталог", "Уведомления", "Аккаунт").forEachIndexed { index, title ->
+                Tab(selected = settingsTab == index, onClick = { settingsTab = index }, text = { Text(title) })
             }
         }
 
+        if (settingsTab == 0) {
         Section("Внешний вид") {
             Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -300,6 +300,22 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
             )
         }
 
+        }
+
+        if (settingsTab == 1) {
+        Section("Файлы") {
+            NavRow(
+                Icons.Default.Download, "Загрузки",
+                if (vm.downloads.isEmpty() && vm.active.isEmpty()) "Скачанные приложения появятся здесь"
+                else "${vm.downloads.size} шт. · ${fmtSize(dlSize)}" + if (vm.active.isNotEmpty()) " · идёт скачивание" else "",
+                onDownloads,
+            )
+            NavRow(Icons.Default.DeleteSweep, "Очистить кэш картинок", "Иконки и аватарки загрузятся заново") {
+                ctx.imageLoader.memoryCache?.clear()
+                ctx.imageLoader.diskCache?.clear()
+                vm.message = "Кэш картинок очищен"
+            }
+        }
         Section("Каталог") {
             SwitchRow(Icons.Default.GridView, "Две колонки", "Каталог сеткой, а не списком", UiPrefs.grid, UiPrefs::setGrid)
             SwitchRow(
@@ -325,18 +341,10 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
             SwitchRow(Icons.Default.ViewAgenda, "Компактные карточки", "Меньше иконка и отступы", UiPrefs.compactCards, UiPrefs::setCompactCards)
         }
 
-        Section("Плавающий док") {
-            SwitchRow(
-                Icons.Default.TouchApp, "Перетаскиваемый док",
-                "Зажми док и тяни в любое место экрана",
-                UiPrefs.dockDrag, UiPrefs::setDockDrag,
-            )
-            NavRow(Icons.Default.RestartAlt, "Вернуть док на место", "Пружинкой уедет вниз") {
-                UiPrefs.resetDock()
-                vm.message = "Док вернулся на место"
-            }
+
         }
 
+        if (settingsTab == 2) {
         Section("Уведомления") {
             SwitchRow(
                 Icons.Default.Notifications, "Новые релизы",
@@ -371,6 +379,9 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
             }
         }
 
+        }
+
+        if (settingsTab == 3) {
         Section("Главная") {
             Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -415,6 +426,7 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
                 UiPrefs.reset()
                 vm.message = "Настройки внешнего вида сброшены"
             }
+        }
         }
     }
 }

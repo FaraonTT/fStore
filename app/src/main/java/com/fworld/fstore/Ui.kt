@@ -556,7 +556,7 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
         onClick = onClick,
         interactionSource = src,
         shape = cardShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         modifier = Modifier
             .fillMaxWidth()
             .graphicsLayer { scaleX = scale; scaleY = scale }
@@ -615,8 +615,7 @@ fun AppTile(a: AppItem, onClick: () -> Unit) {
     val verified = a.status == "approved"
     Card(
         onClick = onClick,
-        shape = cardShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         modifier = Modifier
             .fillMaxWidth()
             .then(if (a.fworld) Modifier.fworldGlow(cardShape) else Modifier)

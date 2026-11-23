@@ -41,7 +41,7 @@ fun AdminScreen(vm: StoreVM, onBack: () -> Unit) {
         }
         if (vm.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         when (tabs.getOrElse(tab) { tabs[0] }) {
-            "Приложения" -> AdminApps(vm)
+            "Приложения" -> AdminApps(vm, me.isOwner)
             "Кастомизация" -> AdminCustom(vm)
             else -> AdminManage(vm, me)
         }
@@ -49,7 +49,7 @@ fun AdminScreen(vm: StoreVM, onBack: () -> Unit) {
 }
 
 @Composable
-private fun AdminApps(vm: StoreVM) {
+private fun AdminApps(vm: StoreVM, owner: Boolean) {
     val list = vm.apps.sortedWith(
         compareByDescending<AppItem> { it.status == "pending" || it.pending != null }.thenByDescending { it.updated },
     )
@@ -86,10 +86,12 @@ private fun AdminApps(vm: StoreVM) {
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(checked = a.fworld, onCheckedChange = { vm.setFworld(a.id, it) })
-                        Spacer(Modifier.width(10.dp))
-                        Text("Бейдж #fworld (отдельная вкладка, свечение)", Modifier.weight(1f))
+                    if (owner) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Switch(checked = a.fworld, onCheckedChange = { vm.setFworld(a.id, it) })
+                            Spacer(Modifier.width(10.dp))
+                            Text("Бейдж #fworld (отдельная вкладка, свечение)", Modifier.weight(1f))
+                        }
                     }
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         if (a.status != "approved" || a.pending != null) {

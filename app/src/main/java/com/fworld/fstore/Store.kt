@@ -494,7 +494,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
 
     fun setFworld(id: String, on: Boolean) = act("Сохраняю…") {
         val m = me ?: error("Нужен вход")
-        check(m.isAdmin) { "Нет прав" }
+        check(m.isOwner) { "Только владелец может выдавать бейдж #fworld" }
         editApps("fworld badge $id") { l -> l.map { if (it.id == id) it.copy(fworld = on) else it } }
     }
 

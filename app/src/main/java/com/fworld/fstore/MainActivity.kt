@@ -399,92 +399,53 @@ private fun CloseButton(onClick: () -> Unit) {
 }
 
 /**
- * Док из «жидкого стекла»: зажми — он дёрнется, приподнимется и потянется за пальцем, как капля,
- * а на отпускании пружинкой уляжется там, где его оставили (положение запоминается).
- * Двойное нажатие в настройках «Вернуть док на место» возвращает его вниз.
+ * Док из «жидкого стекла»: зажми — он плывёт только по горизонтали, вкладка под пальцем подсвечивается,
+ * а после отпускания открывается выбранная вкладка.
  */
 @Composable
 private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) {
-    val draggable = UiPrefs.dockDrag
+    val density = LocalDensity.current
     val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
-    val density = LocalDensity.current
-    val cfg = LocalConfiguration.current
-    val maxX = with(density) { (cfg.screenWidthDp.dp / 2 - 56.dp).toPx() }
-    val minY = with(density) { -(cfg.screenHeightDp.dp * 0.62f).toPx() }
-    val offX = remember { Animatable(UiPrefs.dockX.coerceIn(-maxX, maxX)) }
-    val offY = remember { Animatable(UiPrefs.dockY.coerceIn(minY, 0f)) }
-    val grab = remember { Animatable(0f) }
-    val stretch = remember { Animatable(0f) }
-
-    // «Вернуть док на место» из настроек.
-    LaunchedEffect(UiPrefs.dockToken) {
-        if (UiPrefs.dockToken > 0) {
-            offX.animateTo(0f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow))
-            offY.animateTo(0f, spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow))
-        }
-    }
-
-    fun drop() {
-        scope.launch { grab.animateTo(0f, tween(320)) }
-        scope.launch { stretch.animateTo(0f, tween(280)) }
-        UiPrefs.setDock(offX.value, offY.value)
-    }
+    var dragX by remember { mutableStateOf(0f) }
+    var preview by remember(selected) { mutableStateOf(selected) }
+    val step = with(density) { 76.dp.toPx() }
 
     Surface(
         shape = RoundedCornerShape(34.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.82f),
         tonalElevation = 6.dp,
         shadowElevation = 14.dp,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         modifier = Modifier
             .navigationBarsPadding()
             .padding(horizontal = 24.dp, vertical = 14.dp)
-            .then(
-                if (!draggable) Modifier else Modifier.pointerInput(draggable) {
-                    detectDragGesturesAfterLongPress(
-                        onDragStart = {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            scope.launch {
-                                grab.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = Spring.StiffnessMedium))
-                            }
-                        },
-                        onDragEnd = { drop() },
-                        onDragCancel = { drop() },
-                        onDrag = { change, delta ->
-                            change.consume()
-                            scope.launch {
-                                offX.snapTo((offX.value + delta.x).coerceIn(-maxX, maxX))
-                                offY.snapTo((offY.value + delta.y).coerceIn(minY, 0f))
-                                stretch.snapTo(
-                                    (stretch.value + delta.getDistance() / 90f).coerceIn(0f, 1f),
-                                )
-                            }
-                        },
-                    )
-                },
-            )
-            .graphicsLayer {
-                translationX = offX.value
-                translationY = offY.value
-                val p = grab.value
-                val s = stretch.value
-                // растягивается вдоль движения и сжимается поперёк — как капля
-                scaleX = 1f + 0.05f * p + 0.10f * s
-                scaleY = 1f + 0.05f * p - 0.05f * s
-                rotationZ = if (maxX > 0f) (offX.value / maxX).coerceIn(-1f, 1f) * 3f else 0f
+            .pointerInput(selected) {
+                detectDragGesturesAfterLongPress(
+                    onDragStart = {
+                        dragX = 0f
+                        preview = selected
+                        if (UiPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    },
+                    onDragEnd = { onSelect(preview); dragX = 0f },
+                    onDragCancel = { dragX = 0f; preview = selected },
+                    onDrag = { change, delta ->
+                        change.consume()
+                        dragX += delta.x
+                        // Док ощущается упругим и выбирает вкладку только по горизонтальной оси.
+                        preview = (selected + (dragX / step).toInt()).coerceIn(0, DOCK_ITEMS.lastIndex)
+                    },
+                )
             },
     ) {
-        Row(
-            Modifier.padding(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            DOCK_ITEMS.forEach { (label, icon, idx) ->
-                DockItem(label, icon, idx == selected, anim) { onSelect(idx) }
+        Row(Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
+            DOCK_ITEMS.forEachIndexed { index, (label, icon, _) ->
+                DockItem(label, icon, index == preview, anim) { onSelect(index) }
             }
         }
     }
 }
+
 
 @Composable
 private fun DockItem(label: String, icon: ImageVector, selected: Boolean, anim: Boolean, onClick: () -> Unit) {
