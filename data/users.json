@@ -450,5 +450,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "zorro123",
+  "name": "Саша",
+  "desc": "хороший парень",
+  "avatar": "",
+  "salt": "04a9ad6f96f8be53de9e6706",
+  "hash": "5b5b1f8f20cd9cc98a25097ee1f0d7e30250c61b8802738346aa5bc601d9c60b",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795449510059,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
