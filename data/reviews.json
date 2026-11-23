@@ -130,16 +130,6 @@
   "replyTime": 1795454908038
  },
  {
-  "id": "countershoot2-mwsca6dj:void_fworld",
-  "appId": "countershoot2-mwsca6dj",
-  "user": "void_fworld",
-  "stars": 4,
-  "text": "Стало лучше но оптимизация не исправлена.\nВремя на исправление Неделя.\nС уважением @fworld_team",
-  "time": 1795441682780,
-  "reply": "бля не могу пока изменить в течении недели будет или две или в этот день (23.11)",
-  "replyTime": 1795452675848
- },
- {
   "id": "app-mwtgyqxx:void_fworld",
   "appId": "app-mwtgyqxx",
   "user": "void_fworld",
@@ -238,5 +228,15 @@
   "time": 1795457149833,
   "reply": "",
   "replyTime": 0
+ },
+ {
+  "id": "countershoot2-mwsca6dj:void_fworld",
+  "appId": "countershoot2-mwsca6dj",
+  "user": "void_fworld",
+  "stars": 5,
+  "text": "Стало лучшее на пару фпс на слабом устройстве\n\nРекомендую сделать режим графики Max-Potato оно меня ет все текстрки на серые так же уберают вашу модельку показывает только оружие и у ботов на детализированные модели замени на капсулы\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
+  "time": 1795457233795,
+  "reply": "бля не могу пока изменить в течении недели будет или две или в этот день (23.11)",
+  "replyTime": 1795452675848
  }
 ]
