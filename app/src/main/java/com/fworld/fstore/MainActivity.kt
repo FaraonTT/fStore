@@ -39,6 +39,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -136,6 +139,8 @@ private fun tabIndex(key: String): Int? = if (key.startsWith("tab:")) key.remove
 @Composable
 fun FStoreApp(vm: StoreVM, dark: Boolean) {
     var tab by rememberSaveable { mutableStateOf(0) }
+    // Вкладка каталога (#fworld / Проверенные / Все / Непроверенные) живёт в плавающей панели над доком.
+    var homeSub by rememberSaveable { mutableStateOf(vm.homeTab + 1) }
     var detail by rememberSaveable { mutableStateOf<String?>(null) }
     var admin by rememberSaveable { mutableStateOf(false) }
     var profile by rememberSaveable { mutableStateOf(false) }
@@ -197,7 +202,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
     // Док виден только на основных вкладках, на вложенных экранах он уезжает вниз.
     val onTab = !egg && !admin && !moderator && viewUser == null && detail == null && !profile && !downloads
     val navBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    val dockPad = if (onTab) 88.dp + navBottom else 0.dp
+    val dockPad = if (onTab) (if (tab == 0) 144.dp else 88.dp) + navBottom else 0.dp
 
     val cs = MaterialTheme.colorScheme
     val glow = cs.primary.copy(alpha = if (dark && vm.amoled) 0.10f else 0.16f).compositeOver(cs.background)
@@ -292,7 +297,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                                 tab = 1
                             },
                         )
-                        k == "tab:0" -> HomeScreen(vm) { detail = it }
+                        k == "tab:0" -> HomeScreen(vm, homeSub) { detail = it }
                         k == "tab:1" -> UploadScreen(
                             vm = vm,
                             target = uploadTarget,
@@ -336,16 +341,29 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                     exit = if (anim) slideOutVertically(tween(220)) { it } + fadeOut(tween(160)) else ExitTransition.None,
                 ) {
                     val haptic = LocalHapticFeedback.current
-                    FloatingDock(
-                        selected = tab,
-                        anim = anim,
-                        onSelect = { i ->
-                            if (UiPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            tab = i
-                            detail = null
-                            admin = false
-                        },
-                    )
+                    // Вкладки каталога и док — одна плавающая группа: панель вкладок сидит прямо над доком.
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        AnimatedVisibility(
+                            visible = tab == 0,
+                            enter = if (anim) fadeIn(tween(240)) + scaleIn(tween(240), initialScale = 0.9f) else EnterTransition.None,
+                            exit = if (anim) fadeOut(tween(160)) + scaleOut(tween(160), targetScale = 0.9f) else ExitTransition.None,
+                        ) {
+                            HomeTabsPill(homeSub, anim) { i ->
+                                if (UiPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                homeSub = i
+                            }
+                        }
+                        FloatingDock(
+                            selected = tab,
+                            anim = anim,
+                            onSelect = { i ->
+                                if (UiPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                tab = i
+                                detail = null
+                                admin = false
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -358,7 +376,7 @@ private fun ProfileButton(me: User?, onClick: () -> Unit) {
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 3.dp,
-        shadowElevation = 6.dp,
+        shadowElevation = 0.dp,
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
         modifier = Modifier
             .statusBarsPadding()
@@ -383,7 +401,7 @@ private fun CloseButton(onClick: () -> Unit) {
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 3.dp,
-        shadowElevation = 6.dp,
+        shadowElevation = 0.dp,
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
         modifier = Modifier
             .statusBarsPadding()
@@ -415,11 +433,12 @@ private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) 
         shape = RoundedCornerShape(34.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.82f),
         tonalElevation = 6.dp,
-        shadowElevation = 14.dp,
+        shadowElevation = 0.dp,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         modifier = Modifier
             .navigationBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 14.dp)
+            .padding(start = 24.dp, end = 24.dp, top = 10.dp, bottom = 14.dp)
+            .softGlow(RoundedCornerShape(34.dp), MaterialTheme.colorScheme.primary, 12.dp, 0.25f)
             .pointerInput(selected) {
                 detectDragGesturesAfterLongPress(
                     onDragStart = {
@@ -446,6 +465,50 @@ private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) 
     }
 }
 
+
+/** Панель вкладок каталога: плавает над доком в том же стеклянном стиле. */
+@Composable
+private fun HomeTabsPill(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) {
+    val cs = MaterialTheme.colorScheme
+    val shape = RoundedCornerShape(26.dp)
+    Surface(
+        shape = shape,
+        color = cs.surfaceContainerHigh.copy(alpha = 0.82f),
+        border = BorderStroke(1.dp, cs.outlineVariant.copy(alpha = 0.5f)),
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .softGlow(shape, cs.primary, 10.dp, 0.2f),
+    ) {
+        Row(
+            Modifier.horizontalScroll(rememberScrollState()).padding(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            HOME_TABS.forEachIndexed { i, title ->
+                val on = i == selected
+                val bg by animateColorAsState(
+                    if (on) cs.primaryContainer else Color.Transparent,
+                    animationSpec = tween(if (anim) 220 else 0),
+                    label = "homeTabBg",
+                )
+                val fg by animateColorAsState(
+                    if (on) cs.onPrimaryContainer else cs.onSurfaceVariant,
+                    animationSpec = tween(if (anim) 220 else 0),
+                    label = "homeTabFg",
+                )
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(bg)
+                        .clickable { onSelect(i) }
+                        .padding(horizontal = 14.dp, vertical = 9.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(title, color = fg, style = MaterialTheme.typography.labelLarge, maxLines = 1)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun DockItem(label: String, icon: ImageVector, selected: Boolean, anim: Boolean, onClick: () -> Unit) {

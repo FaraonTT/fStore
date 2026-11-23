@@ -44,15 +44,16 @@ import androidx.compose.ui.unit.dp
 /** Варианты сортировки каталога (настройка «Сортировка» в «Главная»). */
 private val SORTS = listOf("Сначала новые", "По названию", "По размеру", "По рейтингу")
 
+/** Вкладки каталога. Выбор живёт в плавающей панели над доком (см. MainActivity). */
+val HOME_TABS = listOf("#fworld", "Проверенные", "Все", "Непроверенные")
+
 @Composable
-fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
-    var sub by rememberSaveable { mutableStateOf(vm.homeTab + 1) }
+fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var favOnly by rememberSaveable { mutableStateOf(false) }
     var sortOpen by remember { mutableStateOf(false) }
     var egg by remember { mutableStateOf(false) }
     val tap = remember { TapCounter() }
-    val titles = listOf("#fworld", "Проверенные", "Все", "Непроверенные")
 
     val ratings = remember(vm.reviews) {
         vm.reviews.groupBy { it.appId }.mapValues { e -> e.value.sumOf { it.stars }.toDouble() / e.value.size }
@@ -123,16 +124,6 @@ fun HomeScreen(vm: StoreVM, onOpen: (String) -> Unit) {
                 )
             }
         }
-        PrimaryScrollableTabRow(
-            selectedTabIndex = sub,
-            edgePadding = 8.dp,
-            containerColor = Color.Transparent,
-        ) {
-            titles.forEachIndexed { i, t ->
-                Tab(selected = sub == i, onClick = { sub = i }, text = { Text(t) })
-            }
-        }
-
         // Поиск, избранное и сортировка.
         Row(
             Modifier
