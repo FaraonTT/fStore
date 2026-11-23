@@ -94,3 +94,13 @@ fun fmtCount(n: Int): String = when {
     n >= 1_000 -> String.format("%.1f тыс", n / 1_000f)
     else -> n.toString()
 }
+
+/** Средние оценки приложений для значка на карточке (обновляется при загрузке каталога). */
+object RatingCache {
+    var avg by androidx.compose.runtime.mutableStateOf(mapOf<String, Float>())
+        private set
+
+    fun update(reviews: List<Review>) {
+        avg = reviews.groupBy { it.appId }.mapValues { e -> e.value.sumOf { it.stars }.toFloat() / e.value.size }
+    }
+}

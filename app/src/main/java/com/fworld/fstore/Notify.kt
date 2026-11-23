@@ -40,6 +40,24 @@ object AppPrefs {
     var notifyDone by mutableStateOf(true); private set
     var wifiOnly by mutableStateOf(false); private set
 
+    /** Отзывы на мои приложения. */
+    var notifyReview by mutableStateOf(true); private set
+
+    /** Ответы разработчика на мои отзывы. */
+    var notifyReply by mutableStateOf(true); private set
+
+    /** Спрашивать подтверждение перед скачиванием. */
+    var confirmDownload by mutableStateOf(false); private set
+
+    /** Открывать установщик сразу после скачивания. */
+    var autoInstall by mutableStateOf(false); private set
+
+    /** Не показывать непроверенные приложения во вкладке «Все». */
+    var hideUnverified by mutableStateOf(false); private set
+
+    /** Как часто фоновая проверка смотрит каталог, минут (15, 30, 60, 180). */
+    var watchMinutes by mutableStateOf(15); private set
+
     /** 0 — сначала новые, 1 — по названию, 2 — по размеру, 3 — по рейтингу. */
     var sort by mutableStateOf(0); private set
 
@@ -51,6 +69,12 @@ object AppPrefs {
         notifyStart = p.getBoolean("nStart", true)
         notifyDone = p.getBoolean("nDone", true)
         wifiOnly = p.getBoolean("wifiOnly", false)
+        notifyReview = p.getBoolean("nReview", true)
+        notifyReply = p.getBoolean("nReply", true)
+        confirmDownload = p.getBoolean("confirmDl", false)
+        autoInstall = p.getBoolean("autoInstall", false)
+        hideUnverified = p.getBoolean("hideUnver", false)
+        watchMinutes = p.getInt("watchMin", 15).let { if (it in listOf(15, 30, 60, 180)) it else 15 }
         sort = p.getInt("sort", 0).coerceIn(0, 3)
     }
 
@@ -67,6 +91,18 @@ object AppPrefs {
     fun setNotifyDone(v: Boolean) { notifyDone = v; sp?.edit()?.putBoolean("nDone", v)?.apply() }
     @JvmName("applyWifiOnly")
     fun setWifiOnly(v: Boolean) { wifiOnly = v; sp?.edit()?.putBoolean("wifiOnly", v)?.apply() }
+    @JvmName("applyNotifyReview")
+    fun setNotifyReview(v: Boolean) { notifyReview = v; sp?.edit()?.putBoolean("nReview", v)?.apply() }
+    @JvmName("applyNotifyReply")
+    fun setNotifyReply(v: Boolean) { notifyReply = v; sp?.edit()?.putBoolean("nReply", v)?.apply() }
+    @JvmName("applyConfirmDownload")
+    fun setConfirmDownload(v: Boolean) { confirmDownload = v; sp?.edit()?.putBoolean("confirmDl", v)?.apply() }
+    @JvmName("applyAutoInstall")
+    fun setAutoInstall(v: Boolean) { autoInstall = v; sp?.edit()?.putBoolean("autoInstall", v)?.apply() }
+    @JvmName("applyHideUnverified")
+    fun setHideUnverified(v: Boolean) { hideUnverified = v; sp?.edit()?.putBoolean("hideUnver", v)?.apply() }
+    @JvmName("applyWatchMinutes")
+    fun setWatchMinutes(v: Int) { watchMinutes = v; sp?.edit()?.putInt("watchMin", v)?.apply() }
     @JvmName("applySort")
     fun setSort(v: Int) { sort = v; sp?.edit()?.putInt("sort", v)?.apply() }
 }
@@ -75,6 +111,7 @@ object Notifier {
     private const val CH_PROGRESS = "downloads"
     private const val CH_DONE = "downloads_done"
     private const val CH_REL = "releases"
+    private const val CH_REV = "reviews"
 
     /** Каналы нужно создавать до первого уведомления — в том числе из фонового воркера. */
     fun init(ctx: Context) {
@@ -83,6 +120,7 @@ object Notifier {
             nm.createNotificationChannel(NotificationChannel(CH_PROGRESS, "Скачивание началось", NotificationManager.IMPORTANCE_LOW))
             nm.createNotificationChannel(NotificationChannel(CH_DONE, "Скачивание завершено", NotificationManager.IMPORTANCE_HIGH))
             nm.createNotificationChannel(NotificationChannel(CH_REL, "Новые релизы", NotificationManager.IMPORTANCE_HIGH))
+            nm.createNotificationChannel(NotificationChannel(CH_REV, "Отзывы", NotificationManager.IMPORTANCE_HIGH))
         }
     }
 
@@ -139,6 +177,10 @@ object Notifier {
         post(ctx, ("rel:$id").hashCode(), CH_REL, title, text)
     }
 
+    fun review(ctx: Context, id: String, title: String, text: String) {
+        post(ctx, ("rev:$id").hashCode(), CH_REV, title, text)
+    }
+
     /** Кнопка «Проверить уведомления» в настройках. */
     fun test(ctx: Context) {
         post(ctx, 7001, CH_DONE, "Уведомления работают", "fStore сможет сообщать о новых релизах и загрузках")
@@ -163,15 +205,15 @@ object ReleaseWatch {
     /** Включает или выключает фоновую проверку. */
     fun schedule(ctx: Context) {
         val wm = WorkManager.getInstance(ctx.applicationContext)
-        if (!AppPrefs.notifyRelease) {
+        if (!AppPrefs.notifyRelease && !AppPrefs.notifyReview && !AppPrefs.notifyReply) {
             wm.cancelUniqueWork(WORK_PERIODIC)
             wm.cancelUniqueWork(WORK_NOW)
             return
         }
         wm.enqueueUniquePeriodicWork(
             WORK_PERIODIC,
-            ExistingPeriodicWorkPolicy.KEEP,
-            PeriodicWorkRequestBuilder<ReleaseWorker>(15, TimeUnit.MINUTES).setConstraints(online).build(),
+            ExistingPeriodicWorkPolicy.UPDATE,
+            PeriodicWorkRequestBuilder<ReleaseWorker>(AppPrefs.watchMinutes.toLong(), TimeUnit.MINUTES).setConstraints(online).build(),
         )
         wm.enqueueUniqueWork(
             WORK_NOW,
@@ -203,6 +245,44 @@ object ReleaseWatch {
     suspend fun check(ctx: Context) {
         val apps = Gh.readArray("data/apps.json").objs().map { AppItem.from(it) }
         process(ctx, apps)
+        val reviews = Gh.readArray("data/reviews.json").objs().map { Review.from(it) }
+        ReviewWatch.process(ctx, apps, reviews)
+    }
+}
+
+/** Следит за отзывами: новый отзыв на моё приложение и ответ разработчика на мой отзыв. */
+object ReviewWatch {
+    private fun sp(ctx: Context) = ctx.applicationContext.getSharedPreferences("fstore_reviews", 0)
+
+    /** Имя вошедшего пользователя (та же сессия, что и в приложении). */
+    private fun me(ctx: Context): String? =
+        ctx.applicationContext.getSharedPreferences("fstore", 0).getString("user", null)
+
+    /** Первый запуск (и первый после входа) только запоминает отзывы, чтобы не засыпать уведомлениями. */
+    fun process(ctx: Context, apps: List<AppItem>, reviews: List<Review>) {
+        val p = sp(ctx)
+        val user = me(ctx)
+        val now = JSONObject()
+        reviews.forEach { now.put(it.id, "${it.time}|${it.replyTime}") }
+        val raw = p.getString("known", null)
+        val owner = p.getString("owner", null)
+        if (user != null && raw != null && owner == user) {
+            val old = try { JSONObject(raw) } catch (e: Exception) { JSONObject() }
+            for (r in reviews) {
+                val prev = old.optString(r.id, "")
+                val app = apps.find { it.id == r.appId } ?: continue
+                val prevTime = prev.substringBefore("|", "")
+                val prevReply = prev.substringAfter("|", "")
+                if (AppPrefs.notifyReview && app.owner == user && r.user != user && prevTime != r.time.toString()) {
+                    val txt = if (r.text.isBlank()) "${r.stars}★" else "${r.stars}★ · ${r.text.take(120)}"
+                    Notifier.review(ctx, r.id, "Новый отзыв на ${app.name}", "@${r.user}: $txt")
+                }
+                if (AppPrefs.notifyReply && r.user == user && r.reply.isNotBlank() && prevReply != r.replyTime.toString()) {
+                    Notifier.review(ctx, r.id + ":reply", "Ответ на ваш отзыв · ${app.name}", r.reply.take(160))
+                }
+            }
+        }
+        p.edit().putString("known", now.toString()).putString("owner", user ?: "").apply()
     }
 }
 

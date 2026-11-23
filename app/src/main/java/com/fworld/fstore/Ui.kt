@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -115,6 +116,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.items
 import coil.compose.AsyncImage
 import java.io.ByteArrayOutputStream
 import kotlin.math.atan2
@@ -603,6 +605,7 @@ fun AppCard(a: AppItem, onClick: () -> Unit) {
                     if (a.fworld) FworldTag()
                     StatusTag(a.status)
                     if (UiPrefs.showDownloads) DownloadBadge(a.id)
+                    if (UiPrefs.showRating) RatingBadge(a.id)
                 }
             }
             FavoriteHeart(a.id)
@@ -648,6 +651,7 @@ fun AppTile(a: AppItem, onClick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 if (UiPrefs.showDownloads) DownloadBadge(a.id)
+                if (UiPrefs.showRating) RatingBadge(a.id)
                 StatusTag(a.status)
             }
         }
@@ -821,6 +825,95 @@ fun ColorPicker(label: String, value: String, onChange: (String) -> Unit) {
                     valueRange = 0.15f..1f,
                 )
             }
+        }
+    }
+}
+
+/** Скриншот для загрузки: сохраняет пропорции, длинная сторона до 1280 px, JPEG. */
+fun loadShot(ctx: Context, uri: Uri, max: Int = 1280): ByteArray? {
+    return try {
+        val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        ctx.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) }
+        var s = 1
+        while (maxOf(opts.outWidth, opts.outHeight) / s > max * 2) s *= 2
+        val o2 = BitmapFactory.Options().apply { inSampleSize = s }
+        val bmp = ctx.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, o2) }
+            ?: return null
+        val k = minOf(1f, max.toFloat() / maxOf(bmp.width, bmp.height))
+        val scaled = if (k < 1f) Bitmap.createScaledBitmap(bmp, (bmp.width * k).toInt(), (bmp.height * k).toInt(), true) else bmp
+        val out = ByteArrayOutputStream()
+        scaled.compress(Bitmap.CompressFormat.JPEG, 85, out)
+        out.toByteArray()
+    } catch (e: Exception) {
+        null
+    }
+}
+
+/** Лента скриншотов приложения; тап открывает на весь экран со свайпом. */
+@Composable
+fun ScreenshotsRow(paths: List<String>, version: Long) {
+    if (paths.isEmpty()) return
+    var open by remember { mutableStateOf<Int?>(null) }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Скриншоты", style = MaterialTheme.typography.titleMedium)
+        androidx.compose.foundation.lazy.LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            items(count = paths.size, key = { paths[it] }) { i ->
+                AsyncImage(
+                    model = Gh.rawUrl(paths[i], version),
+                    contentDescription = "Скриншот ${i + 1}",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(220.dp)
+                        .aspectRatio(9f / 16f)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                        .clickable { open = i },
+                )
+            }
+        }
+    }
+    open?.let { start ->
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = { open = null },
+            properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
+        ) {
+            val pager = androidx.compose.foundation.pager.rememberPagerState(initialPage = start) { paths.size }
+            Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.96f))) {
+                androidx.compose.foundation.pager.HorizontalPager(pager, Modifier.fillMaxSize()) { i ->
+                    AsyncImage(
+                        model = Gh.rawUrl(paths[i], version),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize().clickable { open = null },
+                    )
+                }
+                Text(
+                    "${pager.currentPage + 1} / ${paths.size}",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(24.dp),
+                )
+            }
+        }
+    }
+}
+
+/** Средняя оценка на карточке. */
+@Composable
+fun RatingBadge(appId: String) {
+    val v = RatingCache.avg[appId] ?: return
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+    ) {
+        Row(
+            Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(Icons.Default.Star, null, Modifier.size(12.dp))
+            Text(String.format(java.util.Locale.US, "%.1f", v), style = MaterialTheme.typography.labelSmall)
         }
     }
 }

@@ -13,12 +13,25 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import android.graphics.BitmapFactory
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -93,6 +106,7 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
     var desc by rememberSaveable(target) { mutableStateOf("") }
     var whatsNew by rememberSaveable(target) { mutableStateOf("") }
     var icon by remember(target) { mutableStateOf<ByteArray?>(null) }
+    val shots = remember(target) { mutableStateListOf<ByteArray>() }
     var apk by remember(target) { mutableStateOf<Pair<File, String>?>(null) }
     var apkError by remember(target) { mutableStateOf<String?>(null) }
 
@@ -106,6 +120,12 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
                 .onSuccess { apk = it; apkError = null }
                 .onFailure { apk = null; apkError = it.message ?: "Не удалось прочитать файл" }
         }
+    }
+
+    val shotLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+        val room = MAX_SHOTS - shots.size
+        uris.take(room.coerceAtLeast(0)).forEach { u -> loadShot(ctx, u)?.let { shots.add(it) } }
+        if (uris.size > room) vm.message = "Максимум скриншотов: $MAX_SHOTS"
     }
 
     Column(
@@ -186,6 +206,49 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
             )
         }
 
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                if (update) "Скриншоты (необязательно — новые заменят старые)" else "Скриншоты (необязательно)",
+                style = MaterialTheme.typography.titleSmall,
+            )
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                itemsIndexed(shots.toList()) { i, b ->
+                    val bmp = remember(b) { BitmapFactory.decodeByteArray(b, 0, b.size)?.asImageBitmap() }
+                    Box(Modifier.height(140.dp).aspectRatio(9f / 16f).clip(RoundedCornerShape(14.dp))) {
+                        if (bmp != null) Image(bmp, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                        Box(
+                            Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(4.dp)
+                                .size(26.dp)
+                                .clip(CircleShape)
+                                .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.55f))
+                                .clickable { shots.removeAt(i) },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(Icons.Default.Close, "Убрать", Modifier.size(16.dp), tint = androidx.compose.ui.graphics.Color.White)
+                        }
+                    }
+                }
+                if (shots.size < MAX_SHOTS) item {
+                    Box(
+                        Modifier
+                            .height(140.dp)
+                            .aspectRatio(9f / 16f)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .clickable { shotLauncher.launch("image/*") },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.AddPhotoAlternate, null)
+                            Text("${shots.size}/$MAX_SHOTS", style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                }
+            }
+        }
+
         val ready = apk != null && name.isNotBlank() && version.isNotBlank() &&
             (update || icon != null) && !vm.busy
         if (vm.busy) {
@@ -198,13 +261,13 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
                 onClick = {
                     val f = apk!!.first
                     if (update) {
-                        vm.submitUpdate(target!!, name, version, whatsNew, icon, f) {
-                            version = ""; whatsNew = ""; icon = null; apk = null
+                        vm.submitUpdate(target!!, name, version, whatsNew, icon, shots.toList(), f) {
+                            version = ""; whatsNew = ""; icon = null; apk = null; shots.clear()
                             vm.message = "Обновление отправлено на проверку"
                         }
                     } else {
-                        vm.submitNew(name, version, shortDesc, desc, icon!!, f) {
-                            name = ""; version = ""; shortDesc = ""; desc = ""; icon = null; apk = null
+                        vm.submitNew(name, version, shortDesc, desc, icon!!, shots.toList(), f) {
+                            name = ""; version = ""; shortDesc = ""; desc = ""; icon = null; apk = null; shots.clear()
                             vm.message = "Приложение отправлено на проверку"
                         }
                     }
