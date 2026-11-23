@@ -471,5 +471,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "anti_sdvg",
+  "name": "S.Z.N",
+  "desc": "делаю игры с помощью клауд",
+  "avatar": "",
+  "salt": "8f0635854b0fc560555e0588",
+  "hash": "2244d87ca4751047f259144b28e9215e7c0b0451ed4d20e416272c6b68095d2a",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795452903749,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
