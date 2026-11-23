@@ -220,6 +220,8 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
 
     CompositionLocalProvider(
         LocalAnim provides anim,
+        // Растяжение края списка (overscroll) в самом низу оставалось «зажатым» и глотало нажатия.
+        androidx.compose.foundation.LocalOverscrollFactory provides null,
         LocalBottomPad provides dockPad,
         LocalUriHandler provides uriHandler,
         LocalOpenUser provides { u: String ->
@@ -380,14 +382,14 @@ private fun ProfileButton(me: User?, onClick: () -> Unit) {
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
         modifier = Modifier
             .statusBarsPadding()
-            .padding(top = 10.dp, end = 14.dp)
-            .size(46.dp)
+            .padding(top = 12.dp, end = 16.dp)
+            .size(44.dp)
             .clip(CircleShape)
             .clickable(onClick = onClick),
     ) {
         Box(contentAlignment = Alignment.Center) {
             if (me != null) {
-                Avatar(me, 42.dp)
+                Avatar(me, 40.dp)
             } else {
                 Icon(Icons.Default.Person, "Профиль", tint = MaterialTheme.colorScheme.primary)
             }
@@ -405,8 +407,8 @@ private fun CloseButton(onClick: () -> Unit) {
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
         modifier = Modifier
             .statusBarsPadding()
-            .padding(top = 10.dp, end = 14.dp)
-            .size(46.dp)
+            .padding(top = 12.dp, end = 16.dp)
+            .size(44.dp)
             .clip(CircleShape)
             .clickable(onClick = onClick),
     ) {
@@ -437,7 +439,7 @@ private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) 
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
         modifier = Modifier
             .navigationBarsPadding()
-            .padding(start = 24.dp, end = 24.dp, top = 10.dp, bottom = 14.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 14.dp)
             .softGlow(RoundedCornerShape(34.dp), MaterialTheme.colorScheme.primary, 12.dp, 0.25f)
             .pointerInput(selected) {
                 detectDragGesturesAfterLongPress(
