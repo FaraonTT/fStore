@@ -232,5 +232,25 @@
   "updated": 1795453556871,
   "parts": 1,
   "shots": []
+ },
+ {
+  "id": "blokerblast-mwtleji5",
+  "owner": "meldo",
+  "name": "blokerblast",
+  "version": "1.0",
+  "shortDesc": "копия block blast",
+  "desc": "копия block blast",
+  "whatsNew": "",
+  "icon": "apps\/meldo\/blokerblast-mwtleji5.png",
+  "apk": "apps\/meldo\/blokerblast-mwtleji5-1-0.apk",
+  "size": 5969647,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795458125020,
+  "updated": 1795458125020,
+  "parts": 1,
+  "shots": [
+   "apps\/meldo\/blokerblast-mwtleji5-shot1.jpg"
+  ]
  }
 ]
