@@ -178,5 +178,15 @@
   "time": 1795436310421,
   "reply": "",
   "replyTime": 0
+ },
+ {
+  "id": "droidscope-mwt7k5i3:void_fworld",
+  "appId": "droidscope-mwt7k5i3",
+  "user": "void_fworld",
+  "stars": 4,
+  "text": "ЯПриложение отличное но есть баги.\nПервый важный баг: Не запускается GPU-Тест и при запуске CPU-Теста приложение полностью зависает.\nС уважением @fworld_team",
+  "time": 1795439250998,
+  "reply": "",
+  "replyTime": 0
  }
 ]
