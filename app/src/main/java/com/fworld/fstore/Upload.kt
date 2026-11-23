@@ -114,7 +114,7 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             // нижний отступ, чтобы кнопка не пряталась за плавающим доком
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp + LocalBottomPad.current),
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + LocalBottomPad.current),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Text("Загрузить", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.heightIn(min = 64.dp))
