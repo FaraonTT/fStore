@@ -9,6 +9,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.filled.Animation
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.InstallMobile
+import androidx.compose.material.icons.filled.RateReview
+import androidx.compose.material.icons.filled.Reply
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.TaskAlt
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
@@ -158,7 +166,7 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
             .fillMaxSize()
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp + LocalBottomPad.current),
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + LocalBottomPad.current),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         Text("Настройки", style = MaterialTheme.typography.headlineMedium)
@@ -339,6 +347,33 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
             )
             SwitchRow(Icons.Default.Storage, "Размер файла", "Показывать рядом с версией", UiPrefs.showSize, UiPrefs::setShowSize)
             SwitchRow(Icons.Default.ViewAgenda, "Компактные карточки", "Меньше иконка и отступы", UiPrefs.compactCards, UiPrefs::setCompactCards)
+            SwitchRow(
+                Icons.Default.Star, "Оценка на карточке",
+                "Средняя оценка по отзывам рядом со значком скачиваний",
+                UiPrefs.showRating, UiPrefs::setShowRating,
+            )
+            SwitchRow(
+                Icons.Default.History, "Недавно открытые",
+                "Полка с последними приложениями над списком",
+                UiPrefs.showRecent, UiPrefs::setShowRecent,
+            )
+            SwitchRow(
+                Icons.Default.VisibilityOff, "Скрывать непроверенные во «Все»",
+                "Во вкладке «Все» останутся только проверенные; непроверенные — в своей вкладке",
+                AppPrefs.hideUnverified, AppPrefs::setHideUnverified,
+            )
+        }
+        Section("Скачивание") {
+            SwitchRow(
+                Icons.Default.TaskAlt, "Подтверждать скачивание",
+                "Спрашивать перед загрузкой: версия и размер файла",
+                AppPrefs.confirmDownload, AppPrefs::setConfirmDownload,
+            )
+            SwitchRow(
+                Icons.Default.InstallMobile, "Сразу открывать установщик",
+                "Когда файл скачан, сразу предложить установку",
+                AppPrefs.autoInstall, AppPrefs::setAutoInstall,
+            )
         }
 
 
@@ -353,6 +388,46 @@ fun SettingsScreen(vm: StoreVM, onProfile: () -> Unit, onDownloads: () -> Unit, 
             ) {
                 AppPrefs.setNotifyRelease(it)
                 ReleaseWatch.schedule(ctx)
+            }
+            SwitchRow(
+                Icons.Default.RateReview, "Новые отзывы",
+                "Кто-то оставил отзыв на ваше приложение",
+                AppPrefs.notifyReview,
+            ) {
+                AppPrefs.setNotifyReview(it)
+                ReleaseWatch.schedule(ctx)
+            }
+            SwitchRow(
+                Icons.Default.Reply, "Ответы на мои отзывы",
+                "Разработчик ответил на ваш отзыв",
+                AppPrefs.notifyReply,
+            ) {
+                AppPrefs.setNotifyReply(it)
+                ReleaseWatch.schedule(ctx)
+            }
+            Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Schedule, null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(16.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text("Как часто проверять", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "Релизы и отзывы в фоне. Чаще — быстрее уведомление, но больше расход батареи",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                val steps = listOf(15 to "15 мин", 30 to "30 мин", 60 to "1 ч", 180 to "3 ч")
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                    steps.forEachIndexed { i, (m, t) ->
+                        SegmentedButton(
+                            selected = AppPrefs.watchMinutes == m,
+                            onClick = { AppPrefs.setWatchMinutes(m); ReleaseWatch.schedule(ctx) },
+                            shape = SegmentedButtonDefaults.itemShape(i, steps.size),
+                        ) { Text(t, maxLines = 1) }
+                    }
+                }
             }
             SwitchRow(
                 Icons.Default.NotificationsActive, "Скачивание началось",
