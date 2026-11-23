@@ -476,7 +476,7 @@
   "username": "anti_sdvg",
   "name": "S.Z.N",
   "desc": "делаю игры с помощью клауд",
-  "avatar": "",
+  "avatar": "data\/avatars\/anti_sdvg.png",
   "salt": "8f0635854b0fc560555e0588",
   "hash": "2244d87ca4751047f259144b28e9215e7c0b0451ed4d20e416272c6b68095d2a",
   "role": "user",
@@ -488,7 +488,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795452903749,
+  "updated": 1795452924561,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
