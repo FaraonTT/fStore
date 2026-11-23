@@ -144,24 +144,6 @@
   "shots": []
  },
  {
-  "id": "app-mwrf6x0k",
-  "owner": "tjehhtht",
-  "name": "техподдержка",
-  "version": "5.0",
-  "shortDesc": "новое обновление все поменялось",
-  "desc": "уже новые интерфейсы и все такое",
-  "whatsNew": "",
-  "icon": "apps\/tjehhtht\/app-mwrf6x0k.png",
-  "apk": "apps\/tjehhtht\/app-mwrf6x0k-5-0.apk",
-  "size": 8221223,
-  "status": "approved",
-  "fworld": false,
-  "created": 1795326763674,
-  "updated": 1795326798780,
-  "parts": 1,
-  "shots": []
- },
- {
   "id": "ball-blast-2-mwrwprv3",
   "owner": "zix510",
   "name": "BALL BLAST 2",
