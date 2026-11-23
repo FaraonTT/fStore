@@ -163,7 +163,7 @@
   "nameColor": "",
   "glowColor": "",
   "badges": [],
-  "friend": false,
+  "friend": true,
   "virus": false,
   "updated": 1795285808170,
   "shimmer": false,
