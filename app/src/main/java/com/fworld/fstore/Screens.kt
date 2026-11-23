@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -59,15 +61,15 @@ fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
         vm.reviews.groupBy { it.appId }.mapValues { e -> e.value.sumOf { it.stars }.toDouble() / e.value.size }
     }
 
-    val list = remember(vm.apps, sub, query, favOnly, Favorites.ids, AppPrefs.sort, ratings) {
+    val list = remember(vm.apps, sub, query, favOnly, Favorites.ids, AppPrefs.sort, AppPrefs.hideUnverified, ratings) {
         val q = query.trim().lowercase()
         val base = vm.apps.filter {
-            // Приложения с бейджем #fworld живут только во вкладке #fworld.
+            // Приложения с бейджем #fworld видны и в своей вкладке, и в «Проверенных»/«Все».
             val inTab = when (sub) {
                 0 -> it.fworld && it.status != "rejected"
-                1 -> !it.fworld && it.status == "approved"
-                2 -> !it.fworld && (it.status == "approved" || it.status == "pending")
-                else -> !it.fworld && it.status == "pending"
+                1 -> it.status == "approved"
+                2 -> it.status == "approved" || (it.status == "pending" && !AppPrefs.hideUnverified)
+                else -> it.status == "pending"
             }
             val okFav = !favOnly || it.id in Favorites.ids
             val okQuery = q.isBlank() ||
@@ -98,7 +100,7 @@ fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
         Row(
             // справа оставляем место под кнопку профиля
             Modifier
-                .padding(start = 20.dp, end = 76.dp, top = 12.dp, bottom = 8.dp)
+                .padding(start = 16.dp, end = 72.dp, top = 12.dp, bottom = 8.dp)
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
@@ -171,7 +173,7 @@ fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
             }
         }
 
-        if (recent.isNotEmpty() && query.isBlank() && !favOnly) {
+        if (UiPrefs.showRecent && recent.isNotEmpty() && query.isBlank() && !favOnly) {
             RecentRow(recent, onOpen)
         }
 
@@ -193,13 +195,16 @@ fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
             modifier = Modifier.weight(1f),
         ) {
             if (list.isEmpty()) {
-                Text(
-                    if (vm.loading) "Загружаю…"
-                    else if (favOnly) "В избранном пусто. Нажми сердечко на карточке приложения."
-                    else "Здесь пока пусто. Потяни вниз, чтобы обновить.",
-                    Modifier.fillMaxWidth().padding(32.dp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                // Пустое состояние тоже прокручивается — иначе жест «потяни вниз» не доходит до PullToRefresh.
+                Box(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                    Text(
+                        if (vm.loading) "Загружаю…"
+                        else if (favOnly) "В избранном пусто. Нажми сердечко на карточке приложения."
+                        else "Здесь пока пусто. Потяни вниз, чтобы обновить.",
+                        Modifier.fillMaxWidth().padding(32.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             } else if (UiPrefs.grid) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
@@ -240,7 +245,7 @@ private fun RecentRow(list: List<AppItem>, onOpen: (String) -> Unit) {
             "Недавно открытые",
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 6.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 6.dp),
         )
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -286,6 +291,16 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
     var replyFor by remember { mutableStateOf<Review?>(null) }
     var stars by remember { mutableStateOf(0) }
     var text by remember { mutableStateOf("") }
+    var confirmDl by remember { mutableStateOf(false) }
+    if (confirmDl) {
+        AlertDialog(
+            onDismissRequest = { confirmDl = false },
+            title = { Text("Скачать ${a.name}?") },
+            text = { Text("Версия ${a.version} · ${fmtSize(a.size)}") },
+            confirmButton = { TextButton(onClick = { confirmDl = false; vm.download(a) }) { Text("Скачать") } },
+            dismissButton = { TextButton(onClick = { confirmDl = false }) { Text("Отмена") } },
+        )
+    }
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(
@@ -405,13 +420,13 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
                                 Spacer(Modifier.width(8.dp))
                                 Text("Установить")
                             }
-                            FilledTonalButton(onClick = { vm.download(a) }, modifier = Modifier.fillMaxWidth()) {
+                            FilledTonalButton(onClick = { if (AppPrefs.confirmDownload) confirmDl = true else vm.download(a) }, modifier = Modifier.fillMaxWidth()) {
                                 Icon(Icons.Default.Download, null)
                                 Spacer(Modifier.width(8.dp))
                                 Text("Скачать заново")
                             }
                         } else {
-                            Button(onClick = { vm.download(a) }, modifier = Modifier.fillMaxWidth()) {
+                            Button(onClick = { if (AppPrefs.confirmDownload) confirmDl = true else vm.download(a) }, modifier = Modifier.fillMaxWidth()) {
                                 Icon(Icons.Default.Download, null)
                                 Spacer(Modifier.width(8.dp))
                                 Text("Скачать APK · ${fmtSize(a.size)}")
@@ -448,6 +463,7 @@ fun AppDetail(vm: StoreVM, id: String, onBack: () -> Unit, onUpdate: (String) ->
                     }
                 }
             }
+            if (a.shots.isNotEmpty()) item { ScreenshotsRow(a.shots, a.updated) }
             if (a.whatsNew.isNotBlank()) {
                 item {
                     Card(
