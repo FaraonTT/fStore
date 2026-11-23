@@ -495,5 +495,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "dosik",
+  "name": "ggg888",
+  "desc": "",
+  "avatar": "",
+  "salt": "5aea00b258052aebe730ae26",
+  "hash": "4ea91f43ad33dc0171ab0c9b1656b40761dc2973ebf4c2b7b45770b686987a34",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795466312014,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
