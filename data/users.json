@@ -441,7 +441,9 @@
   "glow": false,
   "nameColor": "",
   "glowColor": "",
-  "badges": [],
+  "badges": [
+   "bmws86vpi"
+  ],
   "friend": false,
   "virus": false,
   "updated": 1795440699783,
