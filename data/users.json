@@ -156,7 +156,7 @@
   "avatar": "data\/avatars\/tjehhtht.png",
   "salt": "6f423fe9a12794ee3100d442",
   "hash": "0df6b8ecf873bd4e9549a0fa0c5c5ffc66efafd57577cdfe78acd7e966dfbc09",
-  "role": "moderator",
+  "role": "admin",
   "banned": false,
   "verified": false,
   "glow": false,
