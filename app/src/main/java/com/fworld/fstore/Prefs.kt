@@ -46,6 +46,12 @@ object UiPrefs {
     /** Аватарки в отзывах. */
     var reviewAvatars by mutableStateOf(true); private set
 
+    /** Полка «Недавно открытые» на главной. */
+    var showRecent by mutableStateOf(true); private set
+
+    /** Средняя оценка на карточке. */
+    var showRating by mutableStateOf(true); private set
+
     /** Каталог сеткой в две колонки. */
     var grid by mutableStateOf(false); private set
 
@@ -79,6 +85,8 @@ object UiPrefs {
         showDownloads = p.getBoolean("showDownloads", true)
         reviewAvatars = p.getBoolean("reviewAvatars", true)
         grid = p.getBoolean("grid", false)
+        showRecent = p.getBoolean("showRecent", true)
+        showRating = p.getBoolean("showRating", true)
         pressFx = p.getBoolean("pressFx", true)
         dockDrag = p.getBoolean("dockDrag", true)
         dockX = p.getFloat("dockX", 0f)
@@ -111,6 +119,10 @@ object UiPrefs {
     fun setShowDownloads(v: Boolean) { showDownloads = v; sp?.edit()?.putBoolean("showDownloads", v)?.apply() }
     @JvmName("applyReviewAvatars")
     fun setReviewAvatars(v: Boolean) { reviewAvatars = v; sp?.edit()?.putBoolean("reviewAvatars", v)?.apply() }
+    @JvmName("applyShowRecent")
+    fun setShowRecent(v: Boolean) { showRecent = v; sp?.edit()?.putBoolean("showRecent", v)?.apply() }
+    @JvmName("applyShowRating")
+    fun setShowRating(v: Boolean) { showRating = v; sp?.edit()?.putBoolean("showRating", v)?.apply() }
     @JvmName("applyGrid")
     fun setGrid(v: Boolean) { grid = v; sp?.edit()?.putBoolean("grid", v)?.apply() }
     @JvmName("applyPressFx")
@@ -134,7 +146,7 @@ object UiPrefs {
         setAccent(0); setFontScale(1f); setCompactCards(false)
         setShowDesc(true); setShowSize(false); setHaptics(true)
         setLiquid(1f); setGlow(true); setGlowPower(1f); setCorner(28)
-        setShowDownloads(true); setReviewAvatars(true); setGrid(false); setPressFx(true)
+        setShowDownloads(true); setReviewAvatars(true); setShowRecent(true); setShowRating(true); setGrid(false); setPressFx(true)
         setDockDrag(true); resetDock()
     }
 }
