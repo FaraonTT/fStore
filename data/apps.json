@@ -257,5 +257,28 @@
    "apps\/tjehhtht\/app-mwtgyqxx-shot5.jpg",
    "apps\/tjehhtht\/app-mwtgyqxx-shot6.jpg"
   ]
+ },
+ {
+  "id": "app-mwtig9v3",
+  "owner": "anti_sdvg",
+  "name": "Градоначальник:страна и город",
+  "version": "1.0",
+  "shortDesc": "стройте свой город",
+  "desc": "повыщайте и понижайте налоги\nведите внутреннюю и внешнюю политику\nстройте жилые, промышленые и коммерческие кварталы\nповыщайте население и стройте парки",
+  "whatsNew": "",
+  "icon": "apps\/anti_sdvg\/app-mwtig9v3.png",
+  "apk": "apps\/anti_sdvg\/app-mwtig9v3-1-0.apk",
+  "size": 5961669,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795453172200,
+  "updated": 1795453172200,
+  "parts": 1,
+  "shots": [
+   "apps\/anti_sdvg\/app-mwtig9v3-shot1.jpg",
+   "apps\/anti_sdvg\/app-mwtig9v3-shot2.jpg",
+   "apps\/anti_sdvg\/app-mwtig9v3-shot3.jpg",
+   "apps\/anti_sdvg\/app-mwtig9v3-shot4.jpg"
+  ]
  }
 ]
