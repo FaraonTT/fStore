@@ -120,16 +120,6 @@
   "replyTime": 0
  },
  {
-  "id": "countershoot2-mwsca6dj:void_fworld",
-  "appId": "countershoot2-mwsca6dj",
-  "user": "void_fworld",
-  "stars": 4,
-  "text": "Игра ахуенная но оптимизация хромает",
-  "time": 1795392225082,
-  "reply": "да пока лагает в мультиплеере ещё не лагает это боты хромают",
-  "replyTime": 1795435877822
- },
- {
   "id": "ball-blast-2-mwrwprv3:maks6352536",
   "appId": "ball-blast-2-mwrwprv3",
   "user": "maks6352536",
@@ -188,5 +178,15 @@
   "time": 1795439250998,
   "reply": "",
   "replyTime": 0
+ },
+ {
+  "id": "countershoot2-mwsca6dj:void_fworld",
+  "appId": "countershoot2-mwsca6dj",
+  "user": "void_fworld",
+  "stars": 4,
+  "text": "Стало лучше но оптимизация не исправлена.\nВремя на исправление Неделя.\nС уважением @fworld_team",
+  "time": 1795441682780,
+  "reply": "да пока лагает в мультиплеере ещё не лагает это боты хромают",
+  "replyTime": 1795435877822
  }
 ]
