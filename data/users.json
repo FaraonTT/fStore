@@ -427,5 +427,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "minidevchik",
+  "name": "клутой MiniDev",
+  "desc": "",
+  "avatar": "",
+  "salt": "aef6006983e5ce0443a520a8",
+  "hash": "fed6d5b371934ec32ed3852cf013eed622d417da80bcecc53507139ddeb5e0aa",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795440695882,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
