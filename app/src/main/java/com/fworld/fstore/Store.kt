@@ -22,6 +22,9 @@ import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
+/** Сколько скриншотов можно прикрепить к приложению. */
+const val MAX_SHOTS = 6
+
 fun slug(s: String): String {
     val r = s.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-')
     return r.ifBlank { "app" }.take(30)
@@ -146,6 +149,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
                 saveDownloads()
                 ok = true
                 Notifier.downloadDone(ctx, name)
+                if (AppPrefs.autoInstall) installApk(ctx, out)
                 message = "Скачано: $name — файл в Настройки → Загрузки"
             } catch (e: CancellationException) {
                 throw e
@@ -229,8 +233,10 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         reviews = r.await().objs().map { Review.from(it) }
         badges = b.await().objs().map { BadgeDef.from(it) }
         syncMe()
+        RatingCache.update(reviews)
         // Новый релиз → уведомление (первый запуск только запоминает текущие версии).
         ReleaseWatch.process(getApplication(), apps)
+        ReviewWatch.process(getApplication(), apps, reviews)
     }
 
     private fun syncMe() {
@@ -388,9 +394,26 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         return parts
     }
 
+    /** Грузит скриншоты и возвращает их пути. При ошибке убирает уже загруженные. */
+    private suspend fun uploadShots(dir: String, key: String, shots: List<ByteArray>): List<String> {
+        val done = mutableListOf<String>()
+        try {
+            shots.take(MAX_SHOTS).forEachIndexed { i, b ->
+                stage = "Загружаю скриншоты… ${i + 1} из ${minOf(shots.size, MAX_SHOTS)}"
+                val p = "$dir/$key-shot${i + 1}.jpg"
+                Gh.overwrite(p, b, "screenshot $key")
+                done += p
+            }
+        } catch (e: Exception) {
+            cleanup(*done.toTypedArray())
+            throw e
+        }
+        return done
+    }
+
     fun submitNew(
         name: String, version: String, shortDesc: String, desc: String,
-        icon: ByteArray, apk: File, onOk: () -> Unit,
+        icon: ByteArray, shots: List<ByteArray>, apk: File, onOk: () -> Unit,
     ) = act("Загружаю иконку…", onOk) {
         val m = me ?: error("Нужен вход")
         require(name.isNotBlank() && version.isNotBlank()) { "Заполните название и версию" }
@@ -400,14 +423,20 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         val apkPath = "$dir/$id-${slug(version)}.apk"
         val size = apk.length()
         Gh.overwrite(iconPath, icon, "icon $id")
+        val shotPaths = uploadShots(dir, id, shots)
         stage = "Загружаю APK…"
-        val parts = uploadApk(apkPath, apk, "apk $id $version")
+        val parts = try {
+            uploadApk(apkPath, apk, "apk $id $version")
+        } catch (e: Exception) {
+            cleanup(*shotPaths.toTypedArray())
+            throw e
+        }
         val now = System.currentTimeMillis()
         editApps("new app $id") {
             it + AppItem(
                 id = id, owner = m.username, name = name.trim(), version = version.trim(),
                 shortDesc = shortDesc.trim(), desc = desc.trim(), icon = iconPath, apk = apkPath,
-                size = size, status = "pending", created = now, updated = now, parts = parts,
+                size = size, status = "pending", created = now, updated = now, parts = parts, shots = shotPaths,
             )
         }
         apk.delete()
@@ -415,7 +444,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
 
     fun submitUpdate(
         appId: String, name: String, version: String, whatsNew: String,
-        icon: ByteArray?, apk: File, onOk: () -> Unit,
+        icon: ByteArray?, shots: List<ByteArray>, apk: File, onOk: () -> Unit,
     ) = act("Загружаю обновление…", onOk) {
         val m = me ?: error("Нужен вход")
         val a = apps.find { it.id == appId && it.owner == m.username } ?: error("Приложение не найдено")
@@ -429,11 +458,17 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         }
         val apkPath = "$dir/$appId-${slug(version)}-$ts.apk"
         val size = apk.length()
+        val shotPaths = uploadShots(dir, "$appId-$ts", shots)
         stage = "Загружаю APK…"
-        val parts = uploadApk(apkPath, apk, "apk update $appId $version")
-        val p = PendingUpdate(name.trim(), version.trim(), whatsNew.trim(), iconPath, apkPath, size, ts, parts)
+        val parts = try {
+            uploadApk(apkPath, apk, "apk update $appId $version")
+        } catch (e: Exception) {
+            cleanup(*shotPaths.toTypedArray())
+            throw e
+        }
+        val p = PendingUpdate(name.trim(), version.trim(), whatsNew.trim(), iconPath, apkPath, size, ts, parts, shotPaths)
         editApps("update $appId") { l -> l.map { if (it.id == appId) it.copy(pending = p) else it } }
-        a.pending?.let { cleanupApk(it.apk, it.parts); cleanup(it.icon) }
+        a.pending?.let { cleanupApk(it.apk, it.parts); cleanup(it.icon, *it.shots.toTypedArray()) }
         apk.delete()
     }
 
@@ -443,6 +478,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         var oldApk = ""
         var oldParts = 1
         var oldIcon = ""
+        var oldShots = emptyList<String>()
         val now = System.currentTimeMillis()
         editApps("approve $id") { l ->
             l.map { a ->
@@ -454,7 +490,9 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
                         oldApk = a.apk
                         oldParts = a.parts
                         oldIcon = if (p.icon.isNotBlank()) a.icon else ""
+                        if (p.shots.isNotEmpty()) oldShots = a.shots
                         a.copy(
+                            shots = if (p.shots.isNotEmpty()) p.shots else a.shots,
                             name = p.name, version = p.version, whatsNew = p.whatsNew, apk = p.apk,
                             size = p.size, icon = p.icon.ifBlank { a.icon }, status = "approved",
                             pending = null, updated = now, parts = p.parts,
@@ -464,7 +502,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
             }
         }
         cleanupApk(oldApk, oldParts)
-        cleanup(oldIcon)
+        cleanup(oldIcon, *oldShots.toTypedArray())
     }
 
     fun reject(id: String) = act("Отклоняю…") {
@@ -473,6 +511,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
         var dropApk = ""
         var dropParts = 1
         var dropIcon = ""
+        var dropShots = emptyList<String>()
         editApps("reject $id") { l ->
             l.map { a ->
                 if (a.id != id) a else {
@@ -481,6 +520,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
                         dropApk = p.apk
                         dropParts = p.parts
                         dropIcon = p.icon
+                        dropShots = p.shots
                         a.copy(pending = null)
                     } else {
                         a.copy(status = "rejected")
@@ -489,7 +529,7 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
             }
         }
         cleanupApk(dropApk, dropParts)
-        cleanup(dropIcon)
+        cleanup(dropIcon, *dropShots.toTypedArray())
     }
 
     fun setFworld(id: String, on: Boolean) = act("Сохраняю…") {
@@ -507,8 +547,8 @@ class StoreVM(app: Application) : AndroidViewModel(app) {
             arr.objs().filter { it.optString("appId") != id }.toJsonArray()
         }
         cleanupApk(a.apk, a.parts)
-        a.pending?.let { cleanupApk(it.apk, it.parts); cleanup(it.icon) }
-        cleanup(a.icon)
+        a.pending?.let { cleanupApk(it.apk, it.parts); cleanup(it.icon, *it.shots.toTypedArray()) }
+        cleanup(a.icon, *a.shots.toTypedArray())
     }
 
     // ---------- reviews ----------
