@@ -272,5 +272,23 @@
   "updated": 1795498217280,
   "parts": 5,
   "shots": []
+ },
+ {
+  "id": "hideos-mwumc2q4",
+  "owner": "noomchik",
+  "name": "hideOS",
+  "version": "3.5",
+  "shortDesc": "типо прототип ос есть версии 3.0 3.2 но они на гитхаб",
+  "desc": "travagdps-a11y\/hideOS3.0-and-HideOS-3.2: мне 13 лет и я решил создать этот проект сгачал я прсто спосил в гугл это возможно и в claude написал эти два приложения на html https:\/\/github.com\/travagdps-a11y\/hideOS3.0-and-HideOS-3.2",
+  "whatsNew": "",
+  "icon": "apps\/noomchik\/hideos-mwumc2q4.png",
+  "apk": "apps\/noomchik\/hideos-mwumc2q4-3-5.apk",
+  "size": 5978616,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795520152660,
+  "updated": 1795520152660,
+  "parts": 1,
+  "shots": []
  }
 ]
