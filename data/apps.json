@@ -250,23 +250,5 @@
   "updated": 1795458323738,
   "parts": 1,
   "shots": []
- },
- {
-  "id": "mini-design-mwu8h5ho",
-  "owner": "minidevchik",
-  "name": "Mini Design",
-  "version": "0.1 [Beta]",
-  "shortDesc": "Штука для дизайна в стиле Material MK3.",
-  "desc": "ну имба но кучу багов",
-  "whatsNew": "",
-  "icon": "apps\/minidevchik\/mini-design-mwu8h5ho.png",
-  "apk": "apps\/minidevchik\/mini-design-mwu8h5ho-0-1-beta.apk",
-  "size": 872965,
-  "status": "approved",
-  "fworld": false,
-  "created": 1795496872856,
-  "updated": 1795497274216,
-  "parts": 1,
-  "shots": []
  }
 ]
