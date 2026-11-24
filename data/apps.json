@@ -183,36 +183,25 @@
   "id": "droidscope-mwt7k5i3",
   "owner": "terenov",
   "name": "DroidScope",
-  "version": "1.0",
+  "version": "1.0.1",
   "shortDesc": "Железо, датчики, мониторинг, тесты и проверка сети — без root и рекламы.",
   "desc": "DroidScope — диагностика Android без root. Приложение показывает реальные характеристики телефона, а не приблизительные оценки.Что можно узнать:\n•Процессор: модель SoC, число ядер, частоты, текущая загрузка\n•Графика: GPU, версия драйвера, OpenGL ES и Vulkan\n•Память и накопитель: объём, занятость, свободное место•Экран: разрешение, плотность, частота обновления\n•Батарея: заряд, температура, напряжение, история заряда\n•Система, сеть, Bluetooth и все доступные датчики\n\n<Дополнительно>\n\n•Мониторинг в реальном времени: CPU, RAM, температура, частоты ядер\n•Тесты CPU, RAM и GPU с историей результатов\n•Спидометр реальной скорости по системным счётчикам трафика\n•Тест «белых списков»: доступны зарубежные сервисы, только российские или связи нет вообще\n•Экспорт отчёта в TXT и PDF\n•Тёмная и светлая темы\n\n<Честность и приватность>\n\nЕсли Android не отдаёт параметр, приложение пишет «Недоступно», а не выдумывает число. Нет рекламы, аналитики и сбора данных. Интернет используется только для теста доступности сервисов по вашей команде.\nАвтор: Terenov\nСвязь: @Terenov_a\nКанал разработки: t.me\/terendev\nТребования: Android 8.0 и новее. \nRoot не нужен.",
-  "whatsNew": "",
+  "whatsNew": "Обновление\n1.0.0 -> 1.0.1\n\nЧто нового?:\n\n•Добавлен \"Что Нового?\"\n• Исправлены баги с бенчом\n•Добавились новые темы оформление",
   "icon": "apps\/terenov\/droidscope-mwt7k5i3.png",
-  "apk": "apps\/terenov\/droidscope-mwt7k5i3-1-0.apk",
-  "size": 15774320,
+  "apk": "apps\/terenov\/droidscope-mwt7k5i3-1-0-1-1795533016122.apk",
+  "size": 15857314,
   "status": "approved",
   "fworld": false,
   "created": 1795434872900,
-  "updated": 1795435055566,
+  "updated": 1795534074323,
   "parts": 1,
-  "shots": [],
-  "pending": {
-   "shots": [
-    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot1.jpg",
-    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot2.jpg",
-    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot3.jpg",
-    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot4.jpg",
-    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot5.jpg"
-   ],
-   "name": "DroidScope",
-   "version": "1.0.1",
-   "whatsNew": "Обновление\n1.0.0 -> 1.0.1\n\nЧто нового?:\n\n•Добавлен \"Что Нового?\"\n• Исправлены баги с бенчом\n•Добавились новые темы оформление",
-   "icon": "",
-   "apk": "apps\/terenov\/droidscope-mwt7k5i3-1-0-1-1795533016122.apk",
-   "size": 15857314,
-   "time": 1795533016122,
-   "parts": 1
-  }
+  "shots": [
+   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot1.jpg",
+   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot2.jpg",
+   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot3.jpg",
+   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot4.jpg",
+   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot5.jpg"
+  ]
  },
  {
   "id": "app-mwtgyqxx",
