@@ -705,5 +705,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "dure",
+  "name": "дыра",
+  "desc": "",
+  "avatar": "",
+  "salt": "99a07d3eee2b59799920cf5b",
+  "hash": "0d72517766c6b6def98f5abb80db20abfce720ea7e44fe792969051fac1cb548",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795530872948,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
