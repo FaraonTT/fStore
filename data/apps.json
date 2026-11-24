@@ -195,7 +195,24 @@
   "created": 1795434872900,
   "updated": 1795435055566,
   "parts": 1,
-  "shots": []
+  "shots": [],
+  "pending": {
+   "shots": [
+    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot1.jpg",
+    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot2.jpg",
+    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot3.jpg",
+    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot4.jpg",
+    "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot5.jpg"
+   ],
+   "name": "DroidScope",
+   "version": "1.0.1",
+   "whatsNew": "Обновление\n1.0.0 -> 1.0.1\n\nЧто нового?:\n\n•Добавлен \"Что Нового?\"\n• Исправлены баги с бенчом\n•Добавились новые темы оформление",
+   "icon": "",
+   "apk": "apps\/terenov\/droidscope-mwt7k5i3-1-0-1-1795533016122.apk",
+   "size": 15857314,
+   "time": 1795533016122,
+   "parts": 1
+  }
  },
  {
   "id": "app-mwtgyqxx",
