@@ -320,16 +320,6 @@
   "replyTime": 1795528405550
  },
  {
-  "id": "solder-it-mwuozwr4:terenov",
-  "appId": "solder-it-mwuozwr4",
-  "user": "terenov",
-  "stars": 4,
-  "text": "я не могу пройти обучение\nя не могу пройти обучение",
-  "time": 1795528474135,
-  "reply": "вроде проходится. можно по подробнее что именно не так?",
-  "replyTime": 1795528663789
- },
- {
   "id": "solder-it-mwuozwr4:noomchik",
   "appId": "solder-it-mwuozwr4",
   "user": "noomchik",
@@ -388,5 +378,15 @@
   "time": 1795533915558,
   "reply": "",
   "replyTime": 0
+ },
+ {
+  "id": "solder-it-mwuozwr4:terenov",
+  "appId": "solder-it-mwuozwr4",
+  "user": "terenov",
+  "stars": 5,
+  "text": "лучшая игра, Топ игра Месяца и Года!",
+  "time": 1795535370376,
+  "reply": "вроде проходится. можно по подробнее что именно не так?",
+  "replyTime": 1795528663789
  }
 ]
