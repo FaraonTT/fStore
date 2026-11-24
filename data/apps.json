@@ -321,6 +321,17 @@
   "created": 1795524626542,
   "updated": 1795527088721,
   "parts": 1,
-  "shots": []
+  "shots": [],
+  "pending": {
+   "shots": [],
+   "name": "Solder It!",
+   "version": "1.7.3",
+   "whatsNew": "сделано более простое обучение.",
+   "icon": "",
+   "apk": "apps\/pamume\/solder-it-mwuozwr4-1-7-3-1795529635419.apk",
+   "size": 2032846,
+   "time": 1795529635419,
+   "parts": 1
+  }
  }
 ]
