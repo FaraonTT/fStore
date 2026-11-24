@@ -280,10 +280,10 @@
   "icon": "apps\/noomchik\/hideos-mwumc2q4.png",
   "apk": "apps\/noomchik\/hideos-mwumc2q4-3-5.apk",
   "size": 5978616,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795520152660,
-  "updated": 1795520152660,
+  "updated": 1795523121807,
   "parts": 1,
   "shots": []
  },
