@@ -168,31 +168,20 @@
   "version": "1.5",
   "shortDesc": "Удобный аудиоплеер вдохновленный AIMP",
   "desc": "",
-  "whatsNew": "",
-  "icon": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0.png",
-  "apk": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1-5.apk",
+  "whatsNew": "обновили страницу в fstore \nтеперь есть скриншоты",
+  "icon": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-icon-1795508965501.png",
+  "apk": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1-5-1795508965501.apk",
   "size": 247533,
   "status": "approved",
   "fworld": false,
   "created": 1795412976832,
-  "updated": 1795425575099,
+  "updated": 1795514739097,
   "parts": 1,
-  "shots": [],
-  "pending": {
-   "shots": [
-    "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1795508965501-shot1.jpg",
-    "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1795508965501-shot2.jpg",
-    "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1795508965501-shot3.jpg"
-   ],
-   "name": "AEMP PRO",
-   "version": "1.5",
-   "whatsNew": "обновили страницу в fstore \nтеперь есть скриншоты",
-   "icon": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-icon-1795508965501.png",
-   "apk": "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1-5-1795508965501.apk",
-   "size": 247533,
-   "time": 1795508965501,
-   "parts": 1
-  }
+  "shots": [
+   "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1795508965501-shot1.jpg",
+   "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1795508965501-shot2.jpg",
+   "apps\/ip_artem_eremeev\/aemp-pro-mwsuixc0-1795508965501-shot3.jpg"
+  ]
  },
  {
   "id": "droidscope-mwt7k5i3",
