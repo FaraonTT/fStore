@@ -710,7 +710,7 @@
   "username": "dure",
   "name": "дыра",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/dure.png",
   "salt": "99a07d3eee2b59799920cf5b",
   "hash": "0d72517766c6b6def98f5abb80db20abfce720ea7e44fe792969051fac1cb548",
   "role": "user",
@@ -722,7 +722,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795530872948,
+  "updated": 1795530878481,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
