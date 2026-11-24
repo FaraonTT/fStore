@@ -14,8 +14,7 @@
   "fworld": true,
   "created": 1795056552842,
   "updated": 1795278026693,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "you-store-mwn04mnv",
@@ -32,8 +31,7 @@
   "fworld": false,
   "created": 1795059588205,
   "updated": 1795458306468,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "zix-ai-mwnqyphx",
@@ -50,8 +48,7 @@
   "fworld": false,
   "created": 1795104665855,
   "updated": 1795283899630,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "fmessage-mwoavi4c",
@@ -68,8 +65,7 @@
   "fworld": true,
   "created": 1795138105811,
   "updated": 1795138124766,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "meme-blockblast-mwouxi0c",
@@ -86,8 +82,7 @@
   "fworld": false,
   "created": 1795171937370,
   "updated": 1795171952828,
-  "parts": 7,
-  "shots": []
+  "parts": 7
  },
  {
   "id": "app-mwqgtgt4",
@@ -104,8 +99,7 @@
   "fworld": false,
   "created": 1795269029713,
   "updated": 1795285516561,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "0-1-32-beta-mwqmwst5",
@@ -122,8 +116,7 @@
   "fworld": false,
   "created": 1795279253979,
   "updated": 1795283892694,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "ball-blast-2-mwrwprv3",
@@ -140,8 +133,7 @@
   "fworld": false,
   "created": 1795356190838,
   "updated": 1795358651354,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "countershoot2-mwsca6dj",
@@ -158,8 +150,7 @@
   "fworld": false,
   "created": 1795382357140,
   "updated": 1795456763980,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "aemp-pro-mwsuixc0",
@@ -176,8 +167,7 @@
   "fworld": false,
   "created": 1795412976832,
   "updated": 1795514739097,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "droidscope-mwt7k5i3",
@@ -194,14 +184,7 @@
   "fworld": false,
   "created": 1795434872900,
   "updated": 1795534074323,
-  "parts": 1,
-  "shots": [
-   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot1.jpg",
-   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot2.jpg",
-   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot3.jpg",
-   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot4.jpg",
-   "apps\/terenov\/droidscope-mwt7k5i3-1795533016122-shot5.jpg"
-  ]
+  "parts": 1
  },
  {
   "id": "app-mwtgyqxx",
@@ -218,8 +201,7 @@
   "fworld": false,
   "created": 1795450693743,
   "updated": 1795455382848,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "app-mwtig9v3",
@@ -236,8 +218,7 @@
   "fworld": false,
   "created": 1795453172200,
   "updated": 1795453556871,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "blokerblast-mwtleji5",
@@ -254,8 +235,7 @@
   "fworld": false,
   "created": 1795458125020,
   "updated": 1795458323738,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "moo-run-beta-mwu92pwv",
@@ -272,8 +252,7 @@
   "fworld": false,
   "created": 1795497918794,
   "updated": 1795498217280,
-  "parts": 5,
-  "shots": []
+  "parts": 5
  },
  {
   "id": "hideos-mwumc2q4",
@@ -290,8 +269,7 @@
   "fworld": false,
   "created": 1795520152660,
   "updated": 1795523121807,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  },
  {
   "id": "mini-design-mwuo2ps0",
@@ -309,7 +287,16 @@
   "created": 1795523072193,
   "updated": 1795523115172,
   "parts": 1,
-  "shots": []
+  "pending": {
+   "name": "Mini Design",
+   "version": "0.02 [beta]",
+   "whatsNew": "Было добавлено \nИИ в программу который делает что вы ему напишите \nТеперь можно сменять тему акцент и стиль программы\n+ Фикс багов и разных фич\nну и все",
+   "icon": "apps\/minidevchik\/mini-design-mwuo2ps0-icon-1795549679252.png",
+   "apk": "apps\/minidevchik\/mini-design-mwuo2ps0-0-02-beta-1795549679252.apk",
+   "size": 899681,
+   "time": 1795549679252,
+   "parts": 1
+  }
  },
  {
   "id": "solder-it-mwuozwr4",
@@ -326,7 +313,6 @@
   "fworld": false,
   "created": 1795524626542,
   "updated": 1795534236793,
-  "parts": 1,
-  "shots": []
+  "parts": 1
  }
 ]
