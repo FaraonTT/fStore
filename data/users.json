@@ -857,7 +857,7 @@
   "username": "komarku",
   "name": "Кирилл",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/komarku.png",
   "salt": "5f4dddff70b07ee818d30d63",
   "hash": "21f0f767420475691da850c9d38029322d9d35eabc0e26d49a8ba087ea6b54b2",
   "role": "user",
@@ -869,7 +869,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795561316613,
+  "updated": 1795561327357,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
