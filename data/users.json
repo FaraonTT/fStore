@@ -726,5 +726,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "fuck919",
+  "name": "artur",
+  "desc": "",
+  "avatar": "",
+  "salt": "3f62d06c199d42c13b6a2ede",
+  "hash": "bb32371c9abb5986587347af0e46b6319df00eacfa92c4e0457c2e2e18989198",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795533114118,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
