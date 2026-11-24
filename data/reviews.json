@@ -220,16 +220,6 @@
   "replyTime": 1795458162222
  },
  {
-  "id": "countershoot2-mwsca6dj:void_fworld",
-  "appId": "countershoot2-mwsca6dj",
-  "user": "void_fworld",
-  "stars": 5,
-  "text": "Стало лучшее на пару фпс на слабом устройстве\n\nРекомендую сделать режим графики Max-Potato оно меня ет все текстрки на серые так же уберают вашу модельку показывает только оружие и у ботов на детализированные модели замени на капсулы\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
-  "time": 1795457233795,
-  "reply": "я добавлю режим картошки на завтра🤘",
-  "replyTime": 1795458196288
- },
- {
   "id": "app-mwtgyqxx:valvenoofficial",
   "appId": "app-mwtgyqxx",
   "user": "valvenoofficial",
@@ -388,5 +378,15 @@
   "time": 1795551890057,
   "reply": "будет сделано в ближайшее время.",
   "replyTime": 1795531317957
+ },
+ {
+  "id": "countershoot2-mwsca6dj:void_fworld",
+  "appId": "countershoot2-mwsca6dj",
+  "user": "void_fworld",
+  "stars": 5,
+  "text": "Хорошая игра. Оптимизация есть.\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
+  "time": 1795552904401,
+  "reply": "я добавлю режим картошки на завтра🤘",
+  "replyTime": 1795458196288
  }
 ]
