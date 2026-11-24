@@ -14,7 +14,8 @@
   "fworld": true,
   "created": 1795056552842,
   "updated": 1795278026693,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "you-store-mwn04mnv",
@@ -31,7 +32,8 @@
   "fworld": false,
   "created": 1795059588205,
   "updated": 1795458306468,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "zix-ai-mwnqyphx",
@@ -48,7 +50,8 @@
   "fworld": false,
   "created": 1795104665855,
   "updated": 1795283899630,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "fmessage-mwoavi4c",
@@ -65,7 +68,8 @@
   "fworld": true,
   "created": 1795138105811,
   "updated": 1795138124766,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "meme-blockblast-mwouxi0c",
@@ -82,7 +86,8 @@
   "fworld": false,
   "created": 1795171937370,
   "updated": 1795171952828,
-  "parts": 7
+  "parts": 7,
+  "shots": []
  },
  {
   "id": "app-mwqgtgt4",
@@ -99,7 +104,8 @@
   "fworld": false,
   "created": 1795269029713,
   "updated": 1795285516561,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "0-1-32-beta-mwqmwst5",
@@ -116,7 +122,8 @@
   "fworld": false,
   "created": 1795279253979,
   "updated": 1795283892694,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "ball-blast-2-mwrwprv3",
@@ -133,7 +140,8 @@
   "fworld": false,
   "created": 1795356190838,
   "updated": 1795358651354,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "countershoot2-mwsca6dj",
@@ -150,7 +158,8 @@
   "fworld": false,
   "created": 1795382357140,
   "updated": 1795456763980,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "aemp-pro-mwsuixc0",
@@ -167,7 +176,8 @@
   "fworld": false,
   "created": 1795412976832,
   "updated": 1795425575099,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "droidscope-mwt7k5i3",
@@ -184,7 +194,8 @@
   "fworld": false,
   "created": 1795434872900,
   "updated": 1795435055566,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "app-mwtgyqxx",
@@ -201,7 +212,8 @@
   "fworld": false,
   "created": 1795450693743,
   "updated": 1795455382848,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "app-mwtig9v3",
@@ -218,7 +230,8 @@
   "fworld": false,
   "created": 1795453172200,
   "updated": 1795453556871,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "blokerblast-mwtleji5",
@@ -235,7 +248,8 @@
   "fworld": false,
   "created": 1795458125020,
   "updated": 1795458323738,
-  "parts": 1
+  "parts": 1,
+  "shots": []
  },
  {
   "id": "mini-design-mwu8h5ho",
@@ -248,10 +262,11 @@
   "icon": "apps\/minidevchik\/mini-design-mwu8h5ho.png",
   "apk": "apps\/minidevchik\/mini-design-mwu8h5ho-0-1-beta.apk",
   "size": 872965,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795496872856,
-  "updated": 1795496872856,
-  "parts": 1
+  "updated": 1795497274216,
+  "parts": 1,
+  "shots": []
  }
 ]
