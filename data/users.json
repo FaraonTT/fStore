@@ -789,5 +789,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "vitalik",
+  "name": "vitalik",
+  "desc": "",
+  "avatar": "",
+  "salt": "a24f9d2bc224cfc64ee6835e",
+  "hash": "e414d85183c3a4132e6d6ca8025d3e1f46da61145f6e9aa09e71875fc9da90f6",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795539152340,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
