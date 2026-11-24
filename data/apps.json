@@ -316,10 +316,10 @@
   "icon": "apps\/pamume\/solder-it-mwuozwr4.png",
   "apk": "apps\/pamume\/solder-it-mwuozwr4-7-1-2.apk",
   "size": 2028750,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795524626542,
-  "updated": 1795524626542,
+  "updated": 1795527088721,
   "parts": 1,
   "shots": []
  }
