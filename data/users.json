@@ -768,5 +768,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "sem0n",
+  "name": "Семён",
+  "desc": "гы",
+  "avatar": "",
+  "salt": "93f431a1fa953e917428f381",
+  "hash": "a2cfdab5bf843358873584d5dff3545ba8cfb5ebb21b98f2396745465888daaf",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795534082629,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
