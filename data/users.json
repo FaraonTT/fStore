@@ -642,5 +642,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "kolobok1234567",
+  "name": "kolobok",
+  "desc": "",
+  "avatar": "",
+  "salt": "275393f5b63a0ae1f3ce2275",
+  "hash": "2c1438b819a6965f609e14c086469706e58a3d38afc5af2d959861d38433b99a",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795528628990,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
