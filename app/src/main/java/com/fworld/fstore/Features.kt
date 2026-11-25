@@ -1,7 +1,6 @@
 package com.fworld.fstore
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -99,16 +98,6 @@ object Recents {
     }
 }
 
-/** Системное окно «Поделиться» с названием, версией и разработчиком приложения. */
-fun shareApp(ctx: Context, a: AppItem) {
-    val send = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, a.name)
-        putExtra(Intent.EXTRA_TEXT, "${a.name} v${a.version} — в fStore\nРазработчик: @${a.owner}\nНайди его в магазине fStore by #fworld")
-    }
-    ctx.startActivity(Intent.createChooser(send, "Поделиться приложением").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-}
-
 /** Считает частые тапы подряд: на N-м срабатывает пасхалка. */
 class TapCounter(private val need: Int = 7, private val gapMs: Long = 1500L) {
     private var n = 0
@@ -127,132 +116,3 @@ class TapCounter(private val need: Int = 7, private val gapMs: Long = 1500L) {
 }
 
 val LocalEgg = staticCompositionLocalOf<() -> Unit> { {} }
-
-private class Bubble(
-    val x: Float, val size: Int, val speed: Int, val phase: Float,
-    val wob: Float, val spin: Float, val icon: ImageVector,
-)
-
-private val EGG_ICONS = listOf(
-    Icons.Default.Storefront, Icons.Default.CloudDownload, Icons.Default.Apps,
-    Icons.Default.AutoAwesome, Icons.Default.Android, Icons.Default.InstallMobile,
-)
-
-/** Пасхалка: плавающие иконки стора и информация о создателях fStore. */
-@Composable
-fun EasterEgg(onClose: () -> Unit) {
-    Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(Color(0xFF06000F), Color(0xFF1B0638), Color(0xFF06000F))))
-                .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onClose() },
-            contentAlignment = Alignment.Center,
-        ) {
-            FloatingStoreIcons()
-            EggCenter()
-        }
-    }
-}
-
-@Composable
-private fun FloatingStoreIcons() {
-    val bubbles = remember {
-        val r = Random(42)
-        List(22) { i ->
-            Bubble(
-                x = r.nextFloat(),
-                size = 28 + r.nextInt(40),
-                speed = 1 + r.nextInt(3),
-                phase = r.nextFloat(),
-                wob = 1f + r.nextInt(3),
-                spin = (if (r.nextBoolean()) 1f else -1f) * (0.5f + r.nextFloat()),
-                icon = EGG_ICONS[i % EGG_ICONS.size],
-            )
-        }
-    }
-    val t by rememberInfiniteTransition(label = "egg").animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(24000, easing = LinearEasing), RepeatMode.Restart),
-        label = "t",
-    )
-    BoxWithConstraints(Modifier.fillMaxSize()) {
-        val w = constraints.maxWidth.toFloat()
-        val h = constraints.maxHeight.toFloat()
-        bubbles.forEach { b ->
-            // speed — целое число, поэтому петля бесшовная
-            val prog = (t * b.speed + b.phase) % 1f
-            Box(
-                Modifier
-                    .size(b.size.dp)
-                    .graphicsLayer {
-                        translationX = b.x * (w - b.size.dp.toPx()) + sin(prog * 6.2832f * b.wob) * 28f
-                        translationY = h * (1.1f - prog * 1.3f)
-                        rotationZ = prog * 360f * b.spin
-                        alpha = (0.18f + 0.45f * sin(prog * 3.1416f)).coerceIn(0f, 1f)
-                    }
-                    .clip(RoundedCornerShape(30))
-                    .background(Brush.linearGradient(listOf(Color(0xFF3B0A7A), Color(0xFF9B30FF)))),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(b.icon, null, tint = Color.White, modifier = Modifier.size((b.size * 0.58f).dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun EggCenter() {
-    var shown by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { shown = true }
-    val pop by animateFloatAsState(
-        if (shown) 1f else 0f,
-        spring(dampingRatio = 0.45f, stiffness = Spring.StiffnessLow),
-        label = "pop",
-    )
-    val pulse by rememberInfiniteTransition(label = "pulse").animateFloat(
-        initialValue = 0.96f,
-        targetValue = 1.06f,
-        animationSpec = infiniteRepeatable(tween(1400), RepeatMode.Reverse),
-        label = "p",
-    )
-    Column(
-        Modifier
-            .padding(32.dp)
-            .graphicsLayer { scaleX = pop; scaleY = pop; alpha = pop.coerceIn(0f, 1f) },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Box(
-            Modifier
-                .size(112.dp)
-                .graphicsLayer { scaleX = pulse; scaleY = pulse }
-                .clip(RoundedCornerShape(34.dp))
-                .background(Brush.linearGradient(listOf(Color(0xFF3B0A7A), Color(0xFF9B30FF), Color(0xFF3B0A7A)))),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Default.Storefront, null, tint = Color.White, modifier = Modifier.size(64.dp))
-        }
-        Text("fStore", style = MaterialTheme.typography.displaySmall, color = Color.White)
-        Text("Создатель fStore", style = MaterialTheme.typography.labelLarge, color = Color(0xFFD1B3FF))
-        Surface(
-            shape = RoundedCornerShape(24.dp),
-            color = Color.White.copy(alpha = 0.08f),
-            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f)),
-        ) {
-            Text(
-                "void_fworld & #fworld",
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 14.dp),
-                style = TextStyle(
-                    brush = Brush.horizontalGradient(listOf(Color(0xFFB388FF), Color.White, Color(0xFF9B30FF))),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                ),
-            )
-        }
-        Text("Версия ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.6f))
-        Text("Нажми, чтобы закрыть", style = MaterialTheme.typography.labelSmall, color = Color.White.copy(alpha = 0.4f))
-    }
-}
