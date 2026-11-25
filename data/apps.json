@@ -351,10 +351,10 @@
   "icon": "apps\/void_fworld\/fos-simulator-mww0igsw.png",
   "apk": "apps\/void_fworld\/fos-simulator-mww0igsw-1-0.apk",
   "size": 13222860,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795604444890,
-  "updated": 1795604444890,
+  "updated": 1795604451757,
   "parts": 1,
   "shots": []
  }
