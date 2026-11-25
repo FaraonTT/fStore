@@ -370,16 +370,6 @@
   "replyTime": 1795608815314
  },
  {
-  "id": "hideos-mwumc2q4:void_fworld",
-  "appId": "hideos-mwumc2q4",
-  "user": "void_fworld",
-  "stars": 4,
-  "text": "Вы сказали моему работнику «не нравится делайте сами...» ну я сделал fOS...\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
-  "time": 1795609247117,
-  "reply": "это ваш сотрудник я не знал простите ну ему не понравилось Я имел ввиду чтобы он сам себе сделал если ему не понравилось",
-  "replyTime": 1795609743535
- },
- {
   "id": "fos-simulator-mww0igsw:noomchik",
   "appId": "fos-simulator-mww0igsw",
   "user": "noomchik",
@@ -388,5 +378,15 @@
   "time": 1795609909654,
   "reply": "",
   "replyTime": 0
+ },
+ {
+  "id": "hideos-mwumc2q4:void_fworld",
+  "appId": "hideos-mwumc2q4",
+  "user": "void_fworld",
+  "stars": 5,
+  "text": "Хорошо я понял но мой симулятор это прототип будущей операционки на телефоны..)\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
+  "time": 1795610001844,
+  "reply": "это ваш сотрудник я не знал простите ну ему не понравилось Я имел ввиду чтобы он сам себе сделал если ему не понравилось",
+  "replyTime": 1795609743535
  }
 ]
