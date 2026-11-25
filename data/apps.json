@@ -394,10 +394,10 @@
   "icon": "apps\/moto\/app-mwwipjvy.png",
   "apk": "apps\/moto\/app-mwwipjvy-4-6.apk",
   "size": 4844027,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795635010950,
-  "updated": 1795635010950,
+  "updated": 1795650080938,
   "parts": 1,
   "shots": []
  }
