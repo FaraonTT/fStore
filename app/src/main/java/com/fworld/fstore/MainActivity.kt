@@ -343,7 +343,12 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                                 tab = 2
                             },
                         )
-                        k == "tab:0" -> HomeScreen(vm, homeSub) { detail = it }
+                        k == "tab:0" -> HomeScreen(
+                            vm = vm,
+                            sub = homeSub,
+                            onOpen = { detail = it },
+                            onEgg = { egg = true },
+                        )
                         k == "tab:1" -> MusicScreen(vm)
                         k == "tab:2" -> UploadScreen(
                             vm = vm,
