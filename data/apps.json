@@ -364,5 +364,23 @@
    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot5.jpg",
    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot6.jpg"
   ]
+ },
+ {
+  "id": "tactical-strike-1-mww5vkud",
+  "owner": "mifix",
+  "name": "TACTICAL STRIKE 1",
+  "version": "1.0.0",
+  "shortDesc": "мобильный шутер, сделан через клауд",
+  "desc": "",
+  "whatsNew": "",
+  "icon": "apps\/mifix\/tactical-strike-1-mww5vkud.png",
+  "apk": "apps\/mifix\/tactical-strike-1-mww5vkud-1-0-0.apk",
+  "size": 6377742,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795613447482,
+  "updated": 1795613447482,
+  "parts": 1,
+  "shots": []
  }
 ]
