@@ -873,5 +873,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "zzz",
+  "name": "zzz",
+  "desc": "Hola you",
+  "avatar": "",
+  "salt": "be0a445aa53290c6211ac7e2",
+  "hash": "c3bef1615429ac74b8f8f95436603fd7ba806144a704a6dce9e89900ddde0918",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795567743661,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
