@@ -253,7 +253,21 @@
   "created": 1795458125020,
   "updated": 1795458323738,
   "parts": 1,
-  "shots": []
+  "shots": [],
+  "pending": {
+   "shots": [
+    "apps\/meldo\/blokerblast-mwtleji5-1795596783191-shot1.jpg",
+    "apps\/meldo\/blokerblast-mwtleji5-1795596783191-shot2.jpg"
+   ],
+   "name": "blokerblast",
+   "version": "2.0",
+   "whatsNew": "добавлены новые стили, была попытка исправить баг с блоком \"уголок\" и добавлен новый алгоритм который выдаёт блоки",
+   "icon": "apps\/meldo\/blokerblast-mwtleji5-icon-1795596783191.png",
+   "apk": "apps\/meldo\/blokerblast-mwtleji5-2-0-1795596783191.apk",
+   "size": 5968438,
+   "time": 1795596783191,
+   "parts": 1
+  }
  },
  {
   "id": "hideos-mwumc2q4",
