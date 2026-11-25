@@ -962,7 +962,7 @@
   "username": "mifix",
   "name": "MIFIX",
   "desc": "",
-  "avatar": "",
+  "avatar": "data\/avatars\/mifix.png",
   "salt": "a87965b46a1494f55cb4fa06",
   "hash": "82437ac0dc3edab1da9c02eb997fa2a4ba3627e2a2e2335c73949a6af607a394",
   "role": "user",
@@ -974,7 +974,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795605930122,
+  "updated": 1795605935140,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
