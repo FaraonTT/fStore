@@ -326,5 +326,26 @@
    "time": 1795576569468,
    "parts": 1
   }
+ },
+ {
+  "id": "app-mwvq5u6g",
+  "owner": "pure_keka",
+  "name": "КУРОЧКА-ПИСТОЛЕТ",
+  "version": "0.1",
+  "shortDesc": "просто чикен ган",
+  "desc": "просто сделал чикен по приколу",
+  "whatsNew": "",
+  "icon": "apps\/pure_keka\/app-mwvq5u6g.png",
+  "apk": "apps\/pure_keka\/app-mwvq5u6g-0-1.apk",
+  "size": 94206665,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795587079656,
+  "updated": 1795587079656,
+  "parts": 4,
+  "shots": [
+   "apps\/pure_keka\/app-mwvq5u6g-shot1.jpg",
+   "apps\/pure_keka\/app-mwvq5u6g-shot2.jpg"
+  ]
  }
 ]
