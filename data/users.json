@@ -878,7 +878,7 @@
   "username": "zzz",
   "name": "zzz",
   "desc": "Hola you",
-  "avatar": "",
+  "avatar": "data\/avatars\/zzz.png",
   "salt": "be0a445aa53290c6211ac7e2",
   "hash": "c3bef1615429ac74b8f8f95436603fd7ba806144a704a6dce9e89900ddde0918",
   "role": "user",
@@ -890,7 +890,7 @@
   "badges": [],
   "friend": false,
   "virus": false,
-  "updated": 1795567743661,
+  "updated": 1795567747335,
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
