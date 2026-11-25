@@ -56,35 +56,24 @@
  {
   "id": "fmessage-mwoavi4c",
   "owner": "void_fworld",
-  "name": "fMessage",
-  "version": "1.0.27",
+  "name": "fMessage - Kotlin",
+  "version": "1.0.31b",
   "shortDesc": "Мессенджер от #fworld",
   "desc": "Настоящий и молурабочий мессенджер от #fworld\n\nЭксклюзив от #fworld",
-  "whatsNew": "Полностью переписан на Kotlin.\nМузыка не работает исправление потом.\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
+  "whatsNew": "Обновление 1.0.31b\nМузыку вернули... но только которая у вас на устройстве.\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
   "icon": "apps\/void_fworld\/fmessage-mwoavi4c.png",
-  "apk": "apps\/void_fworld\/fmessage-mwoavi4c-1-0-27-1795560333623.apk",
-  "size": 53546611,
+  "apk": "apps\/void_fworld\/fmessage-mwoavi4c-1-0-31b-1795573537058.apk",
+  "size": 53553744,
   "status": "approved",
   "fworld": true,
   "created": 1795138105811,
-  "updated": 1795560392435,
+  "updated": 1795573587521,
   "parts": 3,
-  "shots": [],
-  "pending": {
-   "shots": [
-    "apps\/void_fworld\/fmessage-mwoavi4c-1795573537058-shot1.jpg",
-    "apps\/void_fworld\/fmessage-mwoavi4c-1795573537058-shot2.jpg",
-    "apps\/void_fworld\/fmessage-mwoavi4c-1795573537058-shot3.jpg"
-   ],
-   "name": "fMessage - Kotlin",
-   "version": "1.0.31b",
-   "whatsNew": "Обновление 1.0.31b\nМузыку вернули... но только которая у вас на устройстве.\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
-   "icon": "",
-   "apk": "apps\/void_fworld\/fmessage-mwoavi4c-1-0-31b-1795573537058.apk",
-   "size": 53553744,
-   "time": 1795573537058,
-   "parts": 3
-  }
+  "shots": [
+   "apps\/void_fworld\/fmessage-mwoavi4c-1795573537058-shot1.jpg",
+   "apps\/void_fworld\/fmessage-mwoavi4c-1795573537058-shot2.jpg",
+   "apps\/void_fworld\/fmessage-mwoavi4c-1795573537058-shot3.jpg"
+  ]
  },
  {
   "id": "meme-blockblast-mwouxi0c",
