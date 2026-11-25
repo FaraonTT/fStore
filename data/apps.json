@@ -344,36 +344,25 @@
   "id": "fos-simulator-mww0igsw",
   "owner": "void_fworld",
   "name": "fOS - Simulator",
-  "version": "1.0",
+  "version": "1.0b",
   "shortDesc": "Симулятор нашей будущей ОС",
   "desc": "Симулятор ОС которая скоро выйдет\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
-  "whatsNew": "",
+  "whatsNew": "Добавлены скриншоты.",
   "icon": "apps\/void_fworld\/fos-simulator-mww0igsw.png",
-  "apk": "apps\/void_fworld\/fos-simulator-mww0igsw-1-0.apk",
+  "apk": "apps\/void_fworld\/fos-simulator-mww0igsw-1-0b-1795609052841.apk",
   "size": 13222860,
   "status": "approved",
   "fworld": true,
   "created": 1795604444890,
-  "updated": 1795604451757,
+  "updated": 1795609096664,
   "parts": 1,
-  "shots": [],
-  "pending": {
-   "shots": [
-    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot1.jpg",
-    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot2.jpg",
-    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot3.jpg",
-    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot4.jpg",
-    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot5.jpg",
-    "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot6.jpg"
-   ],
-   "name": "fOS - Simulator",
-   "version": "1.0b",
-   "whatsNew": "Добавлены скриншоты.",
-   "icon": "",
-   "apk": "apps\/void_fworld\/fos-simulator-mww0igsw-1-0b-1795609052841.apk",
-   "size": 13222860,
-   "time": 1795609052841,
-   "parts": 1
-  }
+  "shots": [
+   "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot1.jpg",
+   "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot2.jpg",
+   "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot3.jpg",
+   "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot4.jpg",
+   "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot5.jpg",
+   "apps\/void_fworld\/fos-simulator-mww0igsw-1795609052841-shot6.jpg"
+  ]
  }
 ]
