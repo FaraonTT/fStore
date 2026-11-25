@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 
-/** Панель модератора: только проверка приложений — одобрить, отклонить, скачать APK. */
+/** Панель модератора: проверка приложений — одобрить, отклонить, скачать APK, уведомить владельца. */
 @Composable
 fun ModeratorScreen(vm: StoreVM, onBack: () -> Unit) {
     val me = vm.me
@@ -27,6 +27,13 @@ fun ModeratorScreen(vm: StoreVM, onBack: () -> Unit) {
         .filter { it.status == "pending" || it.pending != null }
         .sortedByDescending { it.updated }
     val uri = LocalUriHandler.current
+    var noticeFor by remember { mutableStateOf<AppItem?>(null) }
+    noticeFor?.let { a ->
+        NoticeDialog(a, { noticeFor = null }) { txt ->
+            noticeFor = null
+            vm.me?.let { Notices.send(it, a, txt) { m -> vm.message = m } }
+        }
+    }
 
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         TopAppBar(
@@ -92,6 +99,7 @@ fun ModeratorScreen(vm: StoreVM, onBack: () -> Unit) {
                                 Text(if (upd != null) "Отклонить обновление" else "Отклонить")
                             }
                             TextButton(onClick = { uri.openUri(Gh.rawUrl(upd?.apk ?: a.apk)) }) { Text("Скачать APK") }
+                            TextButton(onClick = { noticeFor = a }) { Text("Уведомить") }
                         }
                     }
                 }

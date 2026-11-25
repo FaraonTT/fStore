@@ -98,10 +98,27 @@ fun DownloadsScreen(vm: StoreVM, onBack: () -> Unit) {
                                 Icon(Icons.Default.Delete, "Удалить", tint = MaterialTheme.colorScheme.error)
                             }
                         }
-                        Button(onClick = { installApk(ctx, vm.downloadFile(d)) }, modifier = Modifier.fillMaxWidth()) {
-                            Icon(Icons.Default.InstallMobile, null)
-                            Spacer(Modifier.width(8.dp))
-                            Text("Установить")
+                        var shareMenu by remember(d.file) { mutableStateOf(false) }
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Button(onClick = { installApk(ctx, vm.downloadFile(d)) }, modifier = Modifier.weight(1f)) {
+                                Icon(Icons.Default.InstallMobile, null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Установить")
+                            }
+                            Box {
+                                FilledTonalIconButton(onClick = { shareMenu = true }) { ShareIcon() }
+                                DropdownMenu(expanded = shareMenu, onDismissRequest = { shareMenu = false }) {
+                                    DropdownMenuItem(
+                                        text = { Text("Файл APK") },
+                                        onClick = { shareMenu = false; shareApkFile(ctx, vm.downloadFile(d)) },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Ссылка на страницу") },
+                                        enabled = app != null,
+                                        onClick = { shareMenu = false; app?.let { shareApp(ctx, it) } },
+                                    )
+                                }
+                            }
                         }
                     }
                 }
