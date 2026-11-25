@@ -376,10 +376,10 @@
   "icon": "apps\/mifix\/tactical-strike-1-mww5vkud.png",
   "apk": "apps\/mifix\/tactical-strike-1-mww5vkud-1-0-0.apk",
   "size": 6377742,
-  "status": "pending",
+  "status": "approved",
   "fworld": false,
   "created": 1795613447482,
-  "updated": 1795613447482,
+  "updated": 1795613794232,
   "parts": 1,
   "shots": []
  }
