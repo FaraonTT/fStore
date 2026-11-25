@@ -11,6 +11,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.runtime.getValue
@@ -112,6 +113,7 @@ object Notifier {
     private const val CH_DONE = "downloads_done"
     private const val CH_REL = "releases"
     private const val CH_REV = "reviews"
+    private const val CH_NOTE = "notices"
 
     /** Каналы нужно создавать до первого уведомления — в том числе из фонового воркера. */
     fun init(ctx: Context) {
@@ -121,6 +123,7 @@ object Notifier {
             nm.createNotificationChannel(NotificationChannel(CH_DONE, "Скачивание завершено", NotificationManager.IMPORTANCE_HIGH))
             nm.createNotificationChannel(NotificationChannel(CH_REL, "Новые релизы", NotificationManager.IMPORTANCE_HIGH))
             nm.createNotificationChannel(NotificationChannel(CH_REV, "Отзывы", NotificationManager.IMPORTANCE_HIGH))
+            nm.createNotificationChannel(NotificationChannel(CH_NOTE, "Сообщения от модерации", NotificationManager.IMPORTANCE_HIGH))
         }
     }
 
@@ -141,12 +144,14 @@ object Notifier {
     }
 
     @SuppressLint("MissingPermission")
-    private fun post(ctx: Context, id: Int, channel: String, title: String, text: String) {
+    private fun post(ctx: Context, id: Int, channel: String, title: String, text: String, link: String? = null) {
         if (!allowed(ctx)) return
         init(ctx)
+        // Нажатие открывает то место, откуда пришло уведомление (ссылка fstore://…), а не просто приложение.
+        val intent = Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        if (link != null) intent.data = Uri.parse(link)
         val open = PendingIntent.getActivity(
-            ctx, 0,
-            Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            ctx, id, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val n = NotificationCompat.Builder(ctx, channel)
@@ -166,19 +171,24 @@ object Notifier {
 
     // «Началось» и «Скачано» используют один id: второе уведомление заменяет первое.
     fun downloadStarted(ctx: Context, name: String) {
-        if (AppPrefs.notifyStart) post(ctx, ("dl:$name").hashCode(), CH_PROGRESS, "Началось скачивание", name)
+        if (AppPrefs.notifyStart) post(ctx, ("dl:$name").hashCode(), CH_PROGRESS, "Началось скачивание", name, "fstore://downloads")
     }
 
     fun downloadDone(ctx: Context, name: String) {
-        if (AppPrefs.notifyDone) post(ctx, ("dl:$name").hashCode(), CH_DONE, "Скачано", "$name — открой «Загрузки» в настройках, чтобы установить")
+        if (AppPrefs.notifyDone) post(ctx, ("dl:$name").hashCode(), CH_DONE, "Скачано", "$name — открой «Загрузки» на главной, чтобы установить", "fstore://downloads")
     }
 
     fun release(ctx: Context, id: String, title: String, text: String) {
-        post(ctx, ("rel:$id").hashCode(), CH_REL, title, text)
+        post(ctx, ("rel:$id").hashCode(), CH_REL, title, text, "fstore://app/$id")
     }
 
-    fun review(ctx: Context, id: String, title: String, text: String) {
-        post(ctx, ("rev:$id").hashCode(), CH_REV, title, text)
+    fun review(ctx: Context, id: String, appId: String, title: String, text: String) {
+        post(ctx, ("rev:$id").hashCode(), CH_REV, title, text, "fstore://app/$appId")
+    }
+
+    /** Сообщение от модератора/админа владельцу приложения. */
+    fun notice(ctx: Context, id: String, appId: String, title: String, text: String) {
+        post(ctx, ("ntc:$id").hashCode(), CH_NOTE, title, text, "fstore://app/$appId")
     }
 
     /** Кнопка «Проверить уведомления» в настройках. */
@@ -247,6 +257,7 @@ object ReleaseWatch {
         process(ctx, apps)
         val reviews = Gh.readArray("data/reviews.json").objs().map { Review.from(it) }
         ReviewWatch.process(ctx, apps, reviews)
+        NoticeWatch.check(ctx)
     }
 }
 
@@ -275,10 +286,10 @@ object ReviewWatch {
                 val prevReply = prev.substringAfter("|", "")
                 if (AppPrefs.notifyReview && app.owner == user && r.user != user && prevTime != r.time.toString()) {
                     val txt = if (r.text.isBlank()) "${r.stars}★" else "${r.stars}★ · ${r.text.take(120)}"
-                    Notifier.review(ctx, r.id, "Новый отзыв на ${app.name}", "@${r.user}: $txt")
+                    Notifier.review(ctx, r.id, app.id, "Новый отзыв на ${app.name}", "@${r.user}: $txt")
                 }
                 if (AppPrefs.notifyReply && r.user == user && r.reply.isNotBlank() && prevReply != r.replyTime.toString()) {
-                    Notifier.review(ctx, r.id + ":reply", "Ответ на ваш отзыв · ${app.name}", r.reply.take(160))
+                    Notifier.review(ctx, r.id + ":reply", app.id, "Ответ на ваш отзыв · ${app.name}", r.reply.take(160))
                 }
             }
         }
