@@ -3,6 +3,7 @@
 package com.fworld.fstore
 
 import android.Manifest
+import android.content.Intent
 import android.graphics.Color as AColor
 import android.os.Build
 import android.os.Bundle
@@ -57,11 +58,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -97,6 +102,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
@@ -110,6 +116,7 @@ class MainActivity : ComponentActivity() {
         Notifier.init(applicationContext)
         Favorites.init(applicationContext)
         Recents.init(applicationContext)
+        if (savedInstanceState == null) DeepLink.from(intent)
         enableEdgeToEdge()
         setContent {
             val vm: StoreVM = viewModel()
@@ -126,12 +133,23 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    // Нажатие на уведомление или ссылку fstore://… при уже открытом приложении.
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        DeepLink.from(intent)
+    }
 }
 
-private val DOCK_ITEMS: List<Triple<String, ImageVector, Int>> = listOf(
-    Triple("Главная", Icons.Default.Home, 0),
-    Triple("Загрузить", Icons.Default.CloudUpload, 1),
-    Triple("Настройки", Icons.Default.Settings, 2),
+private class DockDef(val label: String, val icons: List<ImageVector>)
+
+// Вкладки: 0 — приложения и игры, 1 — музыка, 2 — загрузка, 3 — настройки.
+private val DOCK_ITEMS: List<DockDef> = listOf(
+    DockDef("Приложения", listOf(Icons.Default.Apps, Icons.Default.SportsEsports)),
+    DockDef("Музыка", listOf(Icons.Default.MusicNote)),
+    DockDef("Загрузить", listOf(Icons.Default.CloudUpload)),
+    DockDef("Настройки", listOf(Icons.Default.Settings)),
 )
 
 private fun tabIndex(key: String): Int? = if (key.startsWith("tab:")) key.removePrefix("tab:").toIntOrNull() else null
@@ -170,6 +188,32 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
 
     // Счётчик скачиваний: читаем при загрузке каталога и при смене аккаунта.
     LaunchedEffect(vm.apps, vm.me) { DownloadStats.load(vm.me?.username) }
+    // Сообщения от модерации: показываем уведомлением, когда приложение открыто.
+    LaunchedEffect(vm.apps, vm.me) { if (vm.me != null) runCatching { NoticeWatch.check(ctx) } }
+
+    // Ссылка fstore://… (из уведомления или «Поделиться») → открыть нужное место.
+    val link = DeepLink.target
+    LaunchedEffect(link, vm.apps, vm.loading) {
+        val t = link ?: return@LaunchedEffect
+        fun reset() {
+            egg = false; admin = false; moderator = false; profile = false
+            viewUser = null; userBackDetail = null; downloads = false; detail = null
+        }
+        when {
+            t.startsWith("app:") -> {
+                val id = t.removePrefix("app:")
+                if (vm.apps.none { it.id == id }) {
+                    if (vm.loading || vm.apps.isEmpty()) return@LaunchedEffect // каталог ещё грузится
+                    vm.message = "Приложение не найдено"
+                } else {
+                    reset(); detail = id
+                }
+            }
+            t == "downloads" -> { reset(); tab = 0; downloads = true }
+            t == "music" -> { reset(); tab = 1 }
+        }
+        DeepLink.target = null
+    }
 
     // Новый файл в «Загрузках» = скачивание: +1 приложению, но не больше раза на аккаунт.
     var counted by remember { mutableStateOf(vm.downloads.map { it.file }.toSet()) }
@@ -284,7 +328,7 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                         k == "profile" -> ProfileScreen(
                             vm = vm,
                             onOpenApp = { profile = false; detail = it },
-                            onUpload = { uploadTarget = null; profile = false; tab = 1 },
+                            onUpload = { uploadTarget = null; profile = false; tab = 2 },
                             onAdmin = { admin = true },
                             onModerator = { moderator = true },
                         )
@@ -296,11 +340,12 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                             onUpdate = { id ->
                                 uploadTarget = id
                                 detail = null
-                                tab = 1
+                                tab = 2
                             },
                         )
                         k == "tab:0" -> HomeScreen(vm, homeSub) { detail = it }
-                        k == "tab:1" -> UploadScreen(
+                        k == "tab:1" -> MusicScreen(vm)
+                        k == "tab:2" -> UploadScreen(
                             vm = vm,
                             target = uploadTarget,
                             onTarget = { uploadTarget = it },
@@ -323,6 +368,27 @@ fun FStoreApp(vm: StoreVM, dark: Boolean) {
                     exit = if (anim) fadeOut() + scaleOut(targetScale = 0.6f) else ExitTransition.None,
                 ) {
                     ProfileButton(vm.me) { profile = true }
+                }
+
+                // Загрузки — на главной, слева от профиля.
+                AnimatedVisibility(
+                    visible = onTab && tab == 0,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    enter = if (anim) fadeIn() + scaleIn(initialScale = 0.6f) else EnterTransition.None,
+                    exit = if (anim) fadeOut() + scaleOut(targetScale = 0.6f) else ExitTransition.None,
+                ) {
+                    CircleAction(endPad = 70.dp, topPad = 12.dp, desc = "Загрузки") { downloads = true }
+                }
+
+                // «Поделиться» на странице приложения: ссылка, которая открывает его прямо в fStore.
+                val shareTarget = detail?.let { id -> vm.apps.find { it.id == id } }
+                AnimatedVisibility(
+                    visible = shareTarget != null && !egg && !admin && !moderator && !profile && viewUser == null && !downloads,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    enter = if (anim) fadeIn() + scaleIn(initialScale = 0.6f) else EnterTransition.None,
+                    exit = if (anim) fadeOut() + scaleOut(targetScale = 0.6f) else ExitTransition.None,
+                ) {
+                    CircleAction(endPad = 12.dp, topPad = 10.dp, desc = "Поделиться") { shareTarget?.let { shareApp(ctx, it) } }
                 }
 
                 // В профиле на том же месте — кнопка «закрыть» (у остальных вложенных экранов своя стрелка назад).
@@ -397,6 +463,29 @@ private fun ProfileButton(me: User?, onClick: () -> Unit) {
     }
 }
 
+/** Круглая кнопка в правом верхнем углу (в том же стиле, что и профиль). */
+@Composable
+private fun CircleAction(endPad: Dp, topPad: Dp, desc: String, onClick: () -> Unit) {
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        tonalElevation = 3.dp,
+        shadowElevation = 0.dp,
+        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)),
+        modifier = Modifier
+            .statusBarsPadding()
+            .padding(top = topPad, end = endPad)
+            .size(44.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onClick),
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            if (desc == "Поделиться") Icon(Icons.Default.Share, desc, tint = MaterialTheme.colorScheme.primary)
+            else Icon(Icons.Default.Download, desc, tint = MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
 @Composable
 private fun CloseButton(onClick: () -> Unit) {
     Surface(
@@ -429,7 +518,7 @@ private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) 
     val haptic = LocalHapticFeedback.current
     var dragX by remember { mutableStateOf(0f) }
     var preview by remember(selected) { mutableStateOf(selected) }
-    val step = with(density) { 76.dp.toPx() }
+    val step = with(density) { 64.dp.toPx() }
 
     Surface(
         shape = RoundedCornerShape(34.dp),
@@ -460,8 +549,8 @@ private fun FloatingDock(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) 
             },
     ) {
         Row(Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
-            DOCK_ITEMS.forEachIndexed { index, (label, icon, _) ->
-                DockItem(label, icon, index == preview, anim) { onSelect(index) }
+            DOCK_ITEMS.forEachIndexed { index, d ->
+                DockItem(d.label, d.icons, index == preview, anim) { onSelect(index) }
             }
         }
     }
@@ -513,7 +602,7 @@ private fun HomeTabsPill(selected: Int, anim: Boolean, onSelect: (Int) -> Unit) 
 }
 
 @Composable
-private fun DockItem(label: String, icon: ImageVector, selected: Boolean, anim: Boolean, onClick: () -> Unit) {
+private fun DockItem(label: String, icons: List<ImageVector>, selected: Boolean, anim: Boolean, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
     val bg by animateColorAsState(
         if (selected) cs.primaryContainer else Color.Transparent,
@@ -531,10 +620,10 @@ private fun DockItem(label: String, icon: ImageVector, selected: Boolean, anim: 
             .background(bg)
             .clickable(onClick = onClick)
             .then(if (anim) Modifier.animateContentSize(tween(280)) else Modifier)
-            .padding(horizontal = 18.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, label, tint = fg)
+        icons.forEach { Icon(it, label, Modifier.size(if (icons.size > 1) 22.dp else 24.dp), tint = fg) }
         AnimatedVisibility(
             visible = selected,
             enter = if (anim) expandHorizontally(tween(280)) + fadeIn(tween(280)) else EnterTransition.None,
