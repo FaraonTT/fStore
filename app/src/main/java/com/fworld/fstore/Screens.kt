@@ -50,11 +50,10 @@ private val SORTS = listOf("Сначала новые", "По названию",
 val HOME_TABS = listOf("#fworld", "Проверенные", "Все", "Непроверенные")
 
 @Composable
-fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
+fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit, onEgg: () -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var favOnly by rememberSaveable { mutableStateOf(false) }
     var sortOpen by remember { mutableStateOf(false) }
-    var egg by remember { mutableStateOf(false) }
     val tap = remember { TapCounter() }
 
     val ratings = remember(vm.reviews) {
@@ -94,7 +93,6 @@ fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
     }
 
     // Пасхалка: семь быстрых тапов по шапке.
-    if (egg) EasterEgg { egg = false }
 
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(
@@ -104,7 +102,7 @@ fun HomeScreen(vm: StoreVM, sub: Int, onOpen: (String) -> Unit) {
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() },
-                ) { if (tap.tap()) egg = true },
+                ) { if (tap.tap()) onEgg() },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
