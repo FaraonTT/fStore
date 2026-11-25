@@ -978,5 +978,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "moto",
+  "name": "@Moto g06_tech",
+  "desc": "юный разра9",
+  "avatar": "",
+  "salt": "f1ee1ea33afabca634592296",
+  "hash": "5da80a02ac346fa2ea599126f5264b23daad6b605df05fbd7aad755ed445d880",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795620241844,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
