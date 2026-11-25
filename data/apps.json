@@ -256,38 +256,6 @@
   "shots": []
  },
  {
-  "id": "moo-run-beta-mwu92pwv",
-  "owner": "pure_keka",
-  "name": "Moo Run (beta",
-  "version": "beta",
-  "shortDesc": "игра про корову которая бежит за тобой",
-  "desc": "твоя цель сбежать от коровы которая бегает за тобой",
-  "whatsNew": "",
-  "icon": "apps\/pure_keka\/moo-run-beta-mwu92pwv.png",
-  "apk": "apps\/pure_keka\/moo-run-beta-mwu92pwv-beta.apk",
-  "size": 106904265,
-  "status": "approved",
-  "fworld": false,
-  "created": 1795497918794,
-  "updated": 1795498217280,
-  "parts": 5,
-  "shots": [],
-  "pending": {
-   "shots": [
-    "apps\/pure_keka\/moo-run-beta-mwu92pwv-1795586776075-shot1.jpg",
-    "apps\/pure_keka\/moo-run-beta-mwu92pwv-1795586776075-shot2.jpg"
-   ],
-   "name": "КУРОЧКА-ПИСТОЛЕТ",
-   "version": "1.0",
-   "whatsNew": "релиз!\nмы переделали игру в чикен Ган!\nиз нового: ИЗМЕНЕНО ВСЁ",
-   "icon": "apps\/pure_keka\/moo-run-beta-mwu92pwv-icon-1795586776075.png",
-   "apk": "apps\/pure_keka\/moo-run-beta-mwu92pwv-1-0-1795586776075.apk",
-   "size": 94206665,
-   "time": 1795586776075,
-   "parts": 4
-  }
- },
- {
   "id": "hideos-mwumc2q4",
   "owner": "noomchik",
   "name": "hideOS",
