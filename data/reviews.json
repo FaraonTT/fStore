@@ -300,16 +300,6 @@
   "replyTime": 1795528405550
  },
  {
-  "id": "hideos-mwumc2q4:void_fworld",
-  "appId": "hideos-mwumc2q4",
-  "user": "void_fworld",
-  "stars": 4,
-  "text": "Рекомендую доработать в течении недели или игра будет отменена.\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
-  "time": 1795530635617,
-  "reply": "",
-  "replyTime": 0
- },
- {
   "id": "0-1-32-beta-mwqmwst5:kyrek",
   "appId": "0-1-32-beta-mwqmwst5",
   "user": "kyrek",
@@ -378,5 +368,15 @@
   "time": 1795608055611,
   "reply": "Здравствуйте, fTok скоро заработает по натоящему с выкладывание и просмотром видео сейчас там заглушки из 5 видео в разном цвете.\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
   "replyTime": 1795608815314
+ },
+ {
+  "id": "hideos-mwumc2q4:void_fworld",
+  "appId": "hideos-mwumc2q4",
+  "user": "void_fworld",
+  "stars": 4,
+  "text": "Вы сказали моему работнику «не нравится делайте сами...» ну я сделал fOS...\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
+  "time": 1795609247117,
+  "reply": "",
+  "replyTime": 0
  }
 ]
