@@ -241,33 +241,22 @@
   "id": "blokerblast-mwtleji5",
   "owner": "meldo",
   "name": "blokerblast",
-  "version": "1.0",
+  "version": "2.0",
   "shortDesc": "копия block blast",
   "desc": "копия block blast",
-  "whatsNew": "",
-  "icon": "apps\/meldo\/blokerblast-mwtleji5.png",
-  "apk": "apps\/meldo\/blokerblast-mwtleji5-1-0.apk",
-  "size": 5969647,
+  "whatsNew": "добавлены новые стили, была попытка исправить баг с блоком \"уголок\" и добавлен новый алгоритм который выдаёт блоки",
+  "icon": "apps\/meldo\/blokerblast-mwtleji5-icon-1795596783191.png",
+  "apk": "apps\/meldo\/blokerblast-mwtleji5-2-0-1795596783191.apk",
+  "size": 5968438,
   "status": "approved",
   "fworld": false,
   "created": 1795458125020,
-  "updated": 1795458323738,
+  "updated": 1795604329767,
   "parts": 1,
-  "shots": [],
-  "pending": {
-   "shots": [
-    "apps\/meldo\/blokerblast-mwtleji5-1795596783191-shot1.jpg",
-    "apps\/meldo\/blokerblast-mwtleji5-1795596783191-shot2.jpg"
-   ],
-   "name": "blokerblast",
-   "version": "2.0",
-   "whatsNew": "добавлены новые стили, была попытка исправить баг с блоком \"уголок\" и добавлен новый алгоритм который выдаёт блоки",
-   "icon": "apps\/meldo\/blokerblast-mwtleji5-icon-1795596783191.png",
-   "apk": "apps\/meldo\/blokerblast-mwtleji5-2-0-1795596783191.apk",
-   "size": 5968438,
-   "time": 1795596783191,
-   "parts": 1
-  }
+  "shots": [
+   "apps\/meldo\/blokerblast-mwtleji5-1795596783191-shot1.jpg",
+   "apps\/meldo\/blokerblast-mwtleji5-1795596783191-shot2.jpg"
+  ]
  },
  {
   "id": "hideos-mwumc2q4",
