@@ -339,5 +339,23 @@
    "apps\/pure_keka\/app-mwvq5u6g-shot1.jpg",
    "apps\/pure_keka\/app-mwvq5u6g-shot2.jpg"
   ]
+ },
+ {
+  "id": "fos-simulator-mww0igsw",
+  "owner": "void_fworld",
+  "name": "fOS - Simulator",
+  "version": "1.0",
+  "shortDesc": "Симулятор нашей будущей ОС",
+  "desc": "Симулятор ОС которая скоро выйдет\n\nС уважением @fworld_team\n(P.S. Разработчик fStore)",
+  "whatsNew": "",
+  "icon": "apps\/void_fworld\/fos-simulator-mww0igsw.png",
+  "apk": "apps\/void_fworld\/fos-simulator-mww0igsw-1-0.apk",
+  "size": 13222860,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795604444890,
+  "updated": 1795604444890,
+  "parts": 1,
+  "shots": []
  }
 ]
