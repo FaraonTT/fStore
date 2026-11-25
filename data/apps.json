@@ -382,23 +382,5 @@
   "updated": 1795613794232,
   "parts": 1,
   "shots": []
- },
- {
-  "id": "magisk-mwwa18cb",
-  "owner": "moto",
-  "name": "magisk",
-  "version": "v31.1",
-  "shortDesc": "управление рут правами",
-  "desc": "",
-  "whatsNew": "",
-  "icon": "apps\/moto\/magisk-mwwa18cb.png",
-  "apk": "apps\/moto\/magisk-mwwa18cb-v31-1.apk",
-  "size": 10679283,
-  "status": "pending",
-  "fworld": false,
-  "created": 1795620453379,
-  "updated": 1795620453379,
-  "parts": 1,
-  "shots": []
  }
 ]
