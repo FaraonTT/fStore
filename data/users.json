@@ -936,5 +936,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "avtavetet",
+  "name": "Максим",
+  "desc": "",
+  "avatar": "",
+  "salt": "eaf79aee8075e35ac8e91043",
+  "hash": "71d7bc9d80bae16e64f5da08708fef625a3e7cf2bff25c1d875cf1b895513bff",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795596308135,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
