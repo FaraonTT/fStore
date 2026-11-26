@@ -220,24 +220,6 @@
   "shots": []
  },
  {
-  "id": "app-mwtig9v3",
-  "owner": "anti_sdvg",
-  "name": "Градоначальник:страна и город",
-  "version": "1.0",
-  "shortDesc": "стройте свой город",
-  "desc": "повыщайте и понижайте налоги\nведите внутреннюю и внешнюю политику\nстройте жилые, промышленые и коммерческие кварталы\nповыщайте население и стройте парки",
-  "whatsNew": "",
-  "icon": "apps\/anti_sdvg\/app-mwtig9v3.png",
-  "apk": "apps\/anti_sdvg\/app-mwtig9v3-1-0.apk",
-  "size": 5961669,
-  "status": "rejected",
-  "fworld": false,
-  "created": 1795453172200,
-  "updated": 1795453556871,
-  "parts": 1,
-  "shots": []
- },
- {
   "id": "blokerblast-mwtleji5",
   "owner": "meldo",
   "name": "blokerblast",
