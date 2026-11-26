@@ -95,6 +95,12 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
         return
     }
 
+    var uploadKind by rememberSaveable { mutableStateOf(0) }
+    if (uploadKind == 1) {
+        MusicUploadScreen(vm = vm, kind = uploadKind, onKind = { uploadKind = it })
+        return
+    }
+
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val mine = vm.apps.filter { it.owner == me.username }
@@ -138,6 +144,7 @@ fun UploadScreen(vm: StoreVM, target: String?, onTarget: (String?) -> Unit, onGo
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Text("Загрузить", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.heightIn(min = 64.dp))
+        KindSwitch(kind = uploadKind, onKind = { uploadKind = it })
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
             SegmentedButton(
                 selected = !update,

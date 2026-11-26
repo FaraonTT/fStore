@@ -55,7 +55,7 @@ object DeepLink {
 
 /** «Поделиться» страницей приложения: ссылка, которая по клику открывает его прямо в fStore. */
 fun shareApp(ctx: Context, a: AppItem) {
-    val text = "«${a.name}» в fStore\n${DeepLink.webLink(a.id)}\n\nОткрыть в приложении: ${DeepLink.appLink(a.id)}"
+    val text = "Открыть в приложении: ${DeepLink.appLink(a.id)}"
     val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
     ctx.startActivity(Intent.createChooser(send, "Поделиться").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 }
