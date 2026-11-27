@@ -1,0 +1,23 @@
+[
+ {
+  "username": "rembo567",
+  "name": "Саша",
+  "desc": "",
+  "avatar": "",
+  "salt": "940ab3ab039f6ddf1f46b4ec",
+  "hash": "066eaa821c8dccb6052267feab29ae4332bec26c5eb34cd8a455b681b062066f",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795796847120,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
+ }
+]
