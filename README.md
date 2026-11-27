@@ -1,3 +1,0 @@
-# fStore
-
-TIME FOR SAME... MURDER.
