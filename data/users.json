@@ -19,5 +19,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "asortic",
+  "name": "pop",
+  "desc": "",
+  "avatar": "",
+  "salt": "15c4ac7127429e3a40d06658",
+  "hash": "c039844d38af0080fb0439c4feb0921335096057c8ca2d529f5daff7094c9164",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795799833074,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
