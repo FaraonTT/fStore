@@ -61,5 +61,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "ter",
+  "name": "Ter",
+  "desc": "",
+  "avatar": "",
+  "salt": "512f7e8a9d7d868576ade137",
+  "hash": "963b2294c3457043d0912399e0b5cddcf32e4e375462456ca72b4f375d0130d8",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795804235994,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
