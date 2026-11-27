@@ -1083,5 +1083,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "smozyy",
+  "name": "smozyy",
+  "desc": "",
+  "avatar": "",
+  "salt": "41048d220a1125c7190f9922",
+  "hash": "99b361020e34079c6fd0e766f482edf845b5b6b5cfcb6ae68b4800ff71d0c740",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795793338835,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
