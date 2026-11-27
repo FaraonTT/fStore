@@ -1062,5 +1062,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "amavok",
+  "name": "забанишь=хуесос без маери",
+  "desc": "",
+  "avatar": "",
+  "salt": "fe17b6484cfe08386a30ac61",
+  "hash": "5c78723bf3b82121fec8ec77a2110aae460be709da47de5946fbc3aff7939f38",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795789838055,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
