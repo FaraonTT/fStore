@@ -82,5 +82,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "max",
+  "name": "Max",
+  "desc": "",
+  "avatar": "",
+  "salt": "420e5cfbd4995f4b60994ded",
+  "hash": "a4a51aa6e2e48433afcab5a0a23ee116b6f4adb38cec76fe10f8e5afd76ec384",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795804452156,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
