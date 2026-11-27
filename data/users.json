@@ -40,5 +40,26 @@
   "shimmer": false,
   "shimmerA": "",
   "shimmerB": ""
+ },
+ {
+  "username": "void_fworld",
+  "name": "I.FIND.YOU",
+  "desc": "",
+  "avatar": "",
+  "salt": "887c4383a86a968083d0c642",
+  "hash": "dee3c65b4df26ffee4af806a0e0ec230da9f4aa24aee909d7d26cd4434d9c327",
+  "role": "user",
+  "banned": false,
+  "verified": false,
+  "glow": false,
+  "nameColor": "",
+  "glowColor": "",
+  "badges": [],
+  "friend": false,
+  "virus": false,
+  "updated": 1795801781723,
+  "shimmer": false,
+  "shimmerA": "",
+  "shimmerB": ""
  }
 ]
