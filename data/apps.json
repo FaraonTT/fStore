@@ -382,5 +382,23 @@
   "updated": 1795650080938,
   "parts": 1,
   "shots": []
+ },
+ {
+  "id": "glamm-browser-mwz33ehz",
+  "owner": "meldo",
+  "name": "glamm browser",
+  "version": "1.4",
+  "shortDesc": "",
+  "desc": "",
+  "whatsNew": "",
+  "icon": "apps\/meldo\/glamm-browser-mwz33ehz.png",
+  "apk": "apps\/meldo\/glamm-browser-mwz33ehz-1-4.apk",
+  "size": 2078095,
+  "status": "pending",
+  "fworld": false,
+  "created": 1795790165264,
+  "updated": 1795790165264,
+  "parts": 1,
+  "shots": []
  }
 ]
